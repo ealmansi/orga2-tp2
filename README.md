@@ -134,6 +134,6 @@ ASM haciendo uso de las instrucciones SSE y la técnica de entubado de código.
 Proponer optimizaciones que surjan de su desarrollo y decisiones puntuales que hayan tomado.
 Hacer un analisis de las mismas.
 
-### Ejercicio 19 ¿Cuáles son las diferencias de performace entre las versiones de los Ejercicios 15, 16 y
-18?
+### Ejercicio 19
+¿Cuáles son las diferencias de performace entre las versiones de los Ejercicios 15, 16 y 18?
 Realizar gráficos que representen estas diferencias y permitan realizar este análisis.

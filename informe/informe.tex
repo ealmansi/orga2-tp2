@@ -1,0 +1,87 @@
+% ** Cuidado: El indice se actualiza al compilar 2 veces. **
+
+% -- Configuración --
+\documentclass[10pt, a4paper]{article}
+\usepackage[paper=a4paper, left=1.5cm, right=1.5cm, bottom=1.5cm, top=1.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{float}
+% \usepackage[colorlinks=true, linkcolor=blue]{hyperref}
+\usepackage{graphicx}
+\usepackage{titling}
+\usepackage{tikz}
+\usepackage{dsfont}
+\usepackage{amsmath}
+\usetikzlibrary{chains,fit,shapes}
+\newcommand{\ig}[1]{\includegraphics[width=\textwidth]{#1}}
+\newcommand{\RNum}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
+\usepackage{parskip}
+ 
+% -- Documento --
+\begin{document}
+
+\setlength{\parindent}{25pt}
+
+	% -- Carátula --
+	
+	\thispagestyle{empty}
+	\title{%
+	\huge{Organización del Computador \RNum{2}}\\
+	\vspace{4mm}
+	\large{Trabajo Práctico 2}
+	}
+	\date{\vspace{5mm}$1^{\mathrm{er}}$ cuatrimestre de 2013}
+
+	\author{
+		\\
+		{\rm Emilio Almansi }\\
+		\small{ealmansi@gmail.com}
+		\and
+		\\
+		{\rm Federico Suárez}\\
+		\small{elgeniofederico@gmail.com}
+		\and
+		\\
+		{\rm Miguel Duarte}\\
+		\small{miguelfeliped@gmail.com}
+	} % end author
+	\maketitle
+
+	
+	\vspace{10mm}
+	% -- Resumen --
+	\begin{abstract}
+		\centering{%
+			En este documento se analiza las diferencias en rendimiento encontradas para las implementaciones de algunos 
+			filtros de imágenes al utilizar instrucciones SIMD de la arquitectura Intel 64.
+		}
+	\end{abstract}
+	\vspace{10mm}
+
+	% -- Indice --
+
+	\tableofcontents
+
+	\newpage
+	% -- Contenido --
+	% Se edita cada seccion por separado, no hay que cambiar nada acá.
+	\section{Introducción}
+		\input{section_introduccion.tex}
+	
+	\section{Filtros Implementados}
+		\input{section_filtros.tex}
+	\newpage
+	\subsection{Filtro de color}
+		\input{subsection_filtro_color.tex}
+	\newpage
+	\subsection{Miniature}
+		\input{subsection_miniature.tex}
+	\newpage
+	\subsection{Decodificación esteganográfica}
+		\input{subsection_decodificacion_esteganografica.tex}
+	\newpage
+	\section{Conclusiones}
+		\input{section_conclusiones.tex}
+
+	
+\end{document}

@@ -16,7 +16,7 @@ void decode_c(unsigned char* src,
 	while (1) {
 
 		char partial_result = 0;
-		for(int bit_shift=6 ; bit_shift >=0 ; bit_shift-=2){
+		for(int bit_shift=0 ; bit_shift <=6 ; bit_shift+=2){
 			char a,b;
 			a = src[j];
 

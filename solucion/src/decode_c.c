@@ -27,16 +27,18 @@ void decode_c(unsigned char* src,
 
 			if (a==0x04){
 				b=b+1;
+				b=b & _mask_01;
 			}
+
 			if (a== 0x08 ) {
 				b=b-1;
+				b=b & _mask_01;
 			}
 			if (a== 0xc){
 				b= b ^ _negation_mask;
 			}
 			b = b << bit_shift;
 			partial_result = partial_result + b;
-			bit_shift-=2;
 			j++;
 		}
 		code[k]= partial_result;

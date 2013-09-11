@@ -1,6 +1,8 @@
 #ifndef __TIEMPO_H__
 #define __TIEMPO_H__
 
+#include <stdio.h>
+
 #define MEDIR_TIEMPO_START(start)							\
 {															\
 	unsigned int start_high, start_low;						\
@@ -55,6 +57,32 @@
 				                                            \
 	end = (((unsigned long long int) end_high) << 32) | 	\
 		(unsigned long long int) (end_low);					\
+}
+
+/* los sucesivos llamados a TIMER_PRINT_STATUS tienen que ser desde la misma función */
+#define         TIMER_BEGIN()                   					\
+unsigned long long int __timer_t0__;            					\
+{                                               					\
+	static int __timer_counter_##__FUNCTION__ = 0;					\
+    MEDIR_TIEMPO_START(__timer_t0__);           					\
+    if(__timer_counter_##__FUNCTION__++ == 0)						\
+    	printf("[");												\
+    else															\
+    	printf("\b");												\
+    printf("{");													\
+}
+
+/* imprime la cantidad de clocks que pasaron desde que se llamó a TIMER_BEGIN() */
+#define         TIMER_PRINT_STATUS(str)                     \
+{                                                           \
+    unsigned long long int tn;                              \
+    MEDIR_TIEMPO_START(tn);                                 \
+    printf("\"%s\" : %llu, ", (str), tn - __timer_t0__);    \
+}
+
+#define         TIMER_END()     \
+{                               \
+    printf("},]");             	\
 }
 
 #endif /* !__TIEMPO_H__ */

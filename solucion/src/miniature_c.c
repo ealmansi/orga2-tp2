@@ -1,3 +1,4 @@
+#include "utils.h"
 #include "tiempo.h"
 
 /*  topPlane:
@@ -13,8 +14,6 @@
         ventana que deben blurear, con el fin de generar un blur más intenso
         a medida que se aleja de la fila centro de la imagen.
 */
-
-#define     MIN(a,b)        (((a) < (b)) ? (a) : (b))
 
 void miniature_c(
                 unsigned char *src,

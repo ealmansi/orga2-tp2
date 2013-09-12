@@ -15,26 +15,73 @@
         a medida que se aleja de la fila centro de la imagen.
 */
 
+#define     OFFSET_PX_RED           2
+#define     OFFSET_PX_GREEN         1
+#define     OFFSET_PX_BLUE          0
+
+#define     red(arr, i, j)          ((arr)[(3 * (i)) * width + (3 * (j)) + OFFSET_PX_RED])
+#define     green(arr, i, j)        ((arr)[(3 * (i)) * width + (3 * (j)) + OFFSET_PX_GREEN])
+#define     blue(arr, i, j)         ((arr)[(3 * (i)) * width + (3 * (j)) + OFFSET_PX_BLUE])
+
+static inline void update_pixel(unsigned char *dst, int i, int j, unsigned char *src, int width)
+{
+    float transf_mat[] = { 0.01, 0.05, 0.18, 0.05, 0.01,
+                            0.05, 0.32, 0.64, 0.32, 0.05,
+                            0.18, 0.64, 1.00, 0.64, 0.18,
+                            0.05, 0.32, 0.64, 0.32, 0.05,
+                            0.01, 0.05, 0.18, 0.05, 0.01 };
+    float  red_accum = 0,
+            green_accum = 0,
+            blue_accum = 0;
+
+    int di, dj, n = 0;
+    for (di = -2; di < 3; ++di)
+        for (dj = -2; dj < 3; ++dj)
+        {
+            red_accum += (transf_mat[n] * red(src, i + di, j + dj));
+            green_accum += (transf_mat[n] * green(src, i + di, j + dj));
+            blue_accum += (transf_mat[n] * blue(src, i + di, j + dj));
+
+            ++n;     
+        }
+
+    red(dst, i, j) = (red_accum/6);
+    green(dst, i, j) = (green_accum/6);
+    blue(dst, i, j) = (blue_accum/6);
+}
+
 void miniature_c(
                 unsigned char *src,
                 unsigned char *dst,
                 int width, int height,
-                float topPlane, float bottomPlane,
+                float coeff_top_plane, float coeff_bottom_plane,
                 int iters) {
 
-    TIMER_BEGIN();
+    int top_plane = coeff_top_plane * height,
+        bottom_plane = coeff_bottom_plane * height;
 
-    TIMER_PRINT_STATUS("t0");
+    // int top_plane_delta = coeff_top_plane * height / iters,
+        // bottom_plane_delta = (1 - coeff_bottom_plane) * height / iters;
 
-    for (int i = 0; i < 2 * width * height; ++i)
-        dst[i] = src[i];
+    int it, i , j, n;
 
-    TIMER_PRINT_STATUS("t1");
+    for (n = 0; n < 3 * width * height; ++n)
+        dst[n] = src[n];
 
-    for (int i = 2 * width * height; i < 3 * width * height; ++i)
-        dst[i] = MIN(255, 3 * src[i]);
+    for (it = 0; it < iters; ++it)
+    {
+        for (i = 2; i <= top_plane; ++i)
+            for (j = 2; j < width - 2; ++j)
+                    update_pixel(dst, i, j, src, width);
 
-    TIMER_PRINT_STATUS("t2");
+        for (i = bottom_plane; i < height - 2; ++i)
+            for (j = 2; j < width - 2; ++j)
+                    update_pixel(dst, i, j, src, width);
 
-    TIMER_END();
+        // top_plane -= top_plane_delta;
+        // bottom_plane += bottom_plane_delta;
+
+        // for (n = 0; n < 3 * width * height; ++n)
+        //     src[n] = dst[n];
+    }
 }

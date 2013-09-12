@@ -92,7 +92,7 @@ decode_asm:
 continuar_ciclo:
 	SHL rax, 8;
 
-	PEXTRB rbx, xmm0, 00001011b ;
+	PEXTRB rbx, xmm0, 11 ;
 	MOV al, bl;
 	CMP al, 0 ;
 		JNE continuar_ciclo2
@@ -101,7 +101,7 @@ continuar_ciclo:
 	
 continuar_ciclo2:
 	
-	PEXTRB rbx, xmm0, 00000111b;
+	PEXTRB rbx, xmm0, 7;
 
 	CMP bl, 0 ;
 		JNE continuar_ciclo3;
@@ -116,7 +116,7 @@ continuar_ciclo3:
 	MOV al, bl;
 	SHL rax, 8
 
-	PEXTRB rbx, xmm0, 00000000b;
+	PEXTRB rbx, xmm0, 3;
 	MOV al, bl;
 	MOV [rsi+r10], eax; Esto lo voy a tener que grabar si o si.
 	CMP al, 0 ;

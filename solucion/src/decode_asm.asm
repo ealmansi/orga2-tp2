@@ -12,10 +12,12 @@ __mascara_restar_1: DB 0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x
 __mascara_invertir: DB  0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c
 
 __mascara_filtrar: DD 0x000000FF,0x000000FF,0x000000FF,0x000000FF
+__mascara_shuffle: DB 0x00,0x04,0x08,0x0c,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80
 
 section .text
 ;void decode_asm(unsigned char *src,
 ;              unsigned char *code,
+;			   int size,
 ;              int width,
 ;              int height);
 
@@ -35,6 +37,7 @@ decode_asm:
 	MOVDQA xmm11, [__mascara_restar_1];
 	MOVDQA xmm10, [__mascara_invertir];
 	MOVDQA xmm9, [__mascara_filtrar];
+	MOVDQA xmm8, [__mascara_shuffle];
 
 	
 	ciclo:
@@ -80,53 +83,58 @@ decode_asm:
 	PADDB xmm0, xmm3;
 
 	PAND xmm0, xmm9;
-	XOR rax, rax;
-	XOR r11, r11;
 
-	PEXTRB rbx, xmm0, 0 ;
-	MOV al, bl;
-	
-	CMP al, 0 ;
-		JNE continuar_ciclo
-		MOV [rsi+r10], al ;
-		JMP salida
+	PSHUFB xmm0, xmm8;
 
-continuar_ciclo:
+	MOVD [rsi+r10], xmm0;
 
-	PEXTRB rbx, xmm0, 4 ;
-	MOV r11, rbx;
-	SHL r11, 8;
-	ADD rax, r11;
-
-	CMP bl, 0 ;
-		JNE continuar_ciclo2
-		MOV [rsi+r10], ax ;
-		JMP salida;
-	
-continuar_ciclo2:
-	
-	PEXTRB rbx, xmm0, 8;
-	MOV r11, rbx;
-	SHL r11, 16;
-	ADD rax, r11;
-
-	CMP bl, 0 ;
-		JNE continuar_ciclo3;
-		MOV [rsi+r10], ax;
-		ADD r10, 2;
-		MOV [rsi+r10], bl;
-		JMP salida;
-
-continuar_ciclo3:
-
-	PEXTRB rbx, xmm0, 12;
-	MOV r11, rbx;
-	SHL r11, 24;
-	ADD rax, r11;
-
-	MOV [rsi+r10], eax; Esto lo voy a tener que grabar si o si.
-	CMP al, 0 ;
-		JE salida;
+;	XOR rax, rax;
+;	XOR r11, r11;
+;
+;	PEXTRB rbx, xmm0, 0 ;
+;	MOV al, bl;
+;	
+;	CMP al, 0 ;
+;		JNE continuar_ciclo
+;		MOV [rsi+r10], al ;
+;		JMP salida
+;
+;continuar_ciclo:
+;
+;	PEXTRB rbx, xmm0, 4 ;
+;	MOV r11, rbx;
+;	SHL r11, 8;
+;	ADD rax, r11;
+;
+;	CMP bl, 0 ;
+;		JNE continuar_ciclo2
+;		MOV [rsi+r10], ax ;
+;		JMP salida;
+;	
+;continuar_ciclo2:
+;	
+;	PEXTRB rbx, xmm0, 8;
+;	MOV r11, rbx;
+;	SHL r11, 16;
+;	ADD rax, r11;
+;
+;	CMP bl, 0 ;
+;		JNE continuar_ciclo3;
+;		MOV [rsi+r10], ax;
+;		ADD r10, 2;
+;		MOV [rsi+r10], bl;
+;		JMP salida;
+;
+;continuar_ciclo3:
+;
+;	PEXTRB rbx, xmm0, 12;
+;	MOV r11, rbx;
+;	SHL r11, 24;
+;	ADD rax, r11;
+;
+;	MOV [rsi+r10], eax; Esto lo voy a tener que grabar si o si.
+;	CMP al, 0 ;
+;		JE salida;
 		
 
 continuar_ciclo4:
@@ -134,7 +142,7 @@ continuar_ciclo4:
 	ADD r9, 16 ;
 	ADD r10, 4;
 
-	CMP r9d, r8d;
+	CMP r9d, edx;
 	JL ciclo;
 
 salida:

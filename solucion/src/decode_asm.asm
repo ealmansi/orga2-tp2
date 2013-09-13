@@ -80,6 +80,8 @@ decode_asm:
 	PADDB xmm0, xmm3;
 
 	PAND xmm0, xmm9;
+	XOR rax, rax;
+	XOR r11, r11;
 
 	PEXTRB rbx, xmm0, 0 ;
 	MOV al, bl;
@@ -90,18 +92,23 @@ decode_asm:
 		JMP salida
 
 continuar_ciclo:
-	SHL rax, 8;
 
 	PEXTRB rbx, xmm0, 4 ;
-	MOV al, bl;
-	CMP al, 0 ;
+	MOV r11, rbx;
+	SHL r11, 8;
+	ADD rax, r11;
+
+	CMP bl, 0 ;
 		JNE continuar_ciclo2
 		MOV [rsi+r10], ax ;
-		JMP salida
+		JMP salida;
 	
 continuar_ciclo2:
 	
 	PEXTRB rbx, xmm0, 8;
+	MOV r11, rbx;
+	SHL r11, 16;
+	ADD rax, r11;
 
 	CMP bl, 0 ;
 		JNE continuar_ciclo3;
@@ -112,12 +119,11 @@ continuar_ciclo2:
 
 continuar_ciclo3:
 
-	SHL rax, 8;
-	MOV al, bl;
-	SHL rax, 8
-
 	PEXTRB rbx, xmm0, 12;
-	MOV al, bl;
+	MOV r11, rbx;
+	SHL r11, 24;
+	ADD rax, r11;
+
 	MOV [rsi+r10], eax; Esto lo voy a tener que grabar si o si.
 	CMP al, 0 ;
 		JE salida;

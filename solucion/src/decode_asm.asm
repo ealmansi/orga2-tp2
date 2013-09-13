@@ -9,9 +9,9 @@ __mascara_unos: DB 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 
 __mascara_sumar_1: DB 0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04
 __mascara_restar_1: DB 0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x08
-__mascara_invertir: DB  0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03
+__mascara_invertir: DB  0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c
 
-__mascara_filtrar: DD 0xFF000000,0xFF000000,0xFF000000,0xFF000000
+__mascara_filtrar: DD 0x000000FF,0x000000FF,0x000000FF,0x000000FF
 
 section .text
 ;void decode_asm(unsigned char *src,
@@ -59,7 +59,7 @@ decode_asm:
 	PAND xmm0, xmm15; Para que no quede nada raro.
 
 	PCMPEQB xmm1, xmm10;
-	PAND xmm1, xmm10;
+	PAND xmm1, xmm15;
 	PXOR xmm0, xmm1; Se invierten los lugares correspondientes.
 
 	
@@ -67,9 +67,9 @@ decode_asm:
 	MOVDQA xmm2, xmm0;
 	MOVDQA xmm3, xmm0;
 
-	PSLLDQ xmm1, 1;
-	PSLLDQ xmm2, 2;
-	PSLLDQ xmm3, 3;
+	PSRLDQ xmm1, 1;
+	PSRLDQ xmm2, 2;
+	PSRLDQ xmm3, 3;
 
 	PSLLD xmm1, 2;
 	PSLLD xmm2, 4;
@@ -81,7 +81,7 @@ decode_asm:
 
 	PAND xmm0, xmm9;
 
-	PEXTRB rbx, xmm0, 15 ;
+	PEXTRB rbx, xmm0, 0 ;
 	MOV al, bl;
 	
 	CMP al, 0 ;
@@ -92,7 +92,7 @@ decode_asm:
 continuar_ciclo:
 	SHL rax, 8;
 
-	PEXTRB rbx, xmm0, 11 ;
+	PEXTRB rbx, xmm0, 4 ;
 	MOV al, bl;
 	CMP al, 0 ;
 		JNE continuar_ciclo2
@@ -101,7 +101,7 @@ continuar_ciclo:
 	
 continuar_ciclo2:
 	
-	PEXTRB rbx, xmm0, 7;
+	PEXTRB rbx, xmm0, 8;
 
 	CMP bl, 0 ;
 		JNE continuar_ciclo3;
@@ -116,7 +116,7 @@ continuar_ciclo3:
 	MOV al, bl;
 	SHL rax, 8
 
-	PEXTRB rbx, xmm0, 3;
+	PEXTRB rbx, xmm0, 12;
 	MOV al, bl;
 	MOV [rsi+r10], eax; Esto lo voy a tener que grabar si o si.
 	CMP al, 0 ;

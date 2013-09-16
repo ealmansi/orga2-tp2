@@ -7,7 +7,7 @@ OPENCV_LIB = `pkg-config --cflags --libs opencv`
 
 BIN = tp2
 BIN_DIR = ../bin
-
+ASMHANDY = handy.asm
 
 
 OBJS = tp2.o utils.o \
@@ -16,7 +16,7 @@ OBJS = tp2.o utils.o \
 
 .PHONY: all clean
 
-$(BIN): $(OBJS)
+$(BIN): clean $(OBJS) $(ASMHANDY)
 	$(CC) $(CFLAGS) $(OBJS) -o $@ $(OPENCV_LIB) -lm
 	cp $(BIN) $(BIN_DIR)/$(BIN)
 

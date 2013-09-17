@@ -13,7 +13,7 @@ void decode_c(unsigned char* src,
 {
 	TIMER_BEGIN();
 
-	TIMER_PRINT_STATUS("antes:");
+	TIMER_PRINT_STATUS("antes");
 
 	int j=0;// Contador para src
 	int k=0;// Contador para code. no pueden ser el mismo porque este avanza 4 veces mas lento.
@@ -56,7 +56,7 @@ void decode_c(unsigned char* src,
 
 
 	
-	TIMER_PRINT_STATUS("despues:");
+	TIMER_PRINT_STATUS("despues");
 
 	TIMER_END()
 

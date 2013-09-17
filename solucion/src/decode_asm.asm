@@ -24,7 +24,7 @@ __mascara_shuffle: DB 0x00,0x04,0x08,0x0c,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x8
 
 __comienzo: DQ 0
 __final: DQ 0
-__formato: DB "[{ 'antes': %lu, 'despues': %lu }]",10,0
+__formato: DB "[{ 'total_before': %lu, 'total_after': %lu }]",10,0
 
 
 

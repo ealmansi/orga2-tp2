@@ -1,9 +1,8 @@
-#include "tiempo.h"
-
 # define _mask_23 0x0C
 # define _mask_01 0x03
 # define _negation_mask 0x03
 
+extern unsigned long int get_timestamp();
 
 void decode_c(unsigned char* src,
               unsigned char* code,
@@ -11,9 +10,11 @@ void decode_c(unsigned char* src,
               int width,
               int height)
 {
-	TIMER_BEGIN();
+	unsigned long int total_before, total_after, comparaciones_before, comparaciones_after;
 
-	TIMER_PRINT_STATUS("antes");
+	total_before=get_timestamp();
+	
+
 
 	int j=0;// Contador para src
 	int k=0;// Contador para code. no pueden ser el mismo porque este avanza 4 veces mas lento.
@@ -30,6 +31,8 @@ void decode_c(unsigned char* src,
 			a = a & _mask_23; //Una para los bits 2 y 3
 			b = b & _mask_01; // y otra para los bits 0 y 1
 
+
+			comparaciones_before = get_timestamp();
 			if (a==0x04){ //Según el valor de a se decide que hacer.
 				b=b+1;
 				b=b & _mask_01;
@@ -42,6 +45,7 @@ void decode_c(unsigned char* src,
 			if (a== 0xc){
 				b= b ^ _negation_mask;
 			}
+			comparaciones_after = get_timestamp();
 			b = b << bit_shift; //Se mueven los bits 1 y 0 al lugar correspondiente
 			partial_result = partial_result + b; //se acumula el cacho de biy en partial result
 			j++; //Se avanza el contador de src.
@@ -56,10 +60,7 @@ void decode_c(unsigned char* src,
 
 
 	
-	TIMER_PRINT_STATUS("despues");
+	total_after=get_timestamp();
 
-	TIMER_END()
-
-
-
+	printf("[{'total_before':%lu, 'total_after':%lu, 'comparaciones_before':%lu, 'comparaciones_after':%lu}]\n", total_before, total_after,comparaciones_before, comparaciones_after);
 }

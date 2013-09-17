@@ -122,53 +122,6 @@ decode_asm:
 
 	MOVD [rsi+r10], xmm0;
 
-;	XOR rax, rax;
-;	XOR r11, r11;
-;
-;	PEXTRB rbx, xmm0, 0 ;
-;	MOV al, bl;
-;	
-;	CMP al, 0 ;
-;		JNE continuar_ciclo
-;		MOV [rsi+r10], al ;
-;		JMP salida
-;
-;continuar_ciclo:
-;
-;	PEXTRB rbx, xmm0, 4 ;
-;	MOV r11, rbx;
-;	SHL r11, 8;
-;	ADD rax, r11;
-;
-;	CMP bl, 0 ;
-;		JNE continuar_ciclo2
-;		MOV [rsi+r10], ax ;
-;		JMP salida;
-;	
-;continuar_ciclo2:
-;	
-;	PEXTRB rbx, xmm0, 8;
-;	MOV r11, rbx;
-;	SHL r11, 16;
-;	ADD rax, r11;
-;
-;	CMP bl, 0 ;
-;		JNE continuar_ciclo3;
-;		MOV [rsi+r10], ax;
-;		ADD r10, 2;
-;		MOV [rsi+r10], bl;
-;		JMP salida;
-;
-;continuar_ciclo3:
-;
-;	PEXTRB rbx, xmm0, 12;
-;	MOV r11, rbx;
-;	SHL r11, 24;
-;	ADD rax, r11;
-;
-;	MOV [rsi+r10], eax; Esto lo voy a tener que grabar si o si.
-;	CMP al, 0 ;
-;		JE salida;
 		
 
 continuar_ciclo4:

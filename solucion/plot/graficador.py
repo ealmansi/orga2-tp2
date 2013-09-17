@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+#http://matplotlib.org/examples/pie_and_polar_charts/pie_demo_features.html
 #constantes
 bar_width = 0.4
 
@@ -23,6 +24,7 @@ class Plotter:
 		self.filtros = []
 		self.times = []
 		self.lines = []
+		self.fractions = []
 		self.width = bar_width
 
 	def agregarFiltro(self,nombreFiltro, detallesImplementacion, rutaTiempo, rutaCodigo):
@@ -34,6 +36,15 @@ class Plotter:
 		for i in list:
 			time = time + (i["despues"]-i["antes"])
 			print(time) #sacar esto después
+			if len(i)>2:
+				size = len(i)
+				size = size/3
+				fractions = []
+				for i in range(1,size+1):
+					fractions[i["break_{0}_name".format(i)]]=i["break_{0}_after".format(i)]-i["break_{0}_before".format(i)]
+
+
+
 		self.times.append(time)
 
 		f = open(rutaCodigo, "r")
@@ -42,7 +53,7 @@ class Plotter:
 			lines+=1
 		self.lines.append(lines)
 
-	def plot(self, rutaSalida):
+	def plotBars(self, rutaSalida):
 		fig = plt.figure()
 		ax = fig.add_subplot(111)
 		indexs = np.arange(len(self.filtros))
@@ -54,11 +65,16 @@ class Plotter:
 		ax2=plt.twinx()
 		barsLines = ax2.bar(indexs+self.width, self.lines, self.width, color = "r", label = "Líneas de código")
 		plt.xlim(-0.2,len(self.filtros))
+		plt.ylim(0,max(self.lines)*1.2)
 		autolabel(barsLines, ax2)
 		ax2.set_ylabel("Cantidad de líneas de código")
 		plt.legend(loc = 1)
 		plt.xticks(indexs+self.width, self.filtros)
 		plt.savefig(rutaSalida)
+
+	def plotPie(self, rutaSalida):
+		pass
+		
 
 
 
@@ -67,4 +83,4 @@ if __name__=="__main__":
 	plotter = Plotter()
 	plotter.agregarFiltro("Decode", "c básico", "../src/decode_c.c.salida", "../src/decode_c.c")
 	plotter.agregarFiltro("Decode", "asm básico", "../src/decode_asm.asm.salida", "../src/decode_asm.asm")
-	plotter.plot("ejemplo.png")
+	plotter.plotBars("ejemplo.png")

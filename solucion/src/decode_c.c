@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 # define _mask_23 0x0C
 # define _mask_01 0x03
 # define _negation_mask 0x03
@@ -10,8 +12,8 @@ void decode_c(unsigned char* src,
               int width,
               int height)
 {
-	unsigned long int total_before, total_after, comparaciones_before, comparaciones_after;
-
+	unsigned long int total_before, total_after, comparaciones_before, comparaciones_after,comparaciones;
+	comparaciones = 0;
 	total_before=get_timestamp();
 	
 
@@ -46,6 +48,7 @@ void decode_c(unsigned char* src,
 				b= b ^ _negation_mask;
 			}
 			comparaciones_after = get_timestamp();
+			comparaciones+= (comparaciones_after-comparaciones_before);
 			b = b << bit_shift; //Se mueven los bits 1 y 0 al lugar correspondiente
 			partial_result = partial_result + b; //se acumula el cacho de biy en partial result
 			j++; //Se avanza el contador de src.
@@ -62,5 +65,5 @@ void decode_c(unsigned char* src,
 	
 	total_after=get_timestamp();
 
-	printf("[{'total_before':%lu, 'total_after':%lu, 'comparaciones_before':%lu, 'comparaciones_after':%lu}]\n", total_before, total_after,comparaciones_before, comparaciones_after);
+	printf("[{'total_before':%lu, 'total_after':%lu, 'comparaciones_before':%lu, 'comparaciones_after':%lu}]\n", total_before, total_after,comparaciones_before, comparaciones_before+comparaciones);
 }

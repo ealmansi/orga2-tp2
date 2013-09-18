@@ -7,7 +7,6 @@ bar_width = 0.4
 
 
 def autolabel(rects, ax):
-	# attach some text labels
 	for rect in rects:
 		height = rect.get_height()
 		ax.text(rect.get_x()+rect.get_width()/2., 1.02*height, '%d'%int(height),ha='center', va='bottom')
@@ -76,16 +75,19 @@ class Plotter:
 		labels = []
 		sizes = []
 		for i in self.fractions:
-			keys = i.keys()
+			keys = [t for t in i.keys()]
+			total = i["total"]
+			keys.remove("total")
 			labels.append(keys)
 			coso = []
+			usado = 0
 			for j in keys:
 				coso.append(i[j])
+				usado =+ i[j]
+			keys.append("resto")
+			coso.append(total-usado)
 			sizes.append(coso)
-				
-
-			
-		plt.pie(sizes[0], labels = labels[0])
+		plt.pie(sizes[0], labels = labels[0], shadow= 'yes', startangle = 15,explode = [0.03 for i in range(len(sizes[0]))] )
 		plt.savefig(rutaSalida)
 		
 

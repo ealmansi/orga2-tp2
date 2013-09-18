@@ -64,11 +64,8 @@ masc_dw_a_px: 		DB 0x00,0x00,0x00,0x04,0x04,0x04,0x08,0x08,0x08,0x0C,0x0C,0x0C,0
 
 %macro cargar_masc_thres 0
 
-	pinsrd 	 		XMM12, R13D, 0
-	pinsrd 	 		XMM12, R13D, 1
-	pinsrd 	 		XMM12, R13D, 2
-	pinsrd 	 		XMM12, R13D, 3
-	cvtdq2ps 		XMM12, XMM12
+	cvtsi2ss 	 	XMM12, R13D
+	shufps 			XMM12, XMM12, 0
 
 %endmacro
 

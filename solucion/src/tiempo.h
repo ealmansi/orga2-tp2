@@ -82,7 +82,7 @@ unsigned long long int __timer_t0__;            					\
 
 #define         TIMER_END()     \
 {                               \
-    printf("},]");             	\
+    printf("},]\n");             	\
 }
 
 #endif /* !__TIEMPO_H__ */

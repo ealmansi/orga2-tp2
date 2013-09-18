@@ -12,7 +12,7 @@ ASMHANDY = handy.asm
 
 OBJS = tp2.o utils.o \
 	color_filter_c.o miniature_c.o decode_c.o \
-	color_filter_asm.o miniature_asm.o decode_asm.o
+	color_filter_asm.o miniature_asm.o decode_asm.o tiempos.o
 
 .PHONY: all clean
 

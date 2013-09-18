@@ -1,4 +1,10 @@
 global decode_asm
+extern printf
+
+
+
+
+
 
 section .data
 
@@ -14,6 +20,14 @@ __mascara_invertir: DB  0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0
 __mascara_filtrar: DD 0x000000FF,0x000000FF,0x000000FF,0x000000FF
 __mascara_shuffle: DB 0x00,0x04,0x08,0x0c,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80
 
+
+
+__comienzo: DQ 0
+__final: DQ 0
+__formato: DB "[{ 'total_before': %lu, 'total_after': %lu }]",10,0
+
+
+
 section .text
 ;void decode_asm(unsigned char *src,
 ;              unsigned char *code,
@@ -21,13 +35,33 @@ section .text
 ;              int width,
 ;              int height);
 
+
+	
+
+
 decode_asm:
+
+	PUSH rax
+	PUSH rdx
+	RDTSC
+	SHL rdx,32;
+	ADD rdx, rax;
+	MOV [__comienzo], rdx;
+	POP rdx
+	POP rax
+
+
+
+
+
 	PUSH rbp; Alineada
 	MOV rbp, rsp;
-	PUSH rbx;
+	PUSH rbx; Desalineada
+	SUB rsp, 8;
 
 	xor r9,r9; r9 va a ser el contador.
 	xor r10, r10
+	SUB rdx, 16;
 
 	;______Se traen las máscaras a registro
 	MOVDQA xmm15, [__mascara_01];
@@ -88,53 +122,6 @@ decode_asm:
 
 	MOVD [rsi+r10], xmm0;
 
-;	XOR rax, rax;
-;	XOR r11, r11;
-;
-;	PEXTRB rbx, xmm0, 0 ;
-;	MOV al, bl;
-;	
-;	CMP al, 0 ;
-;		JNE continuar_ciclo
-;		MOV [rsi+r10], al ;
-;		JMP salida
-;
-;continuar_ciclo:
-;
-;	PEXTRB rbx, xmm0, 4 ;
-;	MOV r11, rbx;
-;	SHL r11, 8;
-;	ADD rax, r11;
-;
-;	CMP bl, 0 ;
-;		JNE continuar_ciclo2
-;		MOV [rsi+r10], ax ;
-;		JMP salida;
-;	
-;continuar_ciclo2:
-;	
-;	PEXTRB rbx, xmm0, 8;
-;	MOV r11, rbx;
-;	SHL r11, 16;
-;	ADD rax, r11;
-;
-;	CMP bl, 0 ;
-;		JNE continuar_ciclo3;
-;		MOV [rsi+r10], ax;
-;		ADD r10, 2;
-;		MOV [rsi+r10], bl;
-;		JMP salida;
-;
-;continuar_ciclo3:
-;
-;	PEXTRB rbx, xmm0, 12;
-;	MOV r11, rbx;
-;	SHL r11, 24;
-;	ADD rax, r11;
-;
-;	MOV [rsi+r10], eax; Esto lo voy a tener que grabar si o si.
-;	CMP al, 0 ;
-;		JE salida;
 		
 
 continuar_ciclo4:
@@ -146,6 +133,26 @@ continuar_ciclo4:
 	JL ciclo;
 
 salida:
+
+
+	PUSH rax
+	PUSH rdx
+	RDTSC
+	SHL rdx,32;
+	ADD rdx, rax;
+	MOV [__final], rdx;
+	POP rdx
+	POP rax
+
+
+	MOV rdi, __formato;
+	MOV rsi, [__comienzo];
+	MOV rdx, [__final];
+	CALL printf
+
+
+
+	ADD rsp, 8
 	POP rbx
 	POP rbp
     ret

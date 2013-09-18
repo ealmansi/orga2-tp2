@@ -2,11 +2,14 @@
 
 section .data
 
-msj_debug:				DB 	'||||||||||||||||||DEBUG|||||||||||||||||||||||', 10, 0
-msj_debug_delim: 		DB 	'||||||||||||||||||||||||||||||||||||||||||||||', 10, 0
+msj_debug:				DB 	'__________DEBUG_________', 10, 0
+msj_debug_delim: 		DB 	'________________________', 10, 0
+fmt_debug_udword:		DB 	'(udword) %u', 10, 0
 fmt_debug_word:			DB 	'(word) %d', 10, 0
+fmt_debug_uword:		DB 	'(uword) %u', 10, 0
 fmt_debug_ubyte:		DB 	'(ubyte) %d', 10, 0
 fmt_debug_uint:			DB 	'(uint) %u', 10, 0
+fmt_debug_float:		DB 	'(float) %f', 10, 0
 
 ;	;	;	;	;	Macros ;	;	;	;	;	;
 
@@ -189,10 +192,68 @@ fmt_debug_uint:			DB 	'(uint) %u', 10, 0
 	pop_defensivo
 %endmacro
 
+%macro debug_xmm_uwords 1
+	push_defensivo
+
+	debug_string msj_debug_delim
+
+	pextrw 		RDI, %1, 0
+	debug_uword DI
+	pextrw 		RDI, %1, 1
+	debug_uword DI
+	pextrw 		RDI, %1, 2
+	debug_uword DI
+	pextrw 		RDI, %1, 3
+	debug_uword DI
+	pextrw 		RDI, %1, 4
+	debug_uword DI
+	pextrw 		RDI, %1, 5
+	debug_uword DI
+	pextrw 		RDI, %1, 6
+	debug_uword DI
+	pextrw 		RDI, %1, 7
+	debug_uword DI
+
+	pop_defensivo
+%endmacro
+
+%macro debug_xmm_udwords 1
+	push_defensivo
+
+	debug_string msj_debug_delim
+
+	pextrd 		EDI, %1, 0
+	debug_udword EDI
+	pextrd 		EDI, %1, 1
+	debug_udword EDI
+	pextrd 		EDI, %1, 2
+	debug_udword EDI
+	pextrd 		EDI, %1, 3
+	debug_udword EDI
+
+	pop_defensivo
+%endmacro
+
 %macro debug_string 1
 	push_defensivo
 
 	mov  		RDI, %1
+	mov  		RAX, 0
+	call printf
+
+	pop_defensivo
+%endmacro
+
+%macro debug_udword 1
+	push_defensivo
+
+	debug_string msj_debug_delim
+
+	xor 		RAX, RAX
+	mov 		EAX, %1
+
+	mov  		RSI, RAX
+	mov  		RDI, fmt_debug_udword
 	mov  		RAX, 0
 	call printf
 
@@ -208,6 +269,20 @@ fmt_debug_uint:			DB 	'(uint) %u', 10, 0
 
 	mov  		RSI, RAX
 	mov  		RDI, fmt_debug_word
+	mov  		RAX, 0
+	call printf
+
+	pop_defensivo
+%endmacro
+
+%macro debug_uword 1
+	push_defensivo
+
+	xor 		RAX, RAX
+	mov 		AX, %1
+
+	mov  		RSI, RAX
+	mov  		RDI, fmt_debug_uword
 	mov  		RAX, 0
 	call printf
 
@@ -233,6 +308,39 @@ fmt_debug_uint:			DB 	'(uint) %u', 10, 0
 	mov  		RDI, fmt_debug_ubyte
 	mov  		RAX, 0
 	call printf
+
+	pop_defensivo
+%endmacro
+
+%macro debug_float 1
+	push_defensivo
+
+	mov  		RDI, fmt_debug_float
+	mov  		RAX, 1
+	call printf
+
+	pop_defensivo
+%endmacro
+
+%macro debug_xmm_floats 1
+	push_defensivo
+
+	debug_string msj_debug_delim
+
+	cvtps2pd 	XMM0, %1
+	debug_float XMM0
+	
+	psrldq 		%1, 4
+	cvtps2pd 	XMM0, %1
+	debug_float XMM0
+
+	psrldq 		%1, 4
+	cvtps2pd 	XMM0, %1
+	debug_float XMM0
+
+	psrldq 		%1, 4
+	cvtps2pd 	XMM0, %1
+	debug_float XMM0
 
 	pop_defensivo
 %endmacro

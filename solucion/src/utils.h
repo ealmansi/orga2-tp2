@@ -19,7 +19,4 @@ void voltear_horizontal (
 
 void pintar_bordes_negro(unsigned char *frame, int m, int n);
 
-#define     MIN(a,b)        (((a) < (b)) ? (a) : (b))
-#define     MAX(a,b)        (((a) > (b)) ? (a) : (b))
-
 #endif /* !__UTILS__H__ */

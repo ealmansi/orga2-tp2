@@ -21,7 +21,6 @@ class Plotter:
 	"""
 	def __init__(self):
 		self.filtros = []
-		self.times = []
 		self.lines = []
 		self.fractions = []
 		self.width = bar_width
@@ -71,23 +70,27 @@ class Plotter:
 
 	def plotPie(self, rutaSalida):
 		plt.clf()
-
-		labels = []
-		sizes = []
-		for i in self.fractions:
-			keys = [t for t in i.keys()]
-			total = i["total"]
-			keys.remove("total")
-			labels.append(keys)
-			coso = []
-			usado = 0
-			for j in keys:
-				coso.append(i[j])
-				usado =+ i[j]
-			keys.append("resto")
-			coso.append(total-usado)
-			sizes.append(coso)
-		plt.pie(sizes[0], labels = labels[0], shadow= 'yes', startangle = 15,explode = [0.03 for i in range(len(sizes[0]))] )
+		fig = plt.figure(figsize = (5*len(self.fractions),5))
+		pos = 0
+		for dicc in self.fractions:
+			plt.subplot(1,len(self.fractions),pos+1)
+			labels = []
+			sizes = []
+			for i in self.fractions:
+				keys = [t for t in i.keys()]
+				total = i["total"]
+				keys.remove("total")
+				labels.append(keys)
+				coso = []
+				usado = 0
+				for j in keys:
+					coso.append(i[j])
+					usado =+ i[j]
+				keys.append("resto")
+				coso.append(total-usado)
+				sizes.append(coso)
+			plt.pie(sizes[pos], labels = labels[pos], shadow= 'yes', startangle = 15,explode = [0.03 for i in range(len(sizes[pos]))] )
+			pos += 1
 		plt.savefig(rutaSalida)
 		
 

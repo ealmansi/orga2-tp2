@@ -2,8 +2,27 @@ global decode_asm
 extern printf
 
 
+%macro get_timestamp 1
 
+	PUSH rax
+	PUSH rdx
+	RDTSC
+	SHL rdx,32;
+	ADD rdx, rax;
+	MOV [%1], rdx;
+	POP rdx
+	POP rax
 
+%endmacro
+
+%macro acum_time 3
+
+	MOV r14, [%1]
+	MOV r15, [%2]
+	SUB r15, r14
+	ADD [%3], r15
+
+%endmacro
 
 
 section .data
@@ -20,11 +39,18 @@ __mascara_invertir: DB  0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0
 __mascara_filtrar: DD 0x000000FF,0x000000FF,0x000000FF,0x000000FF
 __mascara_shuffle: DB 0x00,0x04,0x08,0x0c,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80
 
+align 16
+
+__comienzo: DQ 0 , 0 ;
+__final: DQ 0 , 0 ;
+
+__comparaciones_before: DQ 0 , 0 ;
+__comparaciones_after: DQ 0 , 0 ;
+__comparaciones: DQ 0 , 0 ;
 
 
-__comienzo: DQ 0
-__final: DQ 0
-__formato: DB "[{ 'total_before': %lu, 'total_after': %lu }]",10,0
+
+__formato: DB "{ 'total_before': %lu, 'total_after': %lu, 'comparaciones_before': %lu, 'comparaciones_after': %lu }",10,0
 
 
 
@@ -41,22 +67,13 @@ section .text
 
 decode_asm:
 
-	PUSH rax
-	PUSH rdx
-	RDTSC
-	SHL rdx,32;
-	ADD rdx, rax;
-	MOV [__comienzo], rdx;
-	POP rdx
-	POP rax
-
-
-
-
+	get_timestamp __comienzo
 
 	PUSH rbp; Alineada
 	MOV rbp, rsp;
 	PUSH rbx; Desalineada
+	PUSH r14;
+	PUSH r15;
 	SUB rsp, 8;
 
 	xor r9,r9; r9 va a ser el contador.
@@ -75,11 +92,21 @@ decode_asm:
 
 	
 	ciclo:
+
+	;get_timestamp __comparaciones_before
+
 	MOVDQU xmm0, [rdi+r9];
 	MOVDQA xmm1, xmm0;
 
+
+	;get_timestamp __comparaciones_after
+	
+	;acum_time __comparaciones_before, __comparaciones_after, __comparaciones
+
+
 	PAND xmm0, xmm15; en xmm0 quedan los bits 0 y 1.
 	PAND xmm1, xmm14; en xmm1 quedan los bits 3 y 2.
+
 
 	MOVDQA xmm2, xmm1; Copio para no perder datos.
 
@@ -95,9 +122,10 @@ decode_asm:
 	PSUBB xmm0, xmm2; Se resta 1 donde corresponde.
 	PAND xmm0, xmm15; Para que no quede nada raro.
 
-	PCMPEQB xmm1, xmm10;
+	PCMPEQB xmm1, xmm10; Se verifica cuales hay que invertir
 	PAND xmm1, xmm15;
 	PXOR xmm0, xmm1; Se invierten los lugares correspondientes.
+
 
 	
 	MOVDQA xmm1, xmm0;
@@ -135,24 +163,21 @@ continuar_ciclo4:
 salida:
 
 
-	PUSH rax
-	PUSH rdx
-	RDTSC
-	SHL rdx,32;
-	ADD rdx, rax;
-	MOV [__final], rdx;
-	POP rdx
-	POP rax
+	get_timestamp __final
 
 
 	MOV rdi, __formato;
 	MOV rsi, [__comienzo];
 	MOV rdx, [__final];
+	XOR rcx, rcx;
+	MOV r8, [__comparaciones];
 	CALL printf
 
 
 
 	ADD rsp, 8
+	POP r15
+	POP r14
 	POP rbx
 	POP rbp
     ret

@@ -29,7 +29,7 @@ class Plotter:
 		self.filtros.append(nombreFiltro+" "+ detallesImplementacion)
 		f = open(rutaTiempo, "r")
 		for i in range(4): f.readline()
-		list = eval(f.readline().replace("]\b",""))
+		list = eval("["+f.readline().replace("]\b","")+"]")
 		self.fractions.append({})
 
 		for i in list[0].keys():

@@ -65,5 +65,5 @@ void decode_c(unsigned char* src,
 	
 	total_after=get_timestamp();
 
-	printf("[{'total_before':%lu, 'total_after':%lu, 'comparaciones_before':%lu, 'comparaciones_after':%lu}]\n", total_before, total_after,comparaciones_before, comparaciones_before+comparaciones);
+	printf("{'total_before':%lu, 'total_after':%lu, 'comparaciones_before':%lu, 'comparaciones_after':%lu}\n", total_before, total_after,comparaciones_before, comparaciones_before+comparaciones);
 }

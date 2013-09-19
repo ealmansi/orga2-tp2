@@ -4,23 +4,17 @@ extern printf
 
 %macro get_timestamp 1
 
-	PUSH rax
-	PUSH rdx
 	RDTSC
 	SHL rdx,32;
 	ADD rdx, rax;
-	MOV [%1], rdx;
-	POP rdx
-	POP rax
+	MOV %1, rdx;
 
 %endmacro
 
-%macro acum_time 3
+%macro acum_time 3 ;antes después acum
 
-	MOV r14, [%1]
-	MOV r15, [%2]
-	SUB r15, r14
-	ADD [%3], r15
+	SUB %2, %1
+	ADD %3, r15
 
 %endmacro
 
@@ -66,19 +60,23 @@ section .text
 
 
 decode_asm:
+	MOV rcx, rdx
 
-	get_timestamp __comienzo
+	get_timestamp [__comienzo]
 
 	PUSH rbp; Alineada
 	MOV rbp, rsp;
 	PUSH rbx; Desalineada
-	PUSH r14;
-	PUSH r15;
-	SUB rsp, 8;
+	PUSH r12; Alineada
+	PUSH r13; Desalineada
+	PUSH r14; Alineada
+	PUSH r15; Desalineada
+	SUB rsp, 8; Alineada
 
 	xor r9,r9; r9 va a ser el contador.
 	xor r10, r10
-	SUB rdx, 16;
+	xor r15, r15
+	xor r13, r13
 
 	;______Se traen las máscaras a registro
 	MOVDQA xmm15, [__mascara_01];
@@ -93,15 +91,14 @@ decode_asm:
 	
 	ciclo:
 
-	;get_timestamp __comparaciones_before
+	get_timestamp r14
+	get_timestamp r15
+	acum_time r14,r15,r13
 
 	MOVDQU xmm0, [rdi+r9];
 	MOVDQA xmm1, xmm0;
 
 
-	;get_timestamp __comparaciones_after
-	
-	;acum_time __comparaciones_before, __comparaciones_after, __comparaciones
 
 
 	PAND xmm0, xmm15; en xmm0 quedan los bits 0 y 1.
@@ -157,20 +154,20 @@ continuar_ciclo4:
 	ADD r9, 16 ;
 	ADD r10, 4;
 
-	CMP r9d, edx;
+	CMP r9d, ecx;
 	JL ciclo;
 
 salida:
 
 
-	get_timestamp __final
+	get_timestamp [__final]
 
 
 	MOV rdi, __formato;
 	MOV rsi, [__comienzo];
 	MOV rdx, [__final];
 	XOR rcx, rcx;
-	MOV r8, [__comparaciones];
+	MOV r8, r13;
 	CALL printf
 
 
@@ -178,6 +175,8 @@ salida:
 	ADD rsp, 8
 	POP r15
 	POP r14
+	POP r13
+	POP r12
 	POP rbx
 	POP rbp
     ret

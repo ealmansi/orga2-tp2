@@ -1,3 +1,7 @@
+;	;	;	;	;	Externas ;	;	;	;	;	;
+
+extern printf
+
 ;	;	;	;	;	Datos ;	;	;	;	;	;
 
 section .data
@@ -343,4 +347,32 @@ fmt_debug_float:		DB 	'(float) %f', 10, 0
 	debug_float XMM0
 
 	pop_defensivo
+%endmacro
+
+; 	;	;	;	Macros para tomar tiempos 	;	;	;	
+; pisan R14, R15, RDX, RAX y la variable que se use como contador
+
+%macro obtener_timestamp 0
+
+	rdtsc
+	shl 			RDX, 32
+	add 			RAX, RDX 	; el tiempo actual queda en RAX
+
+%endmacro
+
+%macro inic_tiempo 0
+
+	obtener_timestamp
+	mov 			R14, RAX
+
+%endmacro
+
+%macro medir_tiempo 1
+
+	obtener_timestamp
+	mov 			R15, RAX
+	sub 			R15, R14
+	add 			%1, R15
+	mov 			R14, RAX
+
 %endmacro

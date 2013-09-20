@@ -7,62 +7,6 @@
 #include "utils.h"
 #include "tiempo.h"
 
-typedef union float4{
-    __m128		x;
-    float		v[4];
-} float4;
-
-typedef union dword4{
-    __m128i		x;
-    int		v[4];
-} dword4;
-
-typedef union word8{
-    __m128i		x;
-    short		v[8];
-} word8;
-
-typedef union byte16{
-    __m128i		x;
-    char		v[16];
-} byte16;
-
-void print_vector_f (__m128 x){
-	float4 u; u.x = x;
-    printf("(f) %f,%f,%f,%f\n", u.v[0], u.v[1], u.v[2], u.v[3]);
-}
-
-void print_vector_dw (__m128i x){
-	dword4 u; u.x = x;
-    printf("(dw) %d,%d,%d,%d\n", u.v[0], u.v[1], u.v[2], u.v[3]);
-}
-
-void print_vector_w (__m128i x){
-	word8 u; u.x = x;
-    printf("(w) %d,%d,%d,%d,%d,%d,%d,%d\n", u.v[0], u.v[1], u.v[2], u.v[3], u.v[4], u.v[5], u.v[6], u.v[7]);
-}
-
-void print_vector_uw (__m128i x){
-	word8 u; u.x = x;
-    printf("(uw) %u,%u,%u,%u,%u,%u,%u,%u\n", (unsigned short)u.v[0],
-    	(unsigned short)u.v[1], (unsigned short)u.v[2], (unsigned short)u.v[3], (unsigned short)u.v[4],
-    	(unsigned short)u.v[5], (unsigned short)u.v[6], (unsigned short)u.v[7]);
-}
-
-void print_vector_b (__m128i x){
-	byte16 u; u.x = x;
-    printf("(b) %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", u.v[0], u.v[1], u.v[2], u.v[3], u.v[4], u.v[5], u.v[6], u.v[7], u.v[8], u.v[9], u.v[10], u.v[11], u.v[12], u.v[13], u.v[14], u.v[15]);
-}
-
-void print_vector_ub (__m128i x){
-	byte16 u; u.x = x;
-    printf("(ub) %u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u\n", (unsigned char)u.v[0],
-    	(unsigned char)u.v[1], (unsigned char)u.v[2], (unsigned char)u.v[3], (unsigned char)u.v[4],
-    	(unsigned char)u.v[5], (unsigned char)u.v[6], (unsigned char)u.v[7], (unsigned char)u.v[8],
-    	(unsigned char)u.v[9], (unsigned char)u.v[10], (unsigned char)u.v[11], (unsigned char)u.v[12],
-    	(unsigned char)u.v[13], (unsigned char)u.v[14], (unsigned char)u.v[15]);
-}
-
 void separar_pixeles(__m128i *data, __m128 *data_px1_f, __m128 *data_px2_f, __m128 *data_px3_f, __m128 *data_px4_f)
 {
 	__m128i temp = _mm_setzero_si128();
@@ -178,6 +122,8 @@ void actualizar_datos(__m128i *data, __m128i *promedios, __m128i *flags)
 	*data = _mm_add_epi8(*data, _mm_and_si128(*promedios, *flags));
 }
 
+#define 		____ 		((char)0x80)
+
 void color_filter_c(unsigned char *src,
                     unsigned char *dst,
                     unsigned char rc,
@@ -196,9 +142,8 @@ void color_filter_c(unsigned char *src,
 	masc_denom_prom = _mm_load1_ps(&un_tercio);
 	masc_thres = _mm_load1_ps(&threshold_f);
 	masc_sustr = _mm_load_ps(px_target);
-	masc_limpiar = _mm_set_epi8((char)0x80,(char)0x80,(char)0x80,(char)0x80,(char)0x80,(char)0x80,(char)0x80,(char)0x80,(char)0x80,(char)0x80,(char)0x80,(char)0x80,(char)0x03,(char)0x02,(char)0x01,(char)0x00);
-	masc_dw_a_px = _mm_set_epi8((char)0x80,(char)0x80,(char)0x80,(char)0x80,(char)0x0C,(char)0x0C,(char)0x0C,(char)0x08,(char)0x08,(char)0x08,(char)0x04,(char)0x04,(char)0x04,(char)0x00,(char)0x00,(char)0x00);
-	/* (5) masc_denom_prom, masc_thres, masc_sustr, masc_limpiar, masc_dw_a_px */
+	masc_limpiar = _mm_set_epi8(____,____,____,____,____,____,____,____,____,____,____,____,0x03,0x02,0x01,0x00);
+	masc_dw_a_px = _mm_set_epi8(____,____,____,____,0x0C,0x0C,0x0C,0x08,0x08,0x08,0x04,0x04,0x04,0x00,0x00,0x00);
 
 	__m128i data, promedios, flags;
 	__m128 data_px1_f, data_px2_f, data_px3_f, data_px4_f;
@@ -206,24 +151,18 @@ void color_filter_c(unsigned char *src,
 	for (i = 0; i < 3 * width * height; i += 12)
 	{
 		data = _mm_loadu_si128((__m128i *)(src + i));
-		/* (6) data, masc_denom_prom, masc_thres, masc_sustr, masc_limpiar, masc_dw_a_px */
 
 		separar_pixeles(&data, &data_px1_f, &data_px2_f, &data_px3_f, &data_px4_f);
-		/* (10) data, px1, px2, px3, px4, masc_denom_prom, masc_thres, masc_sustr, masc_limpiar, masc_dw_a_px */
 
 		calcular_flags_comparacion(&data_px1_f, &data_px2_f, &data_px3_f, &data_px4_f, &flags,
 									&masc_sustr, &masc_thres, &masc_limpiar, &masc_dw_a_px,
 									rc, gc, bc, threshold);
-		/* (11) data, px1, px2, px3, px4, flags, masc_denom_prom, masc_thres, masc_sustr, masc_limpiar, masc_dw_a_px */
 
 		calcular_promedios(&data_px1_f, &data_px2_f, &data_px3_f, &data_px4_f, &promedios,
 									&masc_denom_prom, &masc_limpiar, &masc_dw_a_px);
-		/* (12) data, flags, promedios, masc_denom_prom, masc_thres, masc_sustr, masc_limpiar, masc_dw_a_px */
 
 		actualizar_datos(&data, &promedios, &flags);
-		/* (6) data, masc_denom_prom, masc_thres, masc_sustr, masc_limpiar, masc_dw_a_px */
 
 		_mm_storeu_si128((__m128i *)(dst + i), data);
-		/* (5) masc_denom_prom, masc_thres, masc_sustr, masc_limpiar, masc_dw_a_px */
 	}	
 }

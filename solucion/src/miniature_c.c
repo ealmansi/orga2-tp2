@@ -108,7 +108,7 @@ void empaquetar_resultado(__m128i *resultado, __m128i *acum_r, __m128i *acum_g, 
     *resultado = _mm_add_epi8(*resultado, *acum_b);
 }
 
-void actualizar_pixels(unsigned char *src, unsigned char *dst, int i, int j, int width,
+void actualizar_pixeles(unsigned char *src, unsigned char *dst, int i, int j, int width,
                         __m128i *fila_0, __m128i *fila_1, __m128i *fila_2, __m128i *fila_3, __m128i *fila_4)
 {
     __m128i acum_r, acum_g, acum_b, resultado;
@@ -141,12 +141,11 @@ void procesar_fila(unsigned char *src, unsigned char *dst, int i, int width)
 
     int j;
     for (j = 2; j < width - 2; j += 4)
-        actualizar_pixels(src, dst, i, j, width, &fila_0, &fila_1, &fila_2, &fila_3, &fila_4);
-}
+        actualizar_pixeles(src, dst, i, j, width, &fila_0, &fila_1, &fila_2, &fila_3, &fila_4);
 
-void copiar_sectores_no_procesados(unsigned char *src, unsigned char *dst, int width, int height, int top_plane, int bottom_plane)
-{
-
+    // corrijo los primeros 4 bytes de dst(i, j)
+    fila_2 = _mm_loadu_si128((__m128i *) &src(i, j));
+    _mm_storeu_si128((__m128i *) &dst(i, j), fila_2);
 }
 
 void miniature_c(
@@ -173,12 +172,9 @@ void miniature_c(
         for (i = bottom_plane; i < height - 2; ++i)
             procesar_fila(src, dst, i, width);
 
-        copiar_sectores_no_procesados(src, dst, width, height, top_plane, bottom_plane);
-
         top_plane -= top_plane_delta;
         bottom_plane += bottom_plane_delta;
 
         memcpy(src, dst, 3 * width * height);
     }
 }
-

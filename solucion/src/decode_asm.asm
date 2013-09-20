@@ -60,10 +60,6 @@ section .text
 
 
 decode_asm:
-	MOV rcx, rdx
-
-	get_timestamp [__comienzo]
-
 	PUSH rbp; Alineada
 	MOV rbp, rsp;
 	PUSH rbx; Desalineada
@@ -91,12 +87,20 @@ decode_asm:
 	MOVDQA xmm0, [rdi+r9];
 	ADD r9, 16;
 
+
+	SUB rdx, 5 ;
+	MOV rcx, rdx;
+	SHL rcx, 62;
+	SHR rcx, 62;
+	
+
+	XOR r8, r8
+
 	
 	ciclo:
 
 	MOVDQU xmm7, [rdi+r9];
 	MOVDQA xmm1, xmm0;
-
 
 
 
@@ -154,19 +158,21 @@ continuar_ciclo4:
 	ADD r9, 16 ;
 	ADD r10, 4;
 
-	CMP r9d, ecx;
+	CMP r10, rdx;
 	JL ciclo;
+
+
+	MOV r10, rdx
+	SUB r9, 20;
+	MOVDQU xmm0, [rdi+r9]
+	CMP r8, 0 ;
+	MOV r8, 1 ;
+	JE ciclo
 
 salida:
 
 
-	get_timestamp [__final]
 
-
-	MOV rdi, __formato;
-	MOV rsi, [__comienzo];
-	MOV rdx, [__final];
-	CALL printf
 
 
 

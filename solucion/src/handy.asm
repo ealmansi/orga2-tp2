@@ -12,7 +12,7 @@ fmt_debug_udword:		DB 	'(udword) %u', 10, 0
 fmt_debug_word:			DB 	'(word) %d', 10, 0
 fmt_debug_uword:		DB 	'(uword) %u', 10, 0
 fmt_debug_ubyte:		DB 	'(ubyte) %d', 10, 0
-fmt_debug_uint:			DB 	'(uint) %u', 10, 0
+fmt_debug_uint:			DB 	'{"fcolor":%u}', 10, 0
 fmt_debug_float:		DB 	'(float) %f', 10, 0
 
 ;	;	;	;	;	Macros ;	;	;	;	;	;

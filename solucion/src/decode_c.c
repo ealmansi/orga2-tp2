@@ -21,7 +21,7 @@ void decode_c(unsigned char* src,
 	int j=0;// Contador para src
 	int k=0;// Contador para code. no pueden ser el mismo porque este avanza 4 veces mas lento.
 
-	while (j<width*height*3 && k<size) { //La única manera de salir del ciclo es que el string termine, como es de C se sabe que termina en NULL
+	while (j<width*height*3 && k<size-1) { //La única manera de salir del ciclo es que el string termine, como es de C se sabe que termina en NULL
 
 		char partial_result = 0; // partial_result es un byte que se va a ir llenando de a poco.
 		for(int bit_shift=0 ; bit_shift <=6 ; bit_shift+=2){ //bit_shift indica cuantos bits debe moverse a izquierda el bit actual. Se aumenta de a 2 y va de 0 a 6

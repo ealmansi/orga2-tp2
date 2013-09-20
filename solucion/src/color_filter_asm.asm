@@ -44,69 +44,56 @@ masc_dw_a_px: 		DB 0x00,0x00,0x00,0x04,0x04,0x04,0x08,0x08,0x08,0x0C,0x0C,0x0C,0
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-%macro cargar_masc_negacion 0
+%macro cargar_masc_negacion 1
 
-	pxor  		XMM10, XMM10
-	cmpeqps 	XMM10, XMM10
-
-%endmacro
-
-; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-%macro cargar_masc_denom_prom 0
-
-	movdqa  		XMM11, [masc_denom_prom]
-	rcpps 			XMM11, XMM11
+	pxor  		%1, %1
+	cmpeqps 	%1, %1
 
 %endmacro
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-%macro cargar_masc_thres 0
+%macro cargar_masc_denom_prom 1
 
-	cvtsi2ss 	 	XMM12, R13D
-	shufps 			XMM12, XMM12, 0
+	movdqa  		%1, [masc_denom_prom]
+	rcpps 			%1, %1
 
 %endmacro
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-%macro cargar_masc_sustr 0
+%macro cargar_masc_thres 1
 
-	pinsrd	 		XMM13, R12D, 0
-	pinsrd	 		XMM13, R11D, 1
-	pinsrd	 		XMM13, R10D, 2
-	pinsrd	 		XMM13, R12D, 3
-	cvtdq2ps 		XMM13, XMM13
+	cvtsi2ss 	 	%1, R13D
+	shufps 			%1, %1, 0
+
+%endmacro
+
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+%macro cargar_masc_sustr 1
+
+	pinsrd	 		%1, R12D, 0
+	pinsrd	 		%1, R11D, 1
+	pinsrd	 		%1, R10D, 2
+	pinsrd	 		%1, R12D, 3
+	cvtdq2ps 		%1, %1
 	
 %endmacro
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-%macro cargar_masc_limpiar 0
+%macro cargar_masc_limpiar 1
 
-	movdqa 			XMM14, [masc_limpiar]
-
-%endmacro
-
-; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-%macro cargar_masc_dw_a_px 0
-
-	movdqa 			XMM15, [masc_dw_a_px]
+	movdqa 			%1, [masc_limpiar]
 
 %endmacro
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-%macro cargar_mascaras 0
+%macro cargar_masc_dw_a_px 1
 
-	cargar_masc_negacion
-	cargar_masc_denom_prom
-	cargar_masc_thres
-	cargar_masc_sustr
-	cargar_masc_limpiar
-	cargar_masc_dw_a_px
+	movdqa 			%1, [masc_dw_a_px]
 
 %endmacro
 
@@ -303,10 +290,15 @@ color_filter_asm:
 										; R10B 	-	rc		; R14D 	-	width
 										; R11B 	-	gc		; R15D 	-	height
 															
+	cargar_masc_negacion	XMM10
+	cargar_masc_denom_prom	XMM11
+	cargar_masc_thres		XMM12
+	cargar_masc_sustr		XMM13
+	cargar_masc_limpiar		XMM14
+	cargar_masc_dw_a_px		XMM15
+	
 	imul 		R14, R15 				; R14 <- 3 * width * height
 	imul 		R14, 3
-
-	cargar_mascaras 					; libres XMM0 - XMM10
 
 .for:
 	mov 		RCX, 0					; RCX <- 0, indice del ciclo

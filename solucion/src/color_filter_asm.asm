@@ -71,6 +71,7 @@ __despues: DQ 0
 
 	cvtsi2ss 	 	%1, R13D
 	shufps 			%1, %1, 0
+	mulps 			%1, %1
 
 %endmacro
 

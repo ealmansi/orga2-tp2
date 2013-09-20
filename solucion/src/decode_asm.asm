@@ -44,7 +44,7 @@ __comparaciones: DQ 0 , 0 ;
 
 
 
-__formato: DB "{ 'total_before': %lu, 'total_after': %lu, 'comparaciones_before': %lu, 'comparaciones_after': %lu }",10,0
+__formato: DB "{'total_before' : %lu , 'total_after': %lu},",10,0
 
 
 
@@ -88,14 +88,13 @@ decode_asm:
 	MOVDQA xmm9, [__mascara_filtrar];
 	MOVDQA xmm8, [__mascara_shuffle];
 
+	MOVDQA xmm0, [rdi+r9];
+	ADD r9, 16;
+
 	
 	ciclo:
 
-	get_timestamp r14
-	get_timestamp r15
-	acum_time r14,r15,r13
-
-	MOVDQU xmm0, [rdi+r9];
+	MOVDQU xmm7, [rdi+r9];
 	MOVDQA xmm1, xmm0;
 
 
@@ -150,6 +149,7 @@ decode_asm:
 		
 
 continuar_ciclo4:
+	MOVDQA xmm0, xmm7
 
 	ADD r9, 16 ;
 	ADD r10, 4;
@@ -166,8 +166,6 @@ salida:
 	MOV rdi, __formato;
 	MOV rsi, [__comienzo];
 	MOV rdx, [__final];
-	XOR rcx, rcx;
-	MOV r8, r13;
 	CALL printf
 
 

@@ -17,6 +17,46 @@ fmt_debug_float:		DB 	'(float) %f', 10, 0
 
 ;	;	;	;	;	Macros ;	;	;	;	;	;
 
+
+;_*_*_*_*_*_*_ MACROS DE TIEMPO _*_*_*_*_*_*_*_*_
+
+%macro get_timestamp 1
+
+	PUSH rax
+	PUSH rdx
+	RDTSC
+	SHL rdx, 32
+	ADD rax, rdx;
+	MOV %1, rax;
+	POP rdx
+	POP rax
+
+%endmacro
+
+%macro define_format 0
+
+__formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
+
+%endmacro
+
+
+%macro print_time 1
+
+	PUSH rdi
+	PUSH rsi
+	PUSH rax
+	MOV rdi, __formato_printf
+	MOV rsi, %1
+	CALL printf
+	POP rax
+	POP rsi
+	POP rdi
+
+%endmacro
+	
+;_*_*_*_*_*_*_*_ FIN MACROS DE TIEMPO _*_*_*_*_*_*_*
+
+
 %macro alinear 0
 	sub		RSP, 8
 %endmacro

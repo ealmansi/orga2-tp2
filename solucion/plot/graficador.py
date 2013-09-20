@@ -99,8 +99,7 @@ class Plotter:
 if __name__=="__main__":
 	
 	plotter = Plotter()
-	plotter.agregarFiltro("Decode", "c básico", "../src/decode_c.c.salida", "../src/decode_c.c")
-	plotter.agregarFiltro("Decode", "asm básico", "../src/decode_asm.asm.salida", "../src/decode_asm.asm")
+	plotter.agregarFiltro("Decode", "c básico", "../src/color_filter_c.c.salida", "../src/color_filter_c.c")
+	plotter.agregarFiltro("Decode", "asm básico", "../src/color_filter_asm.asm.salida", "../src/color_filter_asm.asm")
 	print(plotter.fractions)
 	plotter.plotBars("ejemplo.png")
-	plotter.plotPie("torta.png")

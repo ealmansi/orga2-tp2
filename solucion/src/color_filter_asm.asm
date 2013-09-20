@@ -22,6 +22,11 @@ masc_denom_prom: 	DD 3.0,3.0,3.0,3.0
 masc_limpiar: 		DB 0x00,0x01,0x02,0x03,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80
 masc_dw_a_px: 		DB 0x00,0x00,0x00,0x04,0x04,0x04,0x08,0x08,0x08,0x0C,0x0C,0x0C,0x80,0x80,0x80,0x80
 
+define_format
+
+__antes: DQ 0
+__despues: DQ 0
+
 ;	;	;	;	;	Macros ;	;	;	;	;	;
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -298,6 +303,8 @@ section .text
 color_filter_asm:
 	push_regs
 
+	get_timestamp [__antes]
+
 	levantar_parametros					; R8 	-	src		; R12B 	-	bc
 										; R9 	-	dst		; R13D 	-	threshold
 										; R10B 	-	rc		; R14D 	-	width
@@ -331,6 +338,17 @@ color_filter_asm:
 	add 		RCX, 12 				; adelanto los 4 pixeles procesados
 	jmp 		.cond
 .endfor:
+
+
+	get_timestamp [__despues]
+
+	MOV rax, [__despues]
+	SUB rax, [__antes]
+
+	SUB rsp, 8
+	print_time rax
+	ADD rsp, 8
+
 
 	pop_regs
     ret

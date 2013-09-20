@@ -7,6 +7,8 @@
 #include "utils.h"
 #include "tiempo.h"
 
+extern unsigned long int get_timestamp();
+
 typedef union float4{
     __m128		x;
     float		v[4];
@@ -187,6 +189,11 @@ void color_filter_c(unsigned char *src,
                     int width,
                     int height)
 {
+	unsigned long int time_begin, time_end;
+
+	time_begin = get_timestamp();
+
+
 	float un_tercio = 1.0/3;
 	float threshold_f = (float) threshold;
 	float px_target[4] = {bc, gc, rc, 0};
@@ -226,4 +233,8 @@ void color_filter_c(unsigned char *src,
 		_mm_storeu_si128((__m128i *)(dst + i), data);
 		/* (5) masc_denom_prom, masc_thres, masc_sustr, masc_limpiar, masc_dw_a_px */
 	}	
+
+	time_end = get_timestamp();
+	
+	printf("{ 'total_before': %lu, 'total_after': %lu }, ", time_begin, time_end);
 }

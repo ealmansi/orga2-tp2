@@ -89,9 +89,14 @@ decode_asm:
 
 
 	SUB rdx, 5 ;
-	MOV rcx, rdx;
-	SHL rcx, 62;
-	SHR rcx, 62;
+	MOV r8, rdx;
+	SHL r8, 62;
+	SHR r8, 62; en r8 tengo el resto entre
+	MOV rcx, 4;
+	SUB rcx, r8;
+	SHL rcx, 2; Multiplico por 4
+	ADD rcx, 16; Para compensar la optimización.
+
 	
 
 	XOR r8, r8
@@ -163,7 +168,7 @@ continuar_ciclo4:
 
 
 	MOV r10, rdx
-	SUB r9, 20;
+	SUB r9, rcx;
 	MOVDQU xmm0, [rdi+r9]
 	CMP r8, 0 ;
 	MOV r8, 1 ;

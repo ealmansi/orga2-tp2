@@ -45,9 +45,11 @@ __formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
 	PUSH rdi
 	PUSH rsi
 	PUSH rax
+	SUB rsp, 8
 	MOV rdi, __formato_printf
 	MOV rsi, %1
 	CALL printf
+	ADD rsp, 8
 	POP rax
 	POP rsi
 	POP rdi

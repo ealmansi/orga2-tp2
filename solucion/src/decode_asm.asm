@@ -19,6 +19,53 @@ extern printf
 %endmacro
 
 
+
+;_*_*_*_*_*_*_ MACROS DE TIEMPO _*_*_*_*_*_*_*_*_
+
+%macro get_timestamp 1
+
+	PUSH rax
+	PUSH rdx
+	RDTSC
+	SHL rdx, 32
+	ADD rax, rdx;
+	MOV %1, rax;
+	POP rdx
+	POP rax
+
+%endmacro
+
+
+
+%macro define_format 0
+
+__formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
+
+%endmacro
+
+
+
+
+%macro print_time 1
+
+	PUSH rdi
+	PUSH rsi
+	PUSH rax
+	SUB rsp, 8
+	MOV rdi, __formato_printf
+	MOV rsi, %1
+	CALL printf
+	ADD rsp, 8
+	POP rax
+	POP rsi
+	POP rdi
+
+%endmacro
+	
+;_*_*_*_*_*_*_*_ FIN MACROS DE TIEMPO _*_*_*_*_*_*_*
+
+
+
 section .data
 
 align 16
@@ -33,18 +80,13 @@ __mascara_invertir: DB  0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0x0c,0
 __mascara_filtrar: DD 0x000000FF,0x000000FF,0x000000FF,0x000000FF
 __mascara_shuffle: DB 0x00,0x04,0x08,0x0c,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80
 
-align 16
 
-__comienzo: DQ 0 , 0 ;
-__final: DQ 0 , 0 ;
-
-__comparaciones_before: DQ 0 , 0 ;
-__comparaciones_after: DQ 0 , 0 ;
-__comparaciones: DQ 0 , 0 ;
+__antes: DQ 0
+__despues: DQ 0
 
 
 
-__formato: DB "{'total_before' : %lu , 'total_after': %lu},",10,0
+define_format
 
 
 
@@ -60,6 +102,11 @@ section .text
 
 
 decode_asm:
+
+
+	get_timestamp [__antes]
+
+
 	PUSH rbp; Alineada
 	MOV rbp, rsp;
 	PUSH rbx; Desalineada
@@ -175,6 +222,14 @@ continuar_ciclo4:
 	JE ciclo
 
 salida:
+
+
+	get_timestamp [__despues]
+
+	MOV r10, [__despues]
+	SUB r10, [__antes]
+
+	print_time r10
 
 
 

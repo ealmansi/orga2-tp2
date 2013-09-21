@@ -1,3 +1,4 @@
+#include <string.h>
 #include <stdio.h>
 #include "utils.h"
 #include "tiempo.h"

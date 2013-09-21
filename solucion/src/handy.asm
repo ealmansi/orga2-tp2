@@ -20,6 +20,20 @@ fmt_debug_float:		DB 	'(float) %f', 10, 0
 
 ;_*_*_*_*_*_*_ MACROS DE TIEMPO _*_*_*_*_*_*_*_*_
 
+
+
+; INFO: este macro tiene que estar si o si en el .data del código.
+%macro define_format 0
+
+__formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
+
+%endmacro
+
+
+; INFO: Este macro es súper sencillo: Agarra, lee el timestamp
+; y lo mete en lo que sea que uno le pase como parámetro.
+; El parámetro puede ser tranquilamente un acceso a memoria porque esto
+; va a estar afuera del ciclo.
 %macro get_timestamp 1
 
 	PUSH rax
@@ -33,13 +47,9 @@ fmt_debug_float:		DB 	'(float) %f', 10, 0
 
 %endmacro
 
-%macro define_format 0
 
-__formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
-
-%endmacro
-
-
+; INFO: Para llamar a este macro es el que imprime en pantalla.
+; Para llamarlo la PILA DEBE ESTAR ALINEADA.
 %macro print_time 1
 
 	PUSH rdi

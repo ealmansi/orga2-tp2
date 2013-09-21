@@ -1,4 +1,4 @@
-CC = icc
+CC = gcc
 ASM = nasm
 DBG = gdb
 CFLAGS = -ggdb -Wall -std=c99 -pedantic -m64 -mssse3 -o3

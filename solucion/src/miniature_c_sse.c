@@ -133,11 +133,11 @@ void actualizar_pixeles(unsigned char *src, unsigned char *dst, int i, int j, in
 
 void procesar_fila(unsigned char *src, unsigned char *dst, int i, int width)
 {
-    __m128i fila_0 = _mm_loadu_si128((__m128i *) &src(i - 2, 2)),
-            fila_1 = _mm_loadu_si128((__m128i *) &src(i - 1, 2)),
-            fila_2 = _mm_loadu_si128((__m128i *) &src(i + 0, 2)),
-            fila_3 = _mm_loadu_si128((__m128i *) &src(i + 1, 2)),
-            fila_4 = _mm_loadu_si128((__m128i *) &src(i + 2, 2));
+    __m128i fila_0 = _mm_loadu_si128((__m128i *) &src(i - 2, 0)),
+            fila_1 = _mm_loadu_si128((__m128i *) &src(i - 1, 0)),
+            fila_2 = _mm_loadu_si128((__m128i *) &src(i + 0, 0)),
+            fila_3 = _mm_loadu_si128((__m128i *) &src(i + 1, 0)),
+            fila_4 = _mm_loadu_si128((__m128i *) &src(i + 2, 0));
 
     int j;
     for (j = 2; j < width - 2; j += 4)

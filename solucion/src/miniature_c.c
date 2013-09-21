@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "utils.h"
 #include "tiempo.h"
 
@@ -26,10 +27,10 @@
 static inline void update_pixel(unsigned char *dst, int i, int j, unsigned char *src, int width)
 {
     float transf_mat[] = { 0.01, 0.05, 0.18, 0.05, 0.01,
-                            0.05, 0.32, 0.64, 0.32, 0.05,
-                            0.18, 0.64, 1.00, 0.64, 0.18,
-                            0.05, 0.32, 0.64, 0.32, 0.05,
-                            0.01, 0.05, 0.18, 0.05, 0.01 };
+                           0.05, 0.32, 0.64, 0.32, 0.05,
+                           0.18, 0.64, 1.00, 0.64, 0.18,
+                           0.05, 0.32, 0.64, 0.32, 0.05,
+                           0.01, 0.05, 0.18, 0.05, 0.01 };
     float  red_accum = 0,
             green_accum = 0,
             blue_accum = 0;
@@ -45,9 +46,9 @@ static inline void update_pixel(unsigned char *dst, int i, int j, unsigned char 
             ++n;     
         }
 
-    red(dst, i, j) = (red_accum/6);
-    green(dst, i, j) = (green_accum/6);
-    blue(dst, i, j) = (blue_accum/6);
+    red(dst, i, j) = (red_accum/6.0);
+    green(dst, i, j) = (green_accum/6.0);
+    blue(dst, i, j) = (blue_accum/6.0);
 }
 
 void miniature_c(
@@ -63,10 +64,9 @@ void miniature_c(
     int top_plane_delta = coeff_top_plane * height / iters,
         bottom_plane_delta = (1 - coeff_bottom_plane) * height / iters;
 
-    int it, i , j, n;
+    int it, i , j;
 
-    for (n = 0; n < 3 * width * height; ++n)
-        dst[n] = src[n];
+    memcpy(dst, src, 3 * width * height);
 
     for (it = 0; it < iters; ++it)
     {
@@ -81,7 +81,6 @@ void miniature_c(
         top_plane -= top_plane_delta;
         bottom_plane += bottom_plane_delta;
 
-        for (n = 0; n < 3 * width * height; ++n)
-            src[n] = dst[n];
+        memcpy(src, dst, 3 * width * height);
     }
 }

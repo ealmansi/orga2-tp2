@@ -338,9 +338,7 @@ color_filter_asm:
 	MOV rax, [__despues]
 	SUB rax, [__antes]
 
-	SUB rsp, 8
 	print_time rax
-	ADD rsp, 8
 
 
 	pop_regs

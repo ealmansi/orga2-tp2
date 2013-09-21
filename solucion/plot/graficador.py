@@ -49,7 +49,7 @@ class Plotter:
 
 	def plotBars(self, rutaSalida):
 		plt.clf()
-		fig = plt.figure()
+		fig = plt.figure(figsize = (3.5*len(self.filtros),6))
 		ax = fig.add_subplot(111)
 		indexs = np.arange(len(self.filtros))
 		times = [i["total"] for i in self.fractions]
@@ -99,14 +99,18 @@ class Plotter:
 if __name__=="__main__":
 	
 	plotter = Plotter()
-	plotter.agregarFiltro("Decode", "c básico", "../src/decode_c.c.salida", "../src/decode_c.c")
-	plotter.agregarFiltro("Decode", "asm básico", "../src/decode_asm.asm.salida", "../src/decode_asm.asm")
+	plotter.agregarFiltro("Decode", "c básico GCC", "../src/salidas/decode_c.c.salidaGCC", "../src/decode_c.c")
+	plotter.agregarFiltro("Decode", "c GCC O3", "../src/salidas/decode_c.c.salidaGCCO3", "../src/decode_c.c")
+	plotter.agregarFiltro("Decode", "c básico ICC", "../src/salidas/decode_c.c.salidaICC", "../src/decode_c.c")
+	plotter.agregarFiltro("Decode", "c básico ICCO3", "../src/salidas/decode_c.c.salidaICCO3", "../src/decode_c.c")
+	plotter.agregarFiltro("Decode", "asm básico", "../src/salidas/decode_asm.asm.salida", "../src/decode_asm.asm")
 	print("Decode:",plotter.fractions)
 	plotter.plotBars("decode.png")
 
 
 	plotter2 = Plotter()
-	plotter2.agregarFiltro("Decode", "c básico", "../src/color_filter_c.c.salida", "../src/color_filter_c.c")
-	plotter2.agregarFiltro("Decode", "asm básico", "../src/color_filter_asm.asm.salida", "../src/color_filter_asm.asm")
+	plotter2.agregarFiltro("Color filter", "c básico", "../src/salidas/color_filter_c.c.salidaGCC", "../src/color_filter_c.c")
+	plotter2.agregarFiltro("Color filter", "c compilado con ICC", "../src/salidas/color_filter_c.c.salidaICC", "../src/color_filter_c.c")
+	plotter2.agregarFiltro("Color filter", "asm básico", "../src/salidas/color_filter_asm.asm.salida", "../src/color_filter_asm.asm")
 	print("color filter:",plotter2.fractions)
 	plotter2.plotBars("color filter.png")

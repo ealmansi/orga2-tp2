@@ -1,6 +1,7 @@
-
 #include "utils.h"
 #include "tiempo.h"
+
+extern unsigned long int get_timestamp();
 
 #define 	OFFSET_RED			2
 #define 	OFFSET_GREEN		1
@@ -19,6 +20,11 @@ void color_filter_c(unsigned char *src,
                     int width,
                     int height)
 {
+
+	unsigned long int __antes, __despues;
+
+	__antes = get_timestamp();
+	
 	int r, g, b, diff_r, diff_g, diff_b, dist;
 	threshold *= threshold;
 	for (int i = 0; i < 3 * width * height; i += 3)
@@ -39,5 +45,8 @@ void color_filter_c(unsigned char *src,
 		green(dst, i) = g;
 		blue(dst, i) = b;
 	}
+
+	__despues = get_timestamp();
+	printf ("{'total_before': %lu, 'total_after': %lu},",__antes,__despues);
 }
 

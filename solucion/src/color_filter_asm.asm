@@ -18,9 +18,11 @@ global color_filter_asm
 ;	;	;	;	;	Datos	;	;	;	;	;	;
 
 align 16
-masc_denom_prom: 	DD 3.0,3.0,3.0,3.0
-masc_limpiar: 		DB 0x00,0x01,0x02,0x03,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80
-masc_dw_a_px: 		DB 0x00,0x00,0x00,0x04,0x04,0x04,0x08,0x08,0x08,0x0C,0x0C,0x0C,0x80,0x80,0x80,0x80
+masc_denom_prom: 		DD 3.0,3.0,3.0,3.0
+masc_empaquetar: 		DB 0x00,0x00,0x00,0x04,0x04,0x04,0x08,0x08,0x08,0x0C,0x0C,0x0C,0x80,0x80,0x80,0x80
+masc_desempaquetar_r:	DB 0x02,0x80,0x80,0x80,0x05,0x80,0x80,0x80,0x08,0x80,0x80,0x80,0x0B,0x80,0x80,0x80
+masc_desempaquetar_g:	DB 0x01,0x80,0x80,0x80,0x04,0x80,0x80,0x80,0x07,0x80,0x80,0x80,0x0A,0x80,0x80,0x80
+masc_desempaquetar_b:	DB 0x00,0x80,0x80,0x80,0x03,0x80,0x80,0x80,0x06,0x80,0x80,0x80,0x09,0x80,0x80,0x80
 
 define_format
 
@@ -49,10 +51,72 @@ __despues: DQ 0
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-%macro cargar_masc_negacion 1
+%macro leer_datos 1
 
-	pxor  		%1, %1
-	cmpeqps 	%1, %1
+	movdqu 		%1, [R8 + RCX]							; leer 16 bytes de imagen src
+
+%endmacro
+
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+%macro escribir_datos 1
+
+	movdqu 		[R9 + RCX], %1 							; escribo a imagen dst
+
+%endmacro
+
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+%macro cargar_masc_desempaquetar_r 1
+
+	movdqa 		%1, [masc_desempaquetar_r]
+
+%endmacro
+
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+%macro cargar_masc_desempaquetar_g 1
+
+	movdqa 		%1, [masc_desempaquetar_g]
+
+%endmacro
+
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+%macro cargar_masc_desempaquetar_b 1
+
+	movdqa 		%1, [masc_desempaquetar_b]
+
+%endmacro
+
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+%macro cargar_masc_sustraendo_r 1
+
+	pinsrd 		%1, R10D, 0
+ 	pinsrd 		%1, R10D, 1
+ 	pinsrd 		%1, R10D, 2
+ 	pinsrd 		%1, R10D, 3
+
+%endmacro
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+%macro cargar_masc_sustraendo_g 1
+
+	pinsrd 		%1, R11D, 0
+ 	pinsrd 		%1, R11D, 1
+ 	pinsrd 		%1, R11D, 2
+ 	pinsrd 		%1, R11D, 3
+
+%endmacro
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+%macro cargar_masc_sustraendo_b 1
+
+	pinsrd 		%1, R12D, 0
+ 	pinsrd 		%1, R12D, 1
+ 	pinsrd 		%1, R12D, 2
+ 	pinsrd 		%1, R12D, 3
 
 %endmacro
 
@@ -60,220 +124,74 @@ __despues: DQ 0
 
 %macro cargar_masc_denom_prom 1
 
-	movdqa  		%1, [masc_denom_prom]
+	movdqu  		%1, [masc_denom_prom]
 	rcpps 			%1, %1
 
 %endmacro
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-%macro cargar_masc_thres 1
+%macro cargar_masc_empaquetar 1
 
-	cvtsi2ss 	 	%1, R13D
-	shufps 			%1, %1, 0
-	mulps 			%1, %1
+	movdqu  		%1, [masc_empaquetar]
 
 %endmacro
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-%macro cargar_masc_sustr 1
+%macro cargar_masc_threshold 1
 
-	pinsrd	 		%1, R12D, 0
-	pinsrd	 		%1, R11D, 1
-	pinsrd	 		%1, R10D, 2
-	pinsrd	 		%1, R12D, 3
-	cvtdq2ps 		%1, %1
-	
-%endmacro
-
-; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-%macro cargar_masc_limpiar 1
-
-	movdqa 			%1, [masc_limpiar]
+	imul 		R13D, R13D
+	pinsrd 		%1, R13D, 0
+ 	pinsrd 		%1, R13D, 1
+ 	pinsrd 		%1, R13D, 2
+ 	pinsrd 		%1, R13D, 3
 
 %endmacro
 
-; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+%macro cuerpo_ciclo 0
 
-%macro cargar_masc_dw_a_px 1
+	pxor 		XMM1, XMM1 									; prom <- [0,0,0,0]
+	pxor 		XMM2, XMM2 									; dist <- [0,0,0,0]
 
-	movdqa 			%1, [masc_dw_a_px]
+	movdqa		XMM3, XMM0 									; desempaquetar rojos
+	pshufb 		XMM3, XMM4 									; rojos <- [r1 r2 r3 r4]
+	paddd 		XMM1, XMM3 									; prom += rojos
+	psubd 		XMM3, XMM7 									; rojos -= [rc, rc, rc, rc]
+	pmulld 		XMM3, XMM3 									; rojos *= rojos
+	paddd 		XMM2, XMM3 									; dist += rojos
 
-%endmacro
+	movdqa		XMM3, XMM0 									; desempaquetar verdes
+	pshufb 		XMM3, XMM5 									; verdes <- [g1 g2 g3 g4]
+	paddd 		XMM1, XMM3 									; prom += verdes
+	psubd 		XMM3, XMM8 									; verdes -= [gc, gc, gc, gc]
+	pmulld 		XMM3, XMM3 									; verdes *= verdes
+	paddd 		XMM2, XMM3 									; dist += verdes
 
-; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+	movdqa		XMM3, XMM0 									; desempaquetar azules
+	pshufb 		XMM3, XMM6 									; azules <- [b1 b2 b3 b4]
+	paddd 		XMM1, XMM3 									; prom += azules
+	psubd 		XMM3, XMM9 									; azules -= [bc, bc, bc, bc]
+	pmulld 		XMM3, XMM3 									; azules *= azules
+	paddd 		XMM2, XMM3 									; dist += azules
 
-%macro separar_pixeles 0
-; toma XMM1 - XMM4
-; libres XMM5 - XMM10
-	
-	pxor			XMM5, XMM5
+	cvtdq2ps 	XMM1, XMM1									; prom <- int2float(prom)
+	mulps 		XMM1, XMM10 								; prom /= [3 3 3 3]
+	cvtps2dq 	XMM1, XMM1 									; prom <- float2int(prom)
+	pshufb 		XMM1, XMM11 								; asigno el promedio a cada uno
+															; de los bytes del pixel
 
-	movdqa 			XMM1, XMM0 		; quedan los tres canales del primer pixel
-	punpcklbw 		XMM1, XMM5 		; convertidos en floats en XMM1
-	punpcklwd 		XMM1, XMM5
-	cvtdq2ps 		XMM1, XMM1
+	pcmpgtd 	XMM2, XMM12 								; dist <- dist > threshold ?
+	pshufb 		XMM2, XMM11 								; asigno el flag a cada uno
+															; de los bytes del pixel
 
-	movdqa 			XMM2, XMM0 		; idem segundo pixel
-	psrldq 			XMM2, 3
-	punpcklbw 		XMM2, XMM5
-	punpcklwd 		XMM2, XMM5
-	cvtdq2ps 		XMM2, XMM2
-
-	movdqa 			XMM3, XMM0 		; idem tercer pixel
-	psrldq 			XMM3, 6
-	punpcklbw 		XMM3, XMM5
-	punpcklwd 		XMM3, XMM5
-	cvtdq2ps 		XMM3, XMM3
-
-	movdqa 			XMM4, XMM0 		; idem cuarto pixel
-	psrldq 			XMM4, 9
-	punpcklbw 		XMM4, XMM5
-	punpcklwd 		XMM4, XMM5
-	cvtdq2ps 		XMM4, XMM4
-
-%endmacro
-
-; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-%macro calcular_flags_comparacion 0
-; toma XMM5
-; libres XMM6 - XMM10
-	
-	movdqa 			XMM6, XMM1
-	subps 			XMM6, XMM13 		; mascara con rc, gc, bc
-	mulps 			XMM6, XMM6
-	movdqa 			XMM7, XMM6
-	psrldq 			XMM6, 4
-	addps 			XMM7, XMM6
-	psrldq 			XMM6, 4
-	addps 			XMM7, XMM6
-	pshufb 			XMM7, XMM14 		; limpia los floats que no se usan
-	movdqa 			XMM5, XMM7 			; lo guarda en XMM5
-
-	movdqa 			XMM6, XMM2
-	subps 			XMM6, XMM13 		; mascara con rc, gc, bc
-	mulps 			XMM6, XMM6
-	movdqa 			XMM7, XMM6
-	psrldq 			XMM6, 4
-	addps 			XMM7, XMM6
-	psrldq 			XMM6, 4
-	addps 			XMM7, XMM6
-	pshufb 			XMM7, XMM14 		; limpia los floats que no se usan
-	pslldq 			XMM7, 4				; lo guarda en XMM5, al lado del anterior
-	por 			XMM5, XMM7
-
-	movdqa 			XMM6, XMM3
-	subps 			XMM6, XMM13 		; mascara con rc, gc, bc
-	mulps 			XMM6, XMM6
-	movdqa 			XMM7, XMM6
-	psrldq 			XMM6, 4
-	addps 			XMM7, XMM6
-	psrldq 			XMM6, 4
-	addps 			XMM7, XMM6
-	pshufb 			XMM7, XMM14 		; limpia los floats que no se usan
-	pslldq 			XMM7, 8				; lo guarda en XMM5, al lado del anterior
-	por 			XMM5, XMM7
-
-	movdqa 			XMM6, XMM4
-	subps 			XMM6, XMM13 		; mascara con rc, gc, bc
-	mulps 			XMM6, XMM6
-	movdqa 			XMM7, XMM6
-	psrldq 			XMM6, 4
-	addps 			XMM7, XMM6
-	psrldq 			XMM6, 4
-	addps 			XMM7, XMM6
-	pshufb 			XMM7, XMM14 		; limpia los floats que no se usan
-	pslldq 			XMM7, 12			; lo guarda en XMM5, al lado del anterior
-	por 			XMM5, XMM7
-
-	movdqa 			XMM6, XMM12 		; compara las 4 distancias con el threshold
-	cmpltps 		XMM6, XMM5
-	movdqa 			XMM5, XMM6
-	pshufb 			XMM5, XMM15 		; distribuye el resultado a cada byte de cada pixel
-	
-%endmacro
-
-; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-%macro calcular_promedios 0
-
-	movdqa 			XMM7, XMM1 			; calcula el promedio del pixel 1
-	movdqa 			XMM8, XMM7
-	psrldq 			XMM8, 4
-	addps 			XMM7, XMM8
-	psrldq 			XMM8, 4
-	addps 			XMM7, XMM8
-	pshufb 			XMM7, XMM14 		; limpia los floats que no se usan
-	movdqa 			XMM6, XMM7 			; guarda en XMM6
-
-	movdqa 			XMM7, XMM2 			; calcula el promedio del pixel 2
-	movdqa 			XMM8, XMM7
-	psrldq 			XMM8, 4
-	addps 			XMM7, XMM8
-	psrldq 			XMM8, 4
-	addps 			XMM7, XMM8
-	pshufb 			XMM7, XMM14 		; limpia los floats que no se usan
-	pslldq 			XMM7, 4				; guarda en XMM6, al lado del anterior
-	por 			XMM6, XMM7
-
-	movdqa 			XMM7, XMM3 			; calcula el promedio del pixel 3
-	movdqa 			XMM8, XMM7
-	psrldq 			XMM8, 4
-	addps 			XMM7, XMM8
-	psrldq 			XMM8, 4
-	addps 			XMM7, XMM8
-	pshufb 			XMM7, XMM14 		; limpia los floats que no se usan
-	pslldq 			XMM7, 8				; guarda en XMM6, al lado del anterior
-	por 			XMM6, XMM7
-
-	movdqa 			XMM7, XMM4 			; calcula el promedio del pixel 4
-	movdqa 			XMM8, XMM7
-	psrldq 			XMM8, 4
-	addps 			XMM7, XMM8
-	psrldq 			XMM8, 4
-	addps 			XMM7, XMM8
-	pshufb 			XMM7, XMM14 		; limpia los floats que no se usan
-	pslldq 			XMM7, 12			; guarda en XMM6, al lado del anterior
-	por 			XMM6, XMM7
-
-	mulps 			XMM6, XMM11 		; divide por 3
-	cvtps2dq 		XMM6, XMM6 			; transforma a enteros
-	pshufb 			XMM6, XMM15 		; asigna el promedio de cada pixel a los bytes correspondientes
+ 	movdqa 		XMM3, XMM2 									; temp <- datos AND ~flags
+ 	pandn 		XMM3, XMM0 									; 
+ 	movdqa 		XMM0, XMM3 									; datos <- temp
+	pand 		XMM1, XMM2 									; prom <- prom AND flags
+ 	paddb 		XMM0, XMM1 									; datos += prom
 
 %endmacro
-
-; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-%macro actualizar_datos 0
-
-	movdqa 		XMM7, XMM5 				; obtengo los flags negados
-	pxor 		XMM7, XMM10 			
-
-	pand 		XMM0, XMM7 				; XMM0 <- datos originales AND flags negados
-	pand 		XMM6, XMM5 				; XMM6 <- promedios AND flags
-	paddb 		XMM0, XMM6 				; XMM0 <- XMM0 + XMM6
-
-%endmacro
-
-; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-%macro leer_datos 0
-
-	movdqu 		XMM0, [R8 + RCX]							; leer 16 bytes de imagen src
-
-%endmacro
-
-; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-%macro escribir_datos 0
-
-	movdqu 		[R9 + RCX], XMM0 							; escribo a imagen dst
-
-%endmacro
-
 
 ;	;	;	;	;	Código	;	;	;	;	;	;
 
@@ -298,13 +216,16 @@ color_filter_asm:
 										; R10B 	-	rc		; R14D 	-	width
 										; R11B 	-	gc		; R15D 	-	height
 															
-	cargar_masc_negacion	XMM10
-	cargar_masc_denom_prom	XMM11
-	cargar_masc_thres		XMM12
-	cargar_masc_sustr		XMM13
-	cargar_masc_limpiar		XMM14
-	cargar_masc_dw_a_px		XMM15
-	
+	cargar_masc_desempaquetar_r 	XMM4
+	cargar_masc_desempaquetar_g 	XMM5
+	cargar_masc_desempaquetar_b 	XMM6
+	cargar_masc_sustraendo_r 		XMM7
+	cargar_masc_sustraendo_g 		XMM8
+	cargar_masc_sustraendo_b 		XMM9
+	cargar_masc_denom_prom 			XMM10
+	cargar_masc_empaquetar 			XMM11
+	cargar_masc_threshold 			XMM12
+
 	imul 		R14, R15 				; R14 <- 3 * width * height
 	imul 		R14, 3
 
@@ -315,17 +236,11 @@ color_filter_asm:
 	cmp 		RCX, R14
 	jge 		.endfor
 
-	leer_datos
+	leer_datos XMM0
 
-	separar_pixeles
+	cuerpo_ciclo
 
-	calcular_flags_comparacion
-	
-	calcular_promedios
-
-	actualizar_datos
-
-	escribir_datos
+	escribir_datos XMM0
 
 .inc:
 	add 		RCX, 12 				; adelanto los 4 pixeles procesados

@@ -13,21 +13,21 @@
 
 #define     ____            ((char)0x80)
 
-__m128i img_fila_0;
-__m128i img_fila_1;
-__m128i img_fila_2;
-__m128i img_fila_3;
-__m128i img_fila_4;
+__m128i img_fila_0;                 // XMM0
+__m128i img_fila_1;                 // XMM1
+__m128i img_fila_2;                 // XMM2
+__m128i img_fila_3;                 // XMM3
+__m128i img_fila_4;                 // XMM4
 
-__m128i mat_fila_0;
-__m128i mat_fila_1;
-__m128i mat_fila_2;
+__m128i mat_fila_0;                 // XMM10
+__m128i mat_fila_1;                 // XMM11
+__m128i mat_fila_2;                 // XMM12
 
-__m128i masc_desempaq;
-__m128  masc_denom;
+__m128i masc_desempaq;              // XMM8
+__m128  masc_denom;                 // XMM9
 
-__m128i acum_r, acum_g, acum_b;
-__m128i temp_1, temp_2, temp_3;
+__m128i acum_r, acum_g, acum_b;     // XMM5, XMM6, XMM7
+__m128i temp_1, temp_2, temp_3;     // XMM13, XMM14, XMM15
 
 void acumular_fila_izq(__m128i *img_fila, __m128i *mat_fila)
 {
@@ -38,10 +38,11 @@ void acumular_fila_izq(__m128i *img_fila, __m128i *mat_fila)
     temp_2 = *mat_fila;                                // temp_2 <- [18,5,1,0,5,18,5,1]
     temp_3 = _mm_setzero_si128();
     temp_2 = _mm_unpackhi_epi8(temp_2, temp_3);
-    temp_3 = _mm_madd_epi16(temp_1, temp_2);            // temp_3 = [b3*18+b2*5,b1*1+b0*0,b3*5+b2*18,b1*5+b0*1]
+    temp_3 = temp_1;
+    temp_3 = _mm_madd_epi16(temp_3, temp_2);            // temp_3 = [b3*18+b2*5,b1*1+b0*0,b3*5+b2*18,b1*5+b0*1]
 
     temp_2 = _mm_slli_epi64(temp_2, 32);                // temp_2 <- [1 0 0 0 5 1 0 0]
-    temp_2 = _mm_madd_epi16(temp_1, temp_2);            // temp_2 = [b3*1+b2*0,b1*0+b0*0,b3*5+b2*1,b1*0+b0*0]
+    temp_2 = _mm_madd_epi16(temp_2, temp_1);            // temp_2 = [b3*1+b2*0,b1*0+b0*0,b3*5+b2*1,b1*0+b0*0]
 
     temp_3 = _mm_hadd_epi32(temp_3, temp_2);            // temp_3 = [px3, px2, px1, px0] (suma de azules fila 0)
     acum_b = _mm_add_epi32(acum_b, temp_3);             // acum_b += temp_3

@@ -1,7 +1,7 @@
-CC = icc
+CC = gcc
 ASM = nasm
 DBG = gdb
-CFLAGS = -Wall -std=c99 -pedantic -m64  -mssse3
+CFLAGS = -ggdb -Wall -std=c99 -pedantic -m64 -mssse3 -msse4.2 -msse4.1
 ASMFLAGS = -felf64 -g -F dwarf
 OPENCV_LIB = `pkg-config --cflags --libs opencv`
 
@@ -12,7 +12,7 @@ ASMHANDY = handy.asm
 
 OBJS = tp2.o utils.o \
 	color_filter_c.o miniature_c.o decode_c.o \
-	color_filter_asm.o miniature_asm.o decode_asm.o tiempos.o 
+	color_filter_asm.o miniature_asm.o decode_asm.o tiempos.o
 
 .PHONY: all clean
 

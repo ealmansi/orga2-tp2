@@ -49,4 +49,3 @@ void color_filter_c(unsigned char *src,
 	__despues = get_timestamp();
 	printf ("{'total_before': %lu, 'total_after': %lu},",__antes,__despues);
 }
-

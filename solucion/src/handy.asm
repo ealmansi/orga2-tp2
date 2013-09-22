@@ -1,6 +1,7 @@
 ;	;	;	;	;	Externas ;	;	;	;	;	;
 
 extern printf
+extern exit
 
 ;	;	;	;	;	Datos ;	;	;	;	;	;
 
@@ -8,12 +9,14 @@ section .data
 
 msj_debug:				DB 	'__________DEBUG_________', 10, 0
 msj_debug_delim: 		DB 	'________________________', 10, 0
-fmt_debug_udword:		DB 	'(udword) %u', 10, 0
-fmt_debug_word:			DB 	'(word) %d', 10, 0
-fmt_debug_uword:		DB 	'(uword) %u', 10, 0
-fmt_debug_ubyte:		DB 	'(ubyte) %d', 10, 0
-fmt_debug_uint:			DB 	'{"fcolor":%u}', 10, 0
-fmt_debug_float:		DB 	'(float) %f', 10, 0
+msj_newline: 			DB 	10, 0
+fmt_debug_ud:			DB 	'%u ', 0
+fmt_debug_w:			DB 	'%d ', 0
+fmt_debug_uw:			DB 	'%u ', 0
+fmt_debug_ub:			DB 	'%d ', 0
+fmt_debug_float:		DB 	'%f ', 0
+fmt_debug_uint:			DB 	'%u ', 0
+fmt_imprimir_tiempo: 	DB 	'%u,',10, 0
 
 ;	;	;	;	;	Macros ;	;	;	;	;	;
 
@@ -182,43 +185,46 @@ __formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
 	pop_xmm 	XMM0
 %endmacro
 
-%macro debug_xmm_ubytes 1
+%macro debug_xmm_ub 1
 	push_defensivo
 
 	debug_string msj_debug_delim
 
 	pextrb 		RDI, %1, 0
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 1
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 2
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 3
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 4
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 5
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 6
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 7
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 8
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 9
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 10
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 11
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 12
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 13
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 14
-	debug_ubyte DIL
+	debug_ub DIL
 	pextrb 		RDI, %1, 15
-	debug_ubyte DIL
+	debug_ub DIL
+
+	debug_newline
+	debug_string msj_debug_delim
 
 	pop_defensivo
 %endmacro
@@ -229,65 +235,80 @@ __formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
 	debug_string msj_debug_delim
 
 	pextrw 		RDI, %1, 0
-	debug_word DI
+	debug_w DI
 	pextrw 		RDI, %1, 1
-	debug_word DI
+	debug_w DI
 	pextrw 		RDI, %1, 2
-	debug_word DI
+	debug_w DI
 	pextrw 		RDI, %1, 3
-	debug_word DI
+	debug_w DI
 	pextrw 		RDI, %1, 4
-	debug_word DI
+	debug_w DI
 	pextrw 		RDI, %1, 5
-	debug_word DI
+	debug_w DI
 	pextrw 		RDI, %1, 6
-	debug_word DI
+	debug_w DI
 	pextrw 		RDI, %1, 7
-	debug_word DI
+	debug_w DI
+
+	debug_newline
+	debug_string msj_debug_delim
 
 	pop_defensivo
 %endmacro
 
-%macro debug_xmm_uwords 1
+%macro debug_xmm_uw 1
 	push_defensivo
 
 	debug_string msj_debug_delim
 
 	pextrw 		RDI, %1, 0
-	debug_uword DI
+	debug_uw DI
 	pextrw 		RDI, %1, 1
-	debug_uword DI
+	debug_uw DI
 	pextrw 		RDI, %1, 2
-	debug_uword DI
+	debug_uw DI
 	pextrw 		RDI, %1, 3
-	debug_uword DI
+	debug_uw DI
 	pextrw 		RDI, %1, 4
-	debug_uword DI
+	debug_uw DI
 	pextrw 		RDI, %1, 5
-	debug_uword DI
+	debug_uw DI
 	pextrw 		RDI, %1, 6
-	debug_uword DI
+	debug_uw DI
 	pextrw 		RDI, %1, 7
-	debug_uword DI
+	debug_uw DI
+
+	debug_newline
+	debug_string msj_debug_delim
 
 	pop_defensivo
 %endmacro
 
-%macro debug_xmm_udwords 1
+%macro debug_xmm_ud 1
 	push_defensivo
 
 	debug_string msj_debug_delim
 
 	pextrd 		EDI, %1, 0
-	debug_udword EDI
+	debug_ud EDI
 	pextrd 		EDI, %1, 1
-	debug_udword EDI
+	debug_ud EDI
 	pextrd 		EDI, %1, 2
-	debug_udword EDI
+	debug_ud EDI
 	pextrd 		EDI, %1, 3
-	debug_udword EDI
+	debug_ud EDI
+
+	debug_newline
+	debug_string msj_debug_delim
 
 	pop_defensivo
+%endmacro
+
+%macro debug_delim 0
+
+	debug_string msj_debug_delim
+
 %endmacro
 
 %macro debug_string 1
@@ -300,23 +321,21 @@ __formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
 	pop_defensivo
 %endmacro
 
-%macro debug_udword 1
+%macro debug_ud 1
 	push_defensivo
-
-	debug_string msj_debug_delim
 
 	xor 		RAX, RAX
 	mov 		EAX, %1
 
 	mov  		RSI, RAX
-	mov  		RDI, fmt_debug_udword
+	mov  		RDI, fmt_debug_ud
 	mov  		RAX, 0
 	call printf
 
 	pop_defensivo
 %endmacro
 
-%macro debug_word 1
+%macro debug_w 1
 	push_defensivo
 
 	mov 		AX, %1
@@ -324,21 +343,20 @@ __formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
 	cdqe
 
 	mov  		RSI, RAX
-	mov  		RDI, fmt_debug_word
+	mov  		RDI, fmt_debug_w
 	mov  		RAX, 0
 	call printf
 
 	pop_defensivo
 %endmacro
 
-%macro debug_uword 1
+%macro debug_uw 1
 	push_defensivo
 
 	xor 		RAX, RAX
 	mov 		AX, %1
-
 	mov  		RSI, RAX
-	mov  		RDI, fmt_debug_uword
+	mov  		RDI, fmt_debug_uw
 	mov  		RAX, 0
 	call printf
 
@@ -353,15 +371,17 @@ __formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
 	mov  		RAX, 0
 	call printf
 
+	debug_newline
+
 	pop_defensivo
 %endmacro
 
-%macro debug_ubyte 1
+%macro debug_ub 1
 	push_defensivo
 
 	xor 		RSI, RSI
 	mov  		SIL, %1
-	mov  		RDI, fmt_debug_ubyte
+	mov  		RDI, fmt_debug_ub
 	mov  		RAX, 0
 	call printf
 
@@ -371,9 +391,13 @@ __formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
 %macro debug_float 1
 	push_defensivo
 
+	movdqu 		XMM0, %1
+	cvtss2sd 	XMM0, XMM0
 	mov  		RDI, fmt_debug_float
 	mov  		RAX, 1
 	call printf
+
+	debug_newline
 
 	pop_defensivo
 %endmacro
@@ -383,28 +407,37 @@ __formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
 
 	debug_string msj_debug_delim
 
-	cvtps2pd 	XMM0, %1
-	debug_float XMM0
+	debug_float %1
 	
 	psrldq 		%1, 4
-	cvtps2pd 	XMM0, %1
-	debug_float XMM0
+	debug_float %1
 
 	psrldq 		%1, 4
-	cvtps2pd 	XMM0, %1
-	debug_float XMM0
+	debug_float %1
 
 	psrldq 		%1, 4
-	cvtps2pd 	XMM0, %1
-	debug_float XMM0
+	debug_float %1
 
 	pop_defensivo
+%endmacro
+
+%macro debug_newline 0
+	push_defensivo
+
+	debug_string msj_newline
+
+	pop_defensivo
+%endmacro
+
+%macro debug_kill 0
+	mov 	RDI, 0
+	call exit
 %endmacro
 
 ; 	;	;	;	Macros para tomar tiempos 	;	;	;	
 ; pisan R14, R15, RDX, RAX y la variable que se use como contador
 
-%macro obtener_timestamp 0
+%macro medir_clock 0
 
 	rdtsc
 	shl 			RDX, 32
@@ -412,19 +445,28 @@ __formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
 
 %endmacro
 
-%macro inic_tiempo 0
+%macro iniciar_tiempo 1
 
-	obtener_timestamp
-	mov 			R14, RAX
+	push 			RAX
+	push 			RDX
+
+	medir_clock
+	mov 			[%1], RAX
+
+	pop 			RDX
+	pop 			RAX
 
 %endmacro
 
-%macro medir_tiempo 1
-
-	obtener_timestamp
-	mov 			R15, RAX
-	sub 			R15, R14
-	add 			%1, R15
-	mov 			R14, RAX
+%macro parar_tiempo 1
+	
+	medir_clock
+	mov 			RDX, [%1]
+	sub 			RAX, RDX
+	mov 			[%1], RAX
+	mov 			RDI, fmt_imprimir_tiempo
+	mov 			RSI, [%1]
+	mov 			RAX, 0
+	call printf
 
 %endmacro

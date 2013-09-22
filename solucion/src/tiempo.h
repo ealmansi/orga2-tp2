@@ -62,27 +62,15 @@
 /* los sucesivos llamados a TIMER_PRINT_STATUS tienen que ser desde la misma función */
 #define         TIMER_BEGIN()                   					\
 unsigned long long int __timer_t0__;            					\
-{                                               					\
-	static int __timer_counter_##__FUNCTION__ = 0;					\
-    MEDIR_TIEMPO_START(__timer_t0__);           					\
-    if(__timer_counter_##__FUNCTION__++ == 0)						\
-    	printf("[");												\
-    else															\
-    	printf("\b");												\
-    printf("{");													\
-}
-
-/* imprime la cantidad de clocks que pasaron desde que se llamó a TIMER_BEGIN() */
-#define         TIMER_PRINT_STATUS(str)                     \
-{                                                           \
-    unsigned long long int tn;                              \
-    MEDIR_TIEMPO_START(tn);                                 \
-    printf("\"%s\" : %llu, ", (str), tn - __timer_t0__);    \
-}
+{																	\
+	MEDIR_TIEMPO_START(__timer_t0__);           					\
+}																	
 
 #define         TIMER_END()     \
 {                               \
-    printf("},]\n");             	\
+    unsigned long long int tn;                              \
+    MEDIR_TIEMPO_START(tn);                                 \
+    printf("%llu,\n", tn - __timer_t0__);    				\
 }
 
 #endif /* !__TIEMPO_H__ */

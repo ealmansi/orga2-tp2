@@ -18,6 +18,8 @@ void color_filter_c(unsigned char *src,
                     int width,
                     int height)
 {
+	TIMER_BEGIN();
+
 	int r, g, b, diff_r, diff_g, diff_b, dist;
 	threshold *= threshold;
 	for (int i = 0; i < 3 * width * height; i += 3)
@@ -38,4 +40,6 @@ void color_filter_c(unsigned char *src,
 		green(dst, i) = g;
 		blue(dst, i) = b;
 	}
+
+	TIMER_END();
 }

@@ -24,6 +24,7 @@ mat_fila_2_datos: 		DB 100,  64,  18,   0,  64, 100,  64,  18, 18,  64, 100,  64
 masc_desempaq_datos: 	DB 0x00,0x80,0x03,0x80,0x06,0x80,0x09,0x80,0x00,0x80,0x03,0x80,0x06,0x80,0x09,0x80
 masc_empaquet_datos: 	DB 0x00,0x80,0x80,0x04,0x80,0x80,0x08,0x80,0x80,0x0C,0x80,0x80,0x80,0x80,0x80,0x80
 masc_denom_datos: 		DD 600.0
+contador_clocks: 		DQ 0
 
 ;	;	;	;	;	Renombres ;	;	;	;	;	;
 
@@ -65,6 +66,7 @@ masc_denom_datos: 		DD 600.0
 %define 	temp_1							XMM13
 %define 	temp_2							XMM14
 %define 	temp_3							XMM15
+%define 	temp_4							XMM12
 
 ;	;	;	;	;	Macros ;	;	;	;	;	;
 
@@ -94,23 +96,23 @@ masc_denom_datos: 		DD 600.0
 
 %macro calcular_bandas 0
 
-	cvtsi2ss	XMM2, height_d				; XMM2 <- int2float(height)
-	cvtsi2ss	XMM3, iters_d				; XMM3 <- int2float(iters)
+	cvtsi2ss	temp_1, height_d				; temp_1 <- int2float(height)
+	cvtsi2ss	temp_2, iters_d				; temp_2 <- int2float(iters)
 
-	movdqa	 	XMM4, coeff_top_plane		; XMM4 <- coeff_top_plane * height
-	mulss 		XMM4, XMM2
-	cvttss2si	top_plane, XMM4 			; top_plane <- float2int(XMM4)
+	movdqa	 	temp_3, coeff_top_plane		; temp_3 <- coeff_top_plane * height
+	mulss 		temp_3, temp_1
+	cvttss2si	top_plane, temp_3 			; top_plane <- float2int(temp_3)
 
-	movdqa	 	XMM5, coeff_bottom_plane 	; XMM5 <- coeff_bottom_plane * height
-	mulss 		XMM5, XMM2
-	cvttss2si	bottom_plane, XMM5 			; bottom_plane <- float2int(XMM5)
+	movdqa	 	temp_4, coeff_bottom_plane 	; temp_4 <- coeff_bottom_plane * height
+	mulss 		temp_4, temp_1
+	cvttss2si	bottom_plane, temp_4 			; bottom_plane <- float2int(temp_4)
 
-	subss 		XMM2, XMM5 					; XMM2 <- (1 - coeff_bottom_plane) * height
+	subss 		temp_1, temp_4 					; temp_1 <- (1 - coeff_bottom_plane) * height
 
-	divss 		XMM4, XMM3 					; XMM4 <- XMM4 / iters
-	divss 		XMM2, XMM3 					; XMM2 <- XMM2 / iters
-	cvttss2si	top_plane_delta, XMM4 		; top_plane_delta <- float2int(XMM4)
-	cvttss2si	bottom_plane_delta, XMM2 	; bottom_plane_delta <- float2int(XMM5)
+	divss 		temp_3, temp_2 					; temp_3 <- temp_3 / iters
+	divss 		temp_1, temp_2 					; temp_1 <- temp_1 / iters
+	cvttss2si	top_plane_delta, temp_3 		; top_plane_delta <- float2int(temp_3)
+	cvttss2si	bottom_plane_delta, temp_1 	; bottom_plane_delta <- float2int(temp_4)
 
 %endmacro
 
@@ -353,7 +355,7 @@ masc_denom_datos: 		DD 600.0
 	pxor 		acum_g, acum_g
 	pxor 		acum_r, acum_r
 
-	acumular_sumas_parciales_izq 						; acumula el aporte de los pixeles cargados (son los pixeles
+	;acumular_sumas_parciales_izq 						; acumula el aporte de los pixeles cargados (son los pixeles
 														; que estan a la izquierda de los que se estan procesando)
 
 														; carga datos que van a ser usados en esta y la prox iteracion
@@ -383,12 +385,12 @@ masc_denom_datos: 		DD 600.0
 	add 		temp_int_2, width
 	movdqu 		img_fila_4, [temp_int_2]
 
-	acumular_sumas_parciales_der						; acumula el aporte de los pixeles recien cargados (los que
+	;acumular_sumas_parciales_der						; acumula el aporte de los pixeles recien cargados (los que
 														; estan a la derecha de los que se estan procesando)
 
-	normalizar_acumuladores 							; divide las sumas (ahora totales) por la suma de la matriz
+	;normalizar_acumuladores 							; divide las sumas (ahora totales) por la suma de la matriz
 
-	empaquetar_resultado 								; empaqueta los acumuladores en 4 pixeles rgb
+	;empaquetar_resultado 								; empaqueta los acumuladores en 4 pixeles rgb
 
 	mov 		temp_int_2, i 							; computa el indice dst(i, j)
 	imul 		temp_int_2, width
@@ -466,8 +468,8 @@ masc_denom_datos: 		DD 600.0
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-%macro procesar_banda_alta 0
-procesar_ba:
+%macro procesar_top_plane 0
+procesar_tp:
 
 .for:
 
@@ -491,8 +493,8 @@ procesar_ba:
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-%macro procesar_banda_baja 0
-procesar_bb:
+%macro procesar_bottom_plane 0
+procesar_bp:
 
 	sub 		height, 2
 
@@ -532,6 +534,8 @@ section .text
 miniature_asm:
 	push_regs
 
+	iniciar_tiempo contador_clocks
+
 	levantar_parametros
 
 	calcular_bandas
@@ -547,11 +551,11 @@ cond:
 	cmp 		iters, 0 								; #iters ejecuciones del cuerpo
 	jle 		end_for
 
-	procesar_banda_alta
+	procesar_top_plane
 
-	procesar_banda_baja
+	procesar_bottom_plane
 
-	sub 		top_plane, top_plane_delta
+	sub 		top_plane, top_plane_delta 				; actualiza el ancho de las bandas
 	add 		bottom_plane, bottom_plane_delta
 
 	copiar_dst_a_src
@@ -562,6 +566,8 @@ incr:
 
 	jmp 		for
 end_for:
+
+	parar_tiempo contador_clocks
 
 	pop_regs
     ret

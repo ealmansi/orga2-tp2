@@ -16,6 +16,7 @@ fmt_debug_uw:			DB 	'%u ', 0
 fmt_debug_ub:			DB 	'%d ', 0
 fmt_debug_float:		DB 	'%f ', 0
 fmt_debug_uint:			DB 	'%u ', 0
+fmt_imprimir_tiempo: 	DB 	'%u,',10, 0
 
 ;	;	;	;	;	Macros ;	;	;	;	;	;
 
@@ -384,32 +385,36 @@ fmt_debug_uint:			DB 	'%u ', 0
 ; 	;	;	;	Macros para tomar tiempos 	;	;	;	
 ; pisan R14, R15, RDX, RAX y la variable que se use como contador
 
-%macro obtener_timestamp 0
+%macro medir_clock 0
 
-	push RDX
-	push RAX
 	rdtsc
 	shl 			RDX, 32
 	add 			RAX, RDX 	; el tiempo actual queda en RAX
-	debug_uint 		RAX
-	pop RAX
-	pop RDX
 
 %endmacro
 
-%macro inic_tiempo 0
+%macro iniciar_tiempo 1
 
-	obtener_timestamp
-	mov 			R14, RAX
+	push 			RAX
+	push 			RDX
+
+	medir_clock
+	mov 			[%1], RAX
+
+	pop 			RDX
+	pop 			RAX
 
 %endmacro
 
-%macro medir_tiempo 1
-
-	obtener_timestamp
-	mov 			R15, RAX
-	sub 			R15, R14
-	add 			%1, R15
-	mov 			R14, RAX
+%macro parar_tiempo 1
+	
+	medir_clock
+	mov 			RDX, [%1]
+	sub 			RAX, RDX
+	mov 			[%1], RAX
+	mov 			RDI, fmt_imprimir_tiempo
+	mov 			RSI, [%1]
+	mov 			RAX, 0
+	call printf
 
 %endmacro

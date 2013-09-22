@@ -26,12 +26,12 @@
 
 static inline void update_pixel(unsigned char *dst, int i, int j, unsigned char *src, int width)
 {
-    float transf_mat[] = { 0.01, 0.05, 0.18, 0.05, 0.01,
-                           0.05, 0.32, 0.64, 0.32, 0.05,
-                           0.18, 0.64, 1.00, 0.64, 0.18,
-                           0.05, 0.32, 0.64, 0.32, 0.05,
-                           0.01, 0.05, 0.18, 0.05, 0.01 };
-    float  red_accum = 0,
+    int transf_mat[] = { 01,  05,  18,  05,  01,
+                         05,  32,  64,  32,  05,
+                         18,  64, 100,  64,  18,
+                         05,  32,  64,  32,  05,
+                         01,  05,  18,  05,  01 };
+    int  red_accum = 0,
             green_accum = 0,
             blue_accum = 0;
 
@@ -46,9 +46,9 @@ static inline void update_pixel(unsigned char *dst, int i, int j, unsigned char 
             ++n;     
         }
 
-    red(dst, i, j) = (red_accum/6.0);
-    green(dst, i, j) = (green_accum/6.0);
-    blue(dst, i, j) = (blue_accum/6.0);
+    red(dst, i, j) = (red_accum/600);
+    green(dst, i, j) = (green_accum/600);
+    blue(dst, i, j) = (blue_accum/600);
 }
 
 void miniature_c(
@@ -57,6 +57,8 @@ void miniature_c(
                 int width, int height,
                 float coeff_top_plane, float coeff_bottom_plane,
                 int iters) {
+
+    TIMER_BEGIN();
 
     int top_plane = coeff_top_plane * height,
         bottom_plane = coeff_bottom_plane * height;
@@ -83,4 +85,6 @@ void miniature_c(
 
         memcpy(src, dst, 3 * width * height);
     }
+
+    TIMER_END();
 }

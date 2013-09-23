@@ -16,6 +16,8 @@ class MeasurementParser:
 
 	def removeOutliers(self):
 
+		self.values = [x for x in self.values if x > 0]
+
 		Q1 = scoreatpercentile(self.values, 25)
 		Q3 = scoreatpercentile(self.values, 75)
 		IQR = Q3 - Q1

@@ -1,3 +1,6 @@
+# ./tomar_medicion directorio_output/ 'comentario sobre que mido' ./tp2 decode -i c ../data/base/encoded.bmp
+# directorio_output/ con barra al final!
+
 fname=$(basename $7)
 fname="${fname%.*}"
 

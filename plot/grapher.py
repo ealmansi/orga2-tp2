@@ -9,7 +9,7 @@ from parser import *;
 def main():
 
 	graficosFiltroColor('../informe/filtro_color/mediciones/')
-	graficosFiltroMiniature('../informe/filtro_miniature/mediciones/')
+	# graficosFiltroMiniature('../informe/filtro_miniature/mediciones/')
 
 def graficosFiltroColor(measumentsPath):
 
@@ -26,29 +26,37 @@ def graficosFiltroColor(measumentsPath):
 	fcolor_asm_city_loopunrollingx4 = 		MeasurementParser('fcolor_asm_city_loopunrollingx4', measumentsPath)
 
 	fcolor_grapher.addMeasurement(fcolor_c_city_normal)
-	fcolor_grapher.addMeasurement(fcolor_asm_city_normal)
-	fcolor_grapher.plotPerformance("C_ASM_perf")
-	fcolor_grapher.plotLOCs("C_ASM_loc")
-	fcolor_grapher.flush()
-
-	fcolor_grapher.addMeasurement(fcolor_c_city_normal)
 	fcolor_grapher.addMeasurement(fcolor_c_city_O1)
 	fcolor_grapher.addMeasurement(fcolor_c_city_O2)
 	fcolor_grapher.addMeasurement(fcolor_c_city_O3)
-	fcolor_grapher.plotPerformance("C_normal_O1_O2_O3")
+	fcolor_grapher.plotLOCs("de_prueba")
 	fcolor_grapher.flush()
 
-	fcolor_grapher.addMeasurement(fcolor_c_city_normal)
-	fcolor_grapher.addMeasurement(fcolor_c_city_normalsinifsincuerpo)
-	fcolor_grapher.addMeasurement(fcolor_c_city_normalsinifconcuerpo)
-	fcolor_grapher.plotPerformance("C_sinifsincuerpo_sinifconcuerpo")
-	fcolor_grapher.flush()
+
+	# fcolor_grapher.addMeasurement(fcolor_c_city_normal)
+	# fcolor_grapher.addMeasurement(fcolor_asm_city_normal)
+	# fcolor_grapher.plotPerformance("C_ASM_perf")
+	# fcolor_grapher.plotLOCs("C_ASM_loc")
+	# fcolor_grapher.flush()
+
+	# fcolor_grapher.addMeasurement(fcolor_c_city_normal)
+	# fcolor_grapher.addMeasurement(fcolor_c_city_O1)
+	# fcolor_grapher.addMeasurement(fcolor_c_city_O2)
+	# fcolor_grapher.addMeasurement(fcolor_c_city_O3)
+	# fcolor_grapher.plotPerformance("C_normal_O1_O2_O3")
+	# fcolor_grapher.flush()
+
+	# fcolor_grapher.addMeasurement(fcolor_c_city_normal)
+	# fcolor_grapher.addMeasurement(fcolor_c_city_normalsinifsincuerpo)
+	# fcolor_grapher.addMeasurement(fcolor_c_city_normalsinifconcuerpo)
+	# fcolor_grapher.plotPerformance("C_sinifsincuerpo_sinifconcuerpo")
+	# fcolor_grapher.flush()
 	
-	fcolor_grapher.addMeasurement(fcolor_asm_city_normal)
-	fcolor_grapher.addMeasurement(fcolor_asm_city_loopunrollingx2)
-	fcolor_grapher.addMeasurement(fcolor_asm_city_loopunrollingx4)
-	fcolor_grapher.plotPerformance("ASM_loopunrollingx2_loopunrollingx4")
-	fcolor_grapher.flush()
+	# fcolor_grapher.addMeasurement(fcolor_asm_city_normal)
+	# fcolor_grapher.addMeasurement(fcolor_asm_city_loopunrollingx2)
+	# fcolor_grapher.addMeasurement(fcolor_asm_city_loopunrollingx4)
+	# fcolor_grapher.plotPerformance("ASM_loopunrollingx2_loopunrollingx4")
+	# fcolor_grapher.flush()
 
 def graficosFiltroMiniature(measumentsPath):
 

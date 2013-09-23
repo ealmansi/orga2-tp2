@@ -1,4 +1,4 @@
-Descripcion: normal sin if sin cuerpo
+Descripcion: s/salto 1
 ../bin/tp2 fcolor -i c ../data/base/city.avi 20 220 20 126
 Procesando...
   Filtro             : fcolor

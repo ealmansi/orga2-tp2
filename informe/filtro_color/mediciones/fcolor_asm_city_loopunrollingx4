@@ -1,4 +1,4 @@
-Descripcion: loop unrolling x4
+Descripcion: l.u. x4
 ../bin/tp2 fcolor -i asm ../data/base/city.avi 20 220 20 126
 Procesando...
   Filtro             : fcolor

@@ -22,22 +22,15 @@ class Plotter:
 	def __init__(self):
 		self.filtros = []
 		self.lines = []
-		self.fractions = []
+		self.times = []
 		self.width = bar_width
 
 	def agregarFiltro(self,nombreFiltro, detallesImplementacion, rutaTiempo, rutaCodigo):
 		self.filtros.append(nombreFiltro+" "+ detallesImplementacion)
 		f = open(rutaTiempo, "r")
 		for i in range(4): f.readline()
-		list = eval("["+f.readline().replace("]\b","")+"]")
-		self.fractions.append({})
-
-		for i in list[0].keys():
-			self.fractions[-1][i.split("_")[0]]=0
-
-		for i in list:
-			for key in self.fractions[-1]:
-				self.fractions[-1][key]+=(i[key+"_after"]-i[key+"_before"])
+		self.times.append(sum(eval("["+f.readline().replace("]\b","")+"]")))
+		
 
 		f = open(rutaCodigo, "r")
 		lines = 0
@@ -52,7 +45,7 @@ class Plotter:
 		fig = plt.figure(figsize = (3.5*len(self.filtros),6))
 		ax = fig.add_subplot(111)
 		indexs = np.arange(len(self.filtros))
-		times = [i["total"] for i in self.fractions]
+		times = [-i for i in self.times]
 		barsTimes = ax.bar(indexs, times, self.width, color="g", label = "Tiempo de ejecución")
 		plt.ylim(0,max(times)*1.2)
 		ax.set_ylabel( "Tiempo (ciclos de clock)")
@@ -99,18 +92,26 @@ class Plotter:
 if __name__=="__main__":
 	
 	plotter = Plotter()
-	plotter.agregarFiltro("Decode", "c básico GCC", "../src/salidas/decode_c.c.salidaGCC", "../src/decode_c.c")
-	plotter.agregarFiltro("Decode", "c GCC O3", "../src/salidas/decode_c.c.salidaGCCO3", "../src/decode_c.c")
-	plotter.agregarFiltro("Decode", "c básico ICC", "../src/salidas/decode_c.c.salidaICC", "../src/decode_c.c")
-	plotter.agregarFiltro("Decode", "c básico ICCO3", "../src/salidas/decode_c.c.salidaICCO3", "../src/decode_c.c")
-	plotter.agregarFiltro("Decode", "asm básico", "../src/salidas/decode_asm.asm.salida", "../src/decode_asm.asm")
-	print("Decode:",plotter.fractions)
+	plotter.agregarFiltro("Decode", "c básico GCC", "../src/salidas/decode_c_prueba.salida", "../src/decode_c.c")
+	#plotter.agregarFiltro("Decode", "c GCC O3", "../src/salidas/decode_c.c.salidaGCCO3", "../src/decode_c.c")
+	#plotter.agregarFiltro("Decode", "c básico ICC", "../src/salidas/decode_c.c.salidaICC", "../src/decode_c.c")
+	#plotter.agregarFiltro("Decode", "c básico ICCO3", "../src/salidas/decode_c.c.salidaICCO3", "../src/decode_c.c")
+	plotter.agregarFiltro("Decode", "asm básico", "../src/salidas/decode_asm_.salida", "../src/decode_asm.asm")
+	#print("Decode:",plotter.fractions)
 	plotter.plotBars("decode.png")
 
 
 	plotter2 = Plotter()
-	plotter2.agregarFiltro("Color filter", "c básico", "../src/salidas/color_filter_c.c.salidaGCC", "../src/color_filter_c.c")
-	plotter2.agregarFiltro("Color filter", "c compilado con ICC", "../src/salidas/color_filter_c.c.salidaICC", "../src/color_filter_c.c")
-	plotter2.agregarFiltro("Color filter", "asm básico", "../src/salidas/color_filter_asm.asm.salida", "../src/color_filter_asm.asm")
-	print("color filter:",plotter2.fractions)
+	plotter2.agregarFiltro("Color filter", "c básico", "../src/salidas/fcolor_c_GCC.salida", "../src/color_filter_c.c")
+	plotter2.agregarFiltro("Color filter", "c compilado con ICC", "../src/salidas/fcolor_c_ICC.salida", "../src/color_filter_c.c")
+	plotter2.agregarFiltro("Color filter", "asm básico", "../src/salidas/fcolor_asm_.salida", "../src/color_filter_asm.asm")
+	#print("color filter:",plotter2.fractions)
 	plotter2.plotBars("color filter.png")
+
+	plotter3 = Plotter()
+	plotter3.agregarFiltro("Miniature", "c básico", "../src/salidas/miniature_c_GCC.salida", "../src/miniature_c.c")
+	plotter3.agregarFiltro("Miniature", "GCC + O3", "../src/salidas/miniature_c_GCC-O3.salida", "../src/miniature_c.c")
+	plotter3.agregarFiltro("Miniature", "ICC", "../src/salidas/miniature_c_ICC.salida", "../src/miniature_c.c")
+	plotter3.agregarFiltro("Miniature", "ICC + O3", "../src/salidas/miniature_c_ICC-O3.salida", "../src/miniature_c.c")
+	plotter3.agregarFiltro("Miniature", "asm básico", "../src/salidas/miniature_asm_.salida", "../src/miniature_asm.asm")
+	plotter3.plotBars("miniature.png")

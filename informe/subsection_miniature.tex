@@ -1,0 +1,18 @@
+\begin{comment}
+	Se realizó todo con ints en lugar de floats justificar
+		- En asm ocupan menos lugar en los xmm (O sea que se pueden procesar de a más a la vez).
+	Describir el algoritmo en c.
+		- Se hardcodea la matriz
+		- Se hardcodea la suma
+		- Se procesa de a un pixel a la vez (los tres canales en cada iteraicón)
+	Describir el algoritmo en asm (con dibujito).
+		- Especificar diferencias.
+		- Que la memoria se levanta en 2 etapas y se reutiliza.
+		- Se procesan 4 pixeles por iteración pero de a 2 a la vez.
+			- Mencionar el tema de los rangos. Para explicar por qué es necsario esto y además por qué conviene trabajar con enteros de word y no con float.
+		- Caso borde, ¿Por qué no existe?.
+		- Tiempos intermedios (cálculo y acceso a memoria)
+			- Como se realizó esta medición y por qué (comentando código).
+			- Explicar lo que representa realmente el gráfico de torta y que tiene error.
+\end{comment}
+

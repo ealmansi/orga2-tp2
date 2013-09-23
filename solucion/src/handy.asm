@@ -28,7 +28,7 @@ fmt_imprimir_tiempo: 	DB 	'%u,',10, 0
 ; INFO: este macro tiene que estar si o si en el .data del código.
 %macro define_format 0
 
-__formato_printf: DB "{ 'total_before': 0 , 'total_after': %lu } ,",0
+__formato_printf: DB "%lu,",0
 
 %endmacro
 

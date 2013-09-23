@@ -1,0 +1,8 @@
+% comparamos implemtaciones del mismo filtro (versión mas intuitiva posible de c vs asm con SIMD). Esto permite analizar mejor la optimizaciones del compilador. Sobre todo las de icc que tiene introducción automática de SIMD
+% En todos los casos se realizó el gráfico C vs ASM (cantidad de clocks y cantidad de líneas de código).
+% Como medimos. (menor vs promedio)
+% Como se compiló. Compilamos con gcc, con icc, y con diferentes flags.
+	% - (aclarar cuales y por qué)
+	% - Explicar por qué se puso ICC y no otro(introduce SIMD automáticamente y se supone que es el compilador mas optimo para la arquitectura AMD-64 con procesadores intel).
+% cómo se ejcutó. (Mínimas interrupciones, init 2 y kill -9 -1).
+% Análisis del código. (object dump).

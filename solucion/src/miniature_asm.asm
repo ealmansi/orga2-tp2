@@ -26,6 +26,10 @@ masc_empaquet_datos: 	DB 0x00,0x80,0x80,0x04,0x80,0x80,0x08,0x80,0x80,0x0C,0x80,
 masc_denom_datos: 		DD 600.0
 contador_clocks: 		DQ 0
 
+define_format
+__antes: DQ 0
+__despues: DQ 0
+
 ;	;	;	;	;	Renombres ;	;	;	;	;	;
 
 %define 	src							R8
@@ -534,7 +538,10 @@ section .text
 miniature_asm:
 	push_regs
 
-	iniciar_tiempo contador_clocks
+	get_timestamp [__antes]
+
+
+
 
 	levantar_parametros
 
@@ -567,7 +574,13 @@ incr:
 	jmp 		for
 end_for:
 
-	parar_tiempo contador_clocks
+
+	get_timestamp [__despues]
+
+	MOV rax, [__despues]
+	SUB rax, [__antes]
+	print_time rax
+
 
 	pop_regs
     ret

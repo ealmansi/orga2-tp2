@@ -37,13 +37,10 @@ void decode_c(unsigned char* src,
 			if (a==0x04){ //Según el valor de a se decide que hacer.
 				b=b+1;
 				b=b & _mask_01;
-			}
-
-			if (a== 0x08 ) {
+			}else if (a== 0x08 ) {
 				b=b-1;
 				b=b & _mask_01;
-			}
-			if (a== 0xc){
+			}else if (a== 0xc){
 				b= b ^ _negation_mask;
 			}
 			b = b << bit_shift; //Se mueven los bits 1 y 0 al lugar correspondiente
@@ -62,5 +59,5 @@ void decode_c(unsigned char* src,
 	
 	total_after=get_timestamp();
 
-	printf("{'total_before':%lu, 'total_after':%lu}, \n", total_before, total_after);
+	printf("%lu,\n",total_after-total_before);
 }

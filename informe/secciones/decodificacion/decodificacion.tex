@@ -8,3 +8,39 @@
 	- ¿Que pesa más?¿Procesamiento o acceso a memoria?
 
 \end{comment}
+
+
+	Para decode se usaron 3 implementaciones: Una escrita en lenguaje C.
+Una escrita en lenguaje ensamblador y otra escrita en lenguaje ensamblador
+intentando usar la máximo los beneficios de la ténica de software pipelining.
+
+	El algorítmo de C al igual que en los otros filtros es lo mas intuitivo posible.
+Basicamente se lee de a un byte de la imagen. Mediante máscaras se filtran los dos bits
+menos significativos y los siguientes 2 bits menos significativos.
+
+	Los bits 2 y 3 se comparan en un switch para saber como procesar
+a los bits 0 y 1. Una vez que se procesaron los bits 0 y 1 se los guarda se los
+mueve a izquierda la cantida de lugares adecuada (0, 2, 4 o 6) según sea el primer
+par de bits de ese bytes, el segundo, el tercero o el cuarto. Luego se van acumulando
+esos resultados parciales y cuando se tiene un byte entero se lo guarda en el vector
+destino.
+
+	Cabe aclarar que a la hora de implementar en ensamblador este filtro provee bastantes
+facilidades. Todos los corrimientos que hay que hacer son múltiplos de dos y la cantidad
+de datos que hacen falta decodidificar para formar un byte es potencia de 2. Estas
+cosas facilitaron mucho el trabajo. Además en ningún momento se necesita saber la
+posición de los pixeles ni nada por el estilo, por lo que la matriz fuente se puede
+tomar sencillamente como un gran vector.
+
+	El proceso, entonces, es sencillo:
+
+\begin{itemize}
+
+	\item Se traen datos de la matriz fuente a un registro xmm. Una vez que
+	están en registro estos datos se copian a otro xmm1.
+
+	\item En una de las copias se conservan los bits 0 y 1. En otra los bits 0 y 3.
+
+	\
+
+\end{itemize}

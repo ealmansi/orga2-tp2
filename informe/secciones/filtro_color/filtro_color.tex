@@ -34,25 +34,23 @@ La modificación evita el cálculo de una raíz cuadrada, sin incurrir en el rie
 
 La implementación en lenguaje ensamblador mantiene esencialmente el mismo procedimiento, con la salvedad de que fue adaptado para procesar cuatro píxeles en simultáneo mediante el uso de operaciones SIMD. Se recorre la matriz en el mismo órden descripto previamente, realizando lecturas de 16 bytes por iteración (equivalente a 5 píxeles y un byte sobrante).
 
-La necesidad de limitar el procesamiento simultáneo a cuatro píxeles se desprende del hecho de que, como se dijo antes, la expresión que mide la distancia entre un píxel y el color principal puede tomar valores en el rango $0, ... \,195075$. Este último valor no cabe en un entero de 16 bits, precisándose un \tipo{double word} para almacenar ese resultado temporal; esto implica un total de hasta cuatro valores de distancia en un registro XMM. En cuestiones de espacio, hubiese sido equivalente utilizar \tipo{floats} ya que también caben hasta cuatro por registro de 128 bits.
+La necesidad de limitar el procesamiento simultáneo a cuatro píxeles se desprende del hecho de que, como se dijo antes, la expresión que mide la distancia entre un píxel y el color principal puede tomar valores en el rango $0, ... \,195075$. Este último valor no cabe en un entero de 16 bits, precisándose un \tipo{double word} para almacenar ese resultado temporal; esto implica un total de hasta cuatro valores de distancia en un registro XMM. Por esta razón, además sería similar trabajar con el tipo de datos \tipo{float} ya que también caben hasta cuatro por registro de 128 bits.
 
 De esta forma, el procedimiento realizado en cada iteración consiste en (para cada uno de los cuatro píxeles en simultáneo) comparar el valor de la distancia con el \param{threshold}, y calcular el promedio de los tres canales, actualizando luego sus valores según la siguiente expresión informal:
 
 $$\text{valor\_original} \land \lnot \text{cumple\_condicion} + \text{promedio} \land \text{cumple\_condicion}$$
 
-Esto permite expresar el equivalente a una expresión del tipo \textbf{if}-\textbf{then}-\textbf{else}, en el lenguaje del procesamiento simultáneo.
+Esto permite expresar el equivalente a una expresión del tipo \textbf{if}-\textbf{then}-\textbf{else}, en el lenguaje del procesamiento simultáneo. El cómputo de los flags con el resultado de las comparaciones y del promedio se puede describir mediante el pseudo-código de la figura \ref{fig:pseudocodigo-filtro-color}.
 
-El cómputo de los flags con el resultado de las comparaciones y del promedio se puede describir mediante el siguiente pseudo-código:
-
-\begin{figure}
+\begin{figure}[h]
 	\begin{mdframed}
 	\begin{center}
 		\begin{lstlisting}
-		prom <- [0,0,0,0] 			// enteros doubleword
-		dist <- [0,0,0,0]
+		prom := [0,0,0,0] 			// enteros doubleword
+		dist := [0,0,0,0]
 	
 		desempaquetar el rojo de cada pixel a un double word
-		rojos <- [r4, r3, r2, r1]
+		rojos := [r4, r3, r2, r1]
 	
 		prom += rojos
 		rojos -= [rc, rc, rc, rc]
@@ -62,18 +60,60 @@ El cómputo de los flags con el resultado de las comparaciones y del promedio se
 		repetir para verdes
 		repetir para azules
 	
-		prom <- prom / 3
-		dist <- dist > [threshold, threshold, threshold, threshold]	
+		prom := prom / 3
+		dist := dist > [threshold, threshold, threshold, threshold]
+		empaquetar prom y dist a formato pixeles
+
+		resultado := datos AND NOT dist
+		resultado += prom AND dist
 		\end{lstlisting}
 	\end{center}
 	\end{mdframed}
 	\caption{Pseudo-código de la implementación en lenguaje ensablador del filtro color.}
+	\label{fig:pseudocodigo-filtro-color}
 \end{figure}
 
-\subsection{Optimizaciones} % (fold)
-\label{sub:optimizaciones}
+Para simplificar la implementación, se asumió que la imagen tiene una cantidad de píxeles \emph{múltiplo de 4} ($ancho * altura = 4 * k$); de esta forma, si en cada iteración se procesan 4 píxeles, no es necesario realizar una adaptación en función del tamaño de la imagen. Esta decisión es razonable porque si se admitieran imágenes sin esta característica, habría que procesar solamente 1, 2 o 3 píxeles fuera del ciclo principal, sin alterar significativamente la performance del filtro.
 
+Sin embargo, incluso para una cantidad de píxeles múltiplo de 4, es importante contemplar el \emph{caso borde} que sucede en la última iteración, cuando faltan procesar los últimos cuatro píxeles de la imagen. De realizarse una lectura desde el comienzo del píxel, se leería junto a los píxeles restantes un total de 4 bytes de memoria posteriores al fin de la imagen. Por esta razon, la última iteración se dejó fuera del ciclo principal, realizando un retroceso de 4 bytes en el puntero de lectura, y ejecutando una versión levemente modificada del cuerpo de ciclo de forma tal que procese los píxeles en los últimos 12 bytes del registro, en vez de los primeros.
 
+\subsection{Optimizaciones en código C}
+\label{sub:filtro-color-optimizaciones-c}
+
+El código de la implementación en lenguaje C se compiló con los distintos flags de optimización descriptos en la sección \ref{}. Los resultados en cuestión de performance se pueden ver en la figura \ref{}, la cual muestra una comparación entre la cantidad de clocks consumidos durante la ejecución de cada versión.
+
+TODO:: Discutir un poco la figura.
+
+Adicionalmente, se analizaron las diferencias entre el código generado con compilación estándar y el código generado con optimización de tipo O1. La diferencia entre ambos evidencia inmediatamente una característica subóptima del código estándar; \emph{todas} las variables locales se alojan en la pila, incluso habiendo disponibilidad de registros. Los registros se utilizan únicamente como variables temporales, y al final de cada extracto de código se guarda el resultado en un espacio de la pila. El código generado con O1, en cambio, ahorra gran cantidad de esos accesos a memoria. Este comportamiento se ejemplifica con el siguiente extracto (figura \ref{fig:codigo-objeto-filtro-color}).
+
+% esto está atado con alambre...
+\begin{figure}[h]
+	\begin{mdframed}
+	\begin{center}
+		\begin{lstlisting}
+		mov  eax, DWORD PTR[rbp-0x10]	| imul   r15d,r15d
+		mov  edx,eax			| imul   r14d,r14d
+		imul edx, DWORD PTR[rbp-0x10]	| add    r14d,r15d
+		mov  eax, DWORD PTR[rbp-0xc]	| imul   ebx,ebx
+		imul eax, DWORD PTR[rbp-0xc]	| add    ebx,r14d
+		add  edx,eax			|			
+		mov  eax, DWORD PTR[rbp-0x8]	|			
+		imul eax, DWORD PTR[rbp-0x8]	|			
+		add  eax,edx			|			
+		mov  DWORD PTR [rbp-0x4],eax	|			
+		\end{lstlisting}
+	\end{center}
+	\end{mdframed}
+	\caption{Código objeto generado con compilación por default (izquierda), y con optimización de tipo O1 (derecha).}
+	\label{fig:codigo-objeto-filtro-color}
+\end{figure}
+
+Sin embargo, la lógica de flujo del código generado es equivalente. Es decir, las operaciones realizadas y el orden en que se realizan son iguales; se mantiene la forma de recorrer la imagen y el procesamiento píxel por píxel.
+
+\subsection{Optimización en código ASM - Desenrollado de ciclos}
+\label{sub:filtro-color-optimizaciones-asm}
+
+Sobre la implementación en lenguaje ensamblador ya descripta, se realizaron dos sucesivas modificaciones para estudiar la técnica conocida como desenrollado de ciclos.
 
 % Describir ocmo funciona el filtro.	
 % Como se implementó en c

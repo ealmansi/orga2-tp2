@@ -359,7 +359,7 @@ __despues: DQ 0
 	pxor 		acum_g, acum_g
 	pxor 		acum_r, acum_r
 
-	;acumular_sumas_parciales_izq 						; acumula el aporte de los pixeles cargados (son los pixeles
+	acumular_sumas_parciales_izq 						; acumula el aporte de los pixeles cargados (son los pixeles
 														; que estan a la izquierda de los que se estan procesando)
 
 														; carga datos que van a ser usados en esta y la prox iteracion
@@ -389,12 +389,12 @@ __despues: DQ 0
 	add 		temp_int_2, width
 	movdqu 		img_fila_4, [temp_int_2]
 
-	;acumular_sumas_parciales_der						; acumula el aporte de los pixeles recien cargados (los que
+	acumular_sumas_parciales_der						; acumula el aporte de los pixeles recien cargados (los que
 														; estan a la derecha de los que se estan procesando)
 
-	;normalizar_acumuladores 							; divide las sumas (ahora totales) por la suma de la matriz
+	normalizar_acumuladores 							; divide las sumas (ahora totales) por la suma de la matriz
 
-	;empaquetar_resultado 								; empaqueta los acumuladores en 4 pixeles rgb
+	empaquetar_resultado 								; empaqueta los acumuladores en 4 pixeles rgb
 
 	mov 		temp_int_2, i 							; computa el indice dst(i, j)
 	imul 		temp_int_2, width
@@ -538,11 +538,6 @@ section .text
 miniature_asm:
 	push_regs
 
-	get_timestamp [__antes]
-
-
-
-
 	levantar_parametros
 
 	calcular_bandas
@@ -568,19 +563,10 @@ cond:
 	copiar_dst_a_src
 
 incr:
-
 	dec 		iters
 
 	jmp 		for
 end_for:
-
-
-	get_timestamp [__despues]
-
-	MOV rax, [__despues]
-	SUB rax, [__antes]
-	print_time rax
-
 
 	pop_regs
     ret

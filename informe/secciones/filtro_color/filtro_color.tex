@@ -165,29 +165,4 @@ Sobre la implementación en lenguaje ensamblador ya descripta, se realizaron dos
 	\label{fig:filtro-color-loop-unrolling}
 \end{figure}
 
-Siguiendo la notación de la figura, en el caso particular del filtro color, se tomó k = 2, y k = 4, y se realizaron mediciones de performance.
-
-TODO:: grafico de performance loop unrolling
-
-% Describir ocmo funciona el filtro.	
-% Como se implementó en c
-% Cómo se implementó en asm
-	% - explicar el algorítmo
-	% - explicar el caso borde
-	% - explicar las optimizaciones realizadas. Loop unrolling.
-	% - particularidades del filtro. Div 3. Se hicieron todas las cuentas con ints pero al final hubo que pasar a float para poder dividir por 3.
-%--Gráfico--  (Performance)
-% C vs ASM
-% C vs O1, O2, O3
-% ASM vs loop unrolling x2 vs loop unrolling 4
-% C con y sin condicionales
-
-
-% Comparar estructura en c y en asm.
-	% - En c es un loop que procesa un pixel por vez con un condicional adentro (lo que hace tarde distinta cantidad de tiempo para distintas imágenes).
-	% - En asm procesa de a 4 pixeles por vez y hace el mismo proceso independientemente de la imagen.
-	% - ¿Que pesa más?¿Procesamiento o acceso a memoria?
-	% - Diferencias estructurales
-		% - Comparación líneas de código
-
-
+Siguiendo la notación de la figura, en el caso particular del filtro color, se tomó k = 2, y k = 4, y se realizaron mediciones de performance. Los resultados no fueron provechosos ya que las mejoras observadas fueron menores al 5\%, incluso sin haber considerado el costo adicional de tratar con los casos donde el tamaño de la matriz no es múltiplo de la cantidad de píxeles que se procesan por ciclo, lo cual deterioraría la performance. Este resultado parecería indicar que el costo de la comparación y la escritura al program counter en cada salto no incurren un costo significativo, posiblemente debido a que el procedimiento realiza un único acceso a memoria por iteración (no congestiona la caché) y la posibilidad de ejecución fuera de orden que brinda al procesador (el puntero de lectura que se utiliza para realizar la comparación no se utiliza dentro del cuerpo del ciclo una vez leída la memoria).

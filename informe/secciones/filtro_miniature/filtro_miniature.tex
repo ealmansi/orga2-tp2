@@ -1,3 +1,55 @@
+\subsection{Descripción del filtro}
+\label{sub:miniature_descripcion}
+
+El filtro miniature es un caso particular de la familia de filtros por convolución, en los cuales se procesa una imagen realizando una convolución entre esta y una matriz determinada denominada \emph{kernel}. Las características del \emph{kernel} determinan el efecto resultante sobre la matriz; en este caso, el efecto logrado se conoce como desefoque gaussiano (se puede ver un ejemplo en la figura \ref{}), y se obtiene mediante el siguiente \emph{kernel}:
+
+\[ \frac{1}{600} *  \left( \begin{array}{ccccc}
+  1 &   5 &  18 &   5 &   1 \\
+  5 &  32 &  64 &  32 &   5 \\
+ 18 &  64 & 100 &  64 &  18 \\
+  5 &  32 &  64 &  32 &   5 \\
+  1 &   5 &  18 &   5 &   1 \end{array} \right)\]
+
+Operativamente, la imagen es procesada mediante una actualización píxel a píxel, reemplazando el valor de cada canal de color del píxel por una combinación lineal del valor de sus vecinos, cada uno ponderado por un coeficiente determinado por un elemento de la matriz. Se toma el elemento central del \emph{kernel} como coeficiente del píxel que se está procesando, y la posición relativa a los demás elementos de la matriz determina a cuál vecino corresponde en la combinación lineal. El factor $\frac{1}{600}$ es una constante de normalización que garantiza que el resultado sea un valor en el rango $[0, 255]$.
+
+\begin{figure}[h]
+\begin{center}
+  \includegraphics[scale=0.2]{secciones/filtro_miniature/imagenes/neo.jpg}
+  \includegraphics[scale=0.2]{secciones/filtro_miniature/imagenes/neo-miniature.jpg}
+\end{center}
+\caption{Imagen antes y después de aplicar el filtro miniature con parámetros de banda $0.08$ y $0.25$, y un total de 20 iteraciones.}
+\label{fig:filtro-miniature-ejemplo}
+\end{figure}
+
+Se incorpora una leve modificación al modelo típico de filtro por convolución, limitando el efecto del filtrado a dos bandas dentro de la imagen; una banda superior, y una banda inferior, dejando la banda central de la imagen inalterada. Se especifican dos parámetros $0 < $ \param{topPlane} $<$ \param{bottomPlane} $ < 1$, de forma tal que las bandas quedan determinadas de esta forma:
+
+\begin{center}
+	\raggedright
+	\hspace{100pt}\textbf{banda superior:} 	\hspace{10pt}filas 0 ... $topPlane * altura$\\
+	\hspace{100pt}\textbf{banda media:} 		\hspace{22pt}filas $topPlane * altura + 1$ ... $bottomPlane * altura - 1$\\
+	\hspace{100pt}\textbf{banda baja:} 		\hspace{31pt}filas $bottomPlane * altura$ ... $altura - 1$\\
+\end{center}
+
+Adicionalmente, se realizan múltiples iteraciones de filtrado, reduciendo el ancho de cada banda luego de cada iteración por:
+
+\begin{center}
+	\raggedright
+	\hspace{100pt}$\Delta$\textbf{banda superior:} 	\hspace{10pt}$topPlane * altura / cantIteraciones$\\
+	\hspace{100pt}$\Delta$\textbf{banda baja:} 		\hspace{31pt}$(1 - bottomPlane) * altura / cantIteraciones$\\
+\end{center}
+
+En el caso de los píxeles del borde, donde no existe el vecindario completo, se optó por exceptuarlos del filtrado, simplificando el procedimiento al saltear las dos primeras y dos últimas filas y columnas.
+
+\subsection{Implementación en lenguaje C y lenguaje ensamblador}
+\label{sub:miniature_implementaci_n_en_c}
+
+El filtro se implementó en C mediante un ciclo que visita una vez por iteración a cada píxel de la banda superior y de la banda inferior, y actualizando el valor de sus tres canales de color por la combinación lineal descripta previamente.
+
+Para este filtro, la implementación intuitiva en C resultó particularmente sugerente a la necesidad de buscar formas de optimizar el procedimiento, dado que cada píxel se lee de la memoria hasta 25 veces (una vez por cada vecino) resultando en un tiempo de ejecución prolongado; y además, el tipo de procesamiento realizado por cada píxel es el cómputo de una combinación lineal, para lo cual los procesadores están altamente optimizados, desperdiciando los beneficios del hardware.
+
+
+
+
 \begin{comment}
 	Se realizó todo con ints en lugar de floats justificar
 		- En asm ocupan menos lugar en los xmm (O sea que se pueden procesar de a más a la vez).
@@ -15,4 +67,3 @@
 			- Como se realizó esta medición y por qué (comentando código).
 			- Explicar lo que representa realmente el gráfico de torta y que tiene error.
 \end{comment}
-

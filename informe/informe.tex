@@ -39,12 +39,12 @@
 		\small{ealmansi@gmail.com}
 		\and
 		\\
-		{\rm Federico Suárez}\\
-		\small{elgeniofederico@gmail.com}
-		\and
-		\\
 		{\rm Miguel Duarte}\\
 		\small{miguelfeliped@gmail.com}
+		\and
+		\\
+		{\rm Federico Suárez}\\
+		\small{elgeniofederico@gmail.com}
 	} % end author
 	\maketitle
 
@@ -67,21 +67,27 @@
 	% -- Contenido --
 	% Se edita cada seccion por separado, no hay que cambiar nada acá.
 	\section{Introducción}
-		\input{section_introduccion.tex}
-	\section{Filtros Implementados} % Cambiar el nombre a 'consideraciones generales'.
-		\input{section_filtros.tex} % esto podría no estar calculo
+		\input{secciones/introduccion/introduccion.tex}
 	\newpage
-	\subsection{Filtro de color}
-		\input{subsection_filtro_color.tex}
+
+	\section{Consideraciones generales}
+		\input{secciones/consideraciones/consideraciones.tex}
 	\newpage
-	\subsection{Miniature}
-		\input{subsection_miniature.tex}
+
+	\section{Filtro de color}
+		\input{secciones/filtro_color/filtro_color.tex}
 	\newpage
-	\subsection{Decodificación esteganográfica}
-		\input{subsection_decodificacion_esteganografica.tex}
+
+	\section{Filtro Miniature}
+		\input{secciones/filtro_miniature/filtro_miniature.tex}
 	\newpage
+
+	\section{Decodificación esteganográfica}
+		\input{secciones/decodificacion/decodificacion.tex}
+	\newpage
+
 	\section{Conclusiones}
-		\input{section_conclusiones.tex}
+		\input{secciones/conclusiones/conclusiones.tex}
 
 	
 \end{document}

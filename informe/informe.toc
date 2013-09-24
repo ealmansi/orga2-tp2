@@ -1,7 +1,7 @@
 \select@language {spanish}
 \contentsline {section}{\numberline {1}Introducci\IeC {\'o}n}{2}
-\contentsline {section}{\numberline {2}Filtros Implementados}{2}
-\contentsline {subsection}{\numberline {2.1}Filtro de color}{3}
-\contentsline {subsection}{\numberline {2.2}Miniature}{4}
-\contentsline {subsection}{\numberline {2.3}Decodificaci\IeC {\'o}n esteganogr\IeC {\'a}fica}{5}
-\contentsline {section}{\numberline {3}Conclusiones}{6}
+\contentsline {section}{\numberline {2}Consideraciones generales}{3}
+\contentsline {section}{\numberline {3}Filtro de color}{4}
+\contentsline {section}{\numberline {4}Filtro Miniature}{5}
+\contentsline {section}{\numberline {5}Decodificaci\IeC {\'o}n esteganogr\IeC {\'a}fica}{6}
+\contentsline {section}{\numberline {6}Conclusiones}{7}

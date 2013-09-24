@@ -45,7 +45,7 @@ class Plotter:
 		fig = plt.figure(figsize = (3.5*len(self.filtros),6))
 		ax = fig.add_subplot(111)
 		indexs = np.arange(len(self.filtros))
-		times = [-i for i in self.times]
+		times = self.times
 		barsTimes = ax.bar(indexs, times, self.width, color="g", label = "Tiempo de ejecución")
 		plt.ylim(0,max(times)*1.2)
 		ax.set_ylabel( "Tiempo (ciclos de clock)")

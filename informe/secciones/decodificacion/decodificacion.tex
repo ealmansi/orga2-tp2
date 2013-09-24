@@ -130,7 +130,38 @@ movimiento es lo mas cerca del final del ciclo posible.
 
 \subsection{Rendimiento}
 
+\begin{figure}[h]
+\begin{center}
+  \includegraphics[scale=0.4]{secciones/decodificacion/imagenes/decode.png}
+\end{center}
+\caption{Imagen antes y después de aplicar el filtro de color con color principal rojo.}
+\label{fig:filtro-color-ejemplo}
+\end{figure}
 
----Insertar gráfico---
+	Como se puede ver en el gráfico el rendimiento de la versión en assembler es notablemente mas rápida. Otra
+vez no cumple con la hipótesis inicial. La versión en ASM es más de 60 veces mas rápida que la versión
+de C. Al introducir ICC en la ecuación la cosa cambia un poco, sin embargo el resultado sigue siendo que
+la versión en ensamblador aplasta a las demás.
+
+	En este momento cabe volver a mencionar que este filtro calza a la perfección en el procesamiento
+SIMD con SSE. Aclarado esto vamos a ahondar un poco más.
+
+	La versión de C siguiendo el código tal cuál está escrito accede a memoria 5 veces cada 4 bytes.
+Es decir, tiene que buscar cada byte. Luego de procesar 4 bytes tiene que ir a guardarlos. Es decir
+que suponiendo que el compilador genera un código que no accede nunca a memoria durante el ciclo de todas
+maneras se están accediendo 20 veces a memoria cada 16 bytes. La versión escita en ensamblador, en cambio
+realiza sólo 2 accesos cada 16 bytes (uno para traer datos, otro para guardarlos). Pero no sólo eso sino
+que además el acceso mas conflictivo (el de trar datos) está optimizado mediante entubado de código.
+
+	Otra cosa importante a la hora de hacer este análisis es que se sabe con mucha presición
+cuantas veces se realiza el ciclo principal. Si o si está en el orden de $size/4$ veces. Es decir,
+en cada iteración se graban exactamente 4 bytes y las iteraciones terminan cuando se graban $size$
+por lo tanto ese va a ser el total de iteraciones.
+
+	Despreciando las instrucciones de afuera del ciclo (que tiene sentido porque son pocas y se
+realizan una sóla vez) la cantidad de ciclos de clock por iteración entonces va a ser el cociente
+entre los clocks totales y $size/4$. Eso da proximamente 9,2. Sin embargo el ciclo tiene 36
+instrucciones, lo que quiere decir que se logró aproximadamente un rendimiento de 4 instrucciones
+por ciclo de clock.
 
 	

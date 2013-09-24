@@ -15,8 +15,16 @@ datos de manera simultánea. Es decir que lo que se logra es paralelismo a nivel
 de datos. Esta clase procesamiento es ideal para realizar filtros sobre imágenes
 , porque ahí justamente lo que uno busca es que cada pixel reciba el mismo proceso.
 
-% Acá va el dibujito que compara los modelos de procesamiento.
-	
+
+\begin{figure}[h]
+\begin{center}
+  \includegraphics[scale=0.4]{secciones/introduccion/imagenes/SISD.png}
+    \includegraphics[scale=0.4]{secciones/introduccion/imagenes/SIMD.png}
+\end{center}
+\caption{Imagen antes y después de aplicar el filtro de color con color principal rojo.}
+\label{fig:filtro-color-ejemplo}
+\end{figure}
+
 
 	Sin embargo para realizar este análisis es imperioso meterse un poco mas adentro.
 El comportamiento esperado a priori para estos procesos es una relación inversa entre

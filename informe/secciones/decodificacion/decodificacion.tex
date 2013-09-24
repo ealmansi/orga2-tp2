@@ -9,6 +9,28 @@
 
 \end{comment}
 
+\subsection{Descripción del filtro}
+
+	El filtro consite en extraer un mensaje codificado detro de la imagen conociendo
+, por supuesto la menera en que este está codificado.
+
+	La codificación consiste en cambiar cambiar en cada byte de la imagen los
+dos bits menos significativos por los bits del mensaje. Es decir que cada
+byte del mensaje de codifica en 4 bytes de la imagen (2 bits en cada imagen).
+
+	Es decir que la imagen está alterada, pero está los cambios son tan leves
+que no son visibles al ojo humano. Es mucho mayor la variación de colores que
+se produce por ver la imagen en diferentes monitores que la que se produce
+por cambiar estos bits.
+
+	Los pares de bits, además tienen una breve codificación individual. Que
+se determina mirando los bits 2 y 3 de cada Byte. Es decir que uno sabe
+como interpretar los dos bits menos significativos mirando los siguientes
+2 bits.
+
+
+\subsection{Implementaciones}
+
 
 	Para decode se usaron 3 implementaciones: Una escrita en lenguaje C.
 Una escrita en lenguaje ensamblador y otra escrita en lenguaje ensamblador
@@ -34,13 +56,81 @@ tomar sencillamente como un gran vector.
 
 	El proceso, entonces, es sencillo:
 
-\begin{itemize}
+\begin{enumerate}
 
 	\item Se traen datos de la matriz fuente a un registro xmm. Una vez que
-	están en registro estos datos se copian a otro xmm1.
+	están en registro estos datos se copian a otro xmm
 
 	\item En una de las copias se conservan los bits 0 y 1. En otra los bits 0 y 3.
 
-	\
+	\item A todos los bits se los hace pasar por el proceso de sumar, restar
+	y negar. Sin embargo lo que se hace es usar una máscara para poner diferentes operandos
+	en cada uno. Por ejemplo cuando se realiza la suma sólo aquellos valores
+	a los que corresponde sumar tienen como segundo operando un uno, el resto tiene
+	un cero. Para que esto quede así se repiten los siguientes pasos para cada
+	posicle operación:
 
-\end{itemize}
+	\begin{enumerate}
+
+		\item Se compara el registro que tiene los bits 2 y 3 con una
+		máscara que contiene la referencia a la operación a realizar repetida
+		en cada byte. Por ejemplo la máscara de negar tiene 0x0C en todos sus bytes.
+
+		\item Cada vez que se compara con una máscara luego se realiza una conjunción
+		con otra máscara que tiene el segundo operando de la operación a relizar.
+		Por ejemplo si lo que hay que hacer es la dato sumarle uno entonces
+		Se usa una máscara de unos. En el resto de las posiciones queda cero.
+
+		\item Por último se realiza la operación entre los datos (es decir los bits
+		menos significativos de los bytes traídos de la imagen) y la máscara recién
+		creada.
+
+	\end{enumerate}
+
+	\item Una vez realizado 4 cuartetos de pares de bits alineados. Para que ocupen las
+	posiciones adecuadas, entonces, lo qeu se hace es realizar 4 copias, shiftear de
+	manera empaquetada , 0 , 2 , 4 y 6 lugares respectivamente y por último sumar todo.
+	
+	\item Ahora se tienen 4 bytes armados pero desordenados. Es necesario tenerlos todos
+	en la parte baja del registro para poder grabar a memoria. Esto se hace mediante un shuffle
+	de bytes.
+
+	\item Al final del ciclo existe un caso complicado. El tamaño del string de salida
+	no tiene por qué ser múltiplo de 4 (hasta ahora se estuvieron insertando de a 4
+	bytes a la vez). Para resolver esto se implementó una lógica especial
+	intentando que reste la menor cantidad de performance posible. Sólo se entra al código
+	que describe esta lógica en la anteúltima y en la última iteración.
+
+\end{enumerate}
+
+
+\subsection{Optimizaciones}
+
+	Se intentó utilizar el entubado de código ($software pipelining$) de diversas maneras.
+En un principio se dividió el proceso en 4 etapas: Acceso a memoria por un lado
+y por otro los 3 entradas del switch. Sin embargo esto no produjo mejoras en la performance,
+por el contrario disminuyó. Por lo tanto se bajó un poco el nivel de ambición y se realizaron
+sólo 2 etapas. Por un lado el acceso a memoria y por el otro lado el proceso de los datos. La idea
+era lograr que el proceso siga mientras se realiza el acceso a memoria en lugar de tener que esperar.
+El proceso fue el siguiente:
+
+	Antes de entrar al ciclo se traen los datos necesarios para hacer la priemra iteración.
+Una vez adentro del ciclo se traen los datos necesarios para la segunda iteración, pero
+se trabaja con los datos que ya se trajeron antes. Luego al finalizar el ciclo.
+Se mueven los datos traídos al principio del ciclo al registro en el cuál se trabaja.
+
+	El resultado de esto es que las operaciones no tienen dependencias a nivel de datos con
+la lectura de memoria, por lo tanto el procesador no tienen que esperar a que se termine el ciclo
+de lectura para poder empezar a trabajar con los datos.
+
+	A nivel de código la optimización es súper sencilla. Mucho mucho más que la enterior.
+Bastó con agregar unas pocas líneas de código en el lugar adecuado para aumentar en un 15\% la performance
+con respecto al código original. Un par de pruebas nos mostraron que el lugar óptimo para hacer el último
+movimiento es lo mas cerca del final del ciclo posible.
+
+\subsection{Rendimiento}
+
+
+---Insertar gráfico---
+
+	

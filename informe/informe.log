@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.9.9)  24 SEP 2013 13:27
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.9.9)  24 SEP 2013 16:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1212,12 +1212,8 @@ used on input line 8.
 (pdftex.def)             Requested size: 205.56435pt x 154.17326pt.
  [4 <./secciones/filtro_color/imagenes/matecocido.jpg> <./secciones/filtro_colo
 r/imagenes/matecocido-fcolor.jpg>]
-
-LaTeX Warning: Reference `fig:pseudocodigo-filtro-color' on page 5 undefined on
- input line 43.
-
 LaTeX Font Info:    Try loading font information for OML+cmr on input line 64.
-(/usr/share/texlive/texmf-dist/tex/latex/base/omlcmr.fd
+ (/usr/share/texlive/texmf-dist/tex/latex/base/omlcmr.fd
 File: omlcmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <10> not available
@@ -1232,10 +1228,6 @@ LaTeX Warning: Reference `' on page 5 undefined on input line 83.
 
 
 LaTeX Warning: Reference `' on page 5 undefined on input line 83.
-
-
-LaTeX Warning: Reference `fig:codigo-objeto-filtro-color' on page 5 undefined o
-n input line 87.
 
 Package mdframed Info: mdframed inside float 
  mdframed uses option nobreak mdframed on input line 106.
@@ -1263,23 +1255,20 @@ used on input line 18.
 (pdftex.def)             Requested size: 160.59715pt x 120.44786pt.
 ) [7 <./secciones/filtro_miniature/imagenes/neo.jpg> <./secciones/filtro_miniat
 ure/imagenes/neo-miniature.jpg>] (./secciones/decodificacion/decodificacion.tex
-) [8]
-(./secciones/conclusiones/conclusiones.tex) [9] (./informe.aux
+ [8]) [9]
+(./secciones/conclusiones/conclusiones.tex) [10] (./informe.aux
 LaTeX Info: Redefining \. on input line 7.
 LaTeX Info: Redefining \% on input line 7.
 )
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
  ) 
 Here is how much of TeX's memory you used:
- 21103 strings out of 495059
- 391044 string characters out of 3182031
- 498782 words of memory out of 3000000
- 23822 multiletter control sequences out of 15000+200000
+ 21102 strings out of 495059
+ 391024 string characters out of 3182031
+ 498836 words of memory out of 3000000
+ 23821 multiletter control sequences out of 15000+200000
  10275 words of font info for 37 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
  56i,7n,60p,831b,1462s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1296,10 +1285,10 @@ amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 .pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><
 /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/sh
 are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on informe.pdf (9 pages, 398981 bytes).
+Output written on informe.pdf (10 pages, 406458 bytes).
 PDF statistics:
- 97 PDF objects out of 1000 (max. 8388607)
- 67 compressed objects within 1 object stream
+ 100 PDF objects out of 1000 (max. 8388607)
+ 69 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  33 words of extra memory for PDF output out of 10000 (max. 10000000)
 

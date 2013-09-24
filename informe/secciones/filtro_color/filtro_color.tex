@@ -1,4 +1,22 @@
+\subsection{Descripción del filtro}
 
+El filtro de color es una transformación sobre imágenes a color que tiene el efecto de decolorizar o pasar a escala de grises todos los píxeles de la entrada cuyo color no esté dentro de un rango de colores especificado. En la figura \ref{filtro-color-ejemplo} se observa un ejemplo de funcionamiento típico.
+
+% figura con un antes/despues de aplicar filtro color sobre alguna imagen
+
+La forma en la cual se especifica el rango de colores que deberá permanecer inmutado es mediante la elección de un color principal, cuya codificación RGB se denota con (\param{rc}, \param{gc}, \param{bc}), y un parámetro umbral \param{threshold}. Una vez determinados estos valores, un píxel de la imagen fuente será actualizado por el filtro únicamente si cumple:
+
+$$ \vectornorm{(r, g, b) - (rc, gc, bc)} > threshold \label{condicion}$$
+
+donde (\param{r}, \param{g}, \param{b}) es la codificación en RGB del píxel. En particular, de cumplirse esta condición, los tres canales se actualizan de la siguiente forma:
+
+$$ r' = b' = g' = \frac{r + g + b}{3} $$
+
+De esta última expresión se desprende que el color de los píxeles alterados pasa a estar en la escala de grises, ya que los tres canales toman igual valor. Como una observación adicional, queda claro mediante esta especificación que el filtro actúa de forma localizada en sobre cada píxel; su suceptibilidad a ser modificado y su nuevo valor dependen únicamente de su propio valor, y no del de sus vecinos.
+
+\subsection{Implementación en lenguaje C}
+
+La implementación en C del filtro se realizó de la forma más sencilla e intuitiva posible; mediante un ciclo que visita una vez cada píxel de la imagen, de izquierda a derecha y de arriba a abajo, evaluando la condición \ref{condicion}
 
 
 % Describir ocmo funciona el filtro.	

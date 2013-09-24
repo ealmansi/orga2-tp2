@@ -60,9 +60,6 @@ void miniature_c(
                 float coeff_top_plane, float coeff_bottom_plane,
                 int iters) {
 	
-	unsigned long int __antes, __despues;
-	__antes = get_timestamp();
-
     int top_plane = coeff_top_plane * height,
         bottom_plane = coeff_bottom_plane * height;
 
@@ -88,7 +85,4 @@ void miniature_c(
 
         memcpy(src, dst, 3 * width * height);
     }
-
-	__despues = get_timestamp();
-	printf("%lu,",__despues-__antes);
 }

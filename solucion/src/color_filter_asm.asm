@@ -24,11 +24,6 @@ masc_desempaquetar_r:	DB 0x02,0x80,0x80,0x80,0x05,0x80,0x80,0x80,0x08,0x80,0x80,
 masc_desempaquetar_g:	DB 0x01,0x80,0x80,0x80,0x04,0x80,0x80,0x80,0x07,0x80,0x80,0x80,0x0A,0x80,0x80,0x80
 masc_desempaquetar_b:	DB 0x00,0x80,0x80,0x80,0x03,0x80,0x80,0x80,0x06,0x80,0x80,0x80,0x09,0x80,0x80,0x80
 
-define_format
-
-__antes: DQ 0
-__despues: DQ 0
-
 ;	;	;	;	;	Macros ;	;	;	;	;	;
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -193,6 +188,58 @@ __despues: DQ 0
 
 %endmacro
 
+%macro caso_borde 0
+
+	movdqa 		XMM13, XMM0 								; los primero cuatro bytes
+	psrldq 		XMM0, 4 									; no los tengo que tocar
+															; los salteo, y sigo igual que antes
+
+	pxor 		XMM1, XMM1 									; prom <- [0,0,0,0]
+	pxor 		XMM2, XMM2 									; dist <- [0,0,0,0]
+
+	movdqa		XMM3, XMM0 									; desempaquetar rojos
+	pshufb 		XMM3, XMM4 									; rojos <- [r1 r2 r3 r4]
+	paddd 		XMM1, XMM3 									; prom += rojos
+	psubd 		XMM3, XMM7 									; rojos -= [rc, rc, rc, rc]
+	pmulld 		XMM3, XMM3 									; rojos *= rojos
+	paddd 		XMM2, XMM3 									; dist += rojos
+
+	movdqa		XMM3, XMM0 									; desempaquetar verdes
+	pshufb 		XMM3, XMM5 									; verdes <- [g1 g2 g3 g4]
+	paddd 		XMM1, XMM3 									; prom += verdes
+	psubd 		XMM3, XMM8 									; verdes -= [gc, gc, gc, gc]
+	pmulld 		XMM3, XMM3 									; verdes *= verdes
+	paddd 		XMM2, XMM3 									; dist += verdes
+
+	movdqa		XMM3, XMM0 									; desempaquetar azules
+	pshufb 		XMM3, XMM6 									; azules <- [b1 b2 b3 b4]
+	paddd 		XMM1, XMM3 									; prom += azules
+	psubd 		XMM3, XMM9 									; azules -= [bc, bc, bc, bc]
+	pmulld 		XMM3, XMM3 									; azules *= azules
+	paddd 		XMM2, XMM3 									; dist += azules
+
+	cvtdq2ps 	XMM1, XMM1									; prom <- int2float(prom)
+	mulps 		XMM1, XMM10 								; prom /= [3 3 3 3]
+	cvtps2dq 	XMM1, XMM1 									; prom <- float2int(prom)
+	pshufb 		XMM1, XMM11 								; asigno el promedio a cada uno
+															; de los bytes del pixel
+
+	pcmpgtd 	XMM2, XMM12 								; dist <- dist > threshold ?
+	pshufb 		XMM2, XMM11 								; asigno el flag a cada uno
+															; de los bytes del pixel
+
+	movdqa 		XMM0, XMM13 								; restauro la copia de los datos
+	pslldq 		XMM2, 4 									; shifteo prom y los flags
+	pslldq 		XMM1, 4 									; para que queden alineados
+
+ 	movdqa 		XMM3, XMM2 									; temp <- datos AND ~flags
+ 	pandn 		XMM3, XMM0 									; 
+ 	movdqa 		XMM0, XMM3 									; datos <- temp
+	pand 		XMM1, XMM2 									; prom <- prom AND flags
+ 	paddb 		XMM0, XMM1 									; datos += prom
+
+%endmacro
+
 ;	;	;	;	;	Código	;	;	;	;	;	;
 
 section .text
@@ -208,8 +255,6 @@ section .text
 
 color_filter_asm:
 	push_regs
-
-	get_timestamp [__antes]
 
 	levantar_parametros					; R8 	-	src		; R12B 	-	bc
 										; R9 	-	dst		; R13D 	-	threshold
@@ -228,6 +273,7 @@ color_filter_asm:
 
 	imul 		R14, R15 				; R14 <- 3 * width * height
 	imul 		R14, 3
+	sub 		R14, 12 				; la última iteracion se hace aparte
 
 .for:
 	mov 		RCX, 0					; RCX <- 0, indice del ciclo
@@ -247,14 +293,12 @@ color_filter_asm:
 	jmp 		.cond
 .endfor:
 
+	sub 		RCX, 4 					; retrocedo un poco y manejo el caso borde
+	leer_datos XMM0
 
-	get_timestamp [__despues]
+	caso_borde
 
-	MOV rax, [__despues]
-	SUB rax, [__antes]
-
-	print_time rax
-
+	escribir_datos XMM0
 
 	pop_regs
     ret

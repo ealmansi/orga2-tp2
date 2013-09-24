@@ -132,11 +132,11 @@ class Grapher:
 		self.measuments.sort(key=lambda x: np.mean(x.values))
 
 		labels = tuple([m.language.upper() + ": " + m.description for m in self.measuments])
-		means = tuple([int(np.mean(m.values)/1000000.0) for m in self.measuments])
+		means = tuple([int(np.mean(m.values)) for m in self.measuments])
 
 		plt.figure(figsize=(6*3.13,4*3.13))
-		plt.title(unicode('Tiempo de ejecución segun implementación', 'utf-8'))
-		plt.xlabel('segs')
+		plt.title(unicode('Cantidad de clocks consumidos segun implementación', 'utf-8'))
+		plt.xlabel('clocks')
 		plt_ypos = np.arange(len(labels))
 		plt.yticks(plt_ypos, labels)
 		plt.barh(plt_ypos, means, align='center', alpha=0.4, color="g")
@@ -166,7 +166,7 @@ class Grapher:
 		self.measuments.sort(key=lambda x: np.mean(x.values))
 
 		labels = tuple([m.language.upper() + ": " + m.description for m in self.measuments])
-		sizes = tuple([int(np.mean(m.values)/1000000.0) for m in self.measuments])
+		sizes = tuple([int(np.mean(m.values)) for m in self.measuments])
 		colors = [self.getColor(i) for i in range(len(self.measuments))]
 		explode = tuple([0] * (len(self.measuments) - 1) + [0.1])
 

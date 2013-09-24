@@ -77,14 +77,47 @@ Para simplificar la implementación, se asumió que la imagen tiene una cantidad
 
 Sin embargo, incluso para una cantidad de píxeles múltiplo de 4, es importante contemplar el \emph{caso borde} que sucede en la última iteración, cuando faltan procesar los últimos cuatro píxeles de la imagen. De realizarse una lectura desde el comienzo del píxel, se leería junto a los píxeles restantes un total de 4 bytes de memoria posteriores al fin de la imagen. Por esta razon, la última iteración se dejó fuera del ciclo principal, realizando un retroceso de 4 bytes en el puntero de lectura, y ejecutando una versión levemente modificada del cuerpo de ciclo de forma tal que procese los píxeles en los últimos 12 bytes del registro, en vez de los primeros.
 
+\subsection{Comparación de performance}
+\label{sub:comparaci_n_de_performance}
+
+Se realizaron mediciones en igualdad de condiciones para ambas implementaciones, según se explicó en la sección de consideraciones generales. En la figura \ref{fig:filtro-color-C-vs-ASM} se puede comparar la cantidad de clocks consumidos por ambas implementaciones para una misma entrada.
+
+\begin{figure}[H]
+\begin{center}
+  \includegraphics[scale=0.35]{secciones/filtro_color/graficos/C_ASM_perf.png}
+  \includegraphics[scale=0.35]{secciones/filtro_color/graficos/C_ASM_loc.png}
+\end{center}
+\caption{Comparación de performance (superior) y cantidad de líneas de código (inferior) entre versión C básica y versión ASM básica.}
+\label{fig:filtro-color-C-vs-ASM}
+\end{figure}
+
+El resultado muestra un incremento en velocidad de ejecución de aproximadamente 9 veces. Es importante destacar que esta mejora cercana a un orden de magintud no deviene de un cambio algorítmico, sino simplemente de un uso más provechoso de los recursos del procesador; particularmente, las operaciones SIMD. El costo de esta optimización recae en mayor tiempo de desarrollo, lo cual se puede retratar utilizando como indicador la cantidad de líneas de código mediante la figura \ref{fig:filtro-color-C-vs-ASM} (parte inferior).
+
+
 \subsection{Optimizaciones en código C}
 \label{sub:filtro-color-optimizaciones-c}
 
-El código de la implementación en lenguaje C se compiló con los distintos flags de optimización descriptos en la sección \ref{}. Los resultados en cuestión de performance se pueden ver en la figura \ref{}, la cual muestra una comparación entre la cantidad de clocks consumidos durante la ejecución de cada versión.
+El código de la implementación en lenguaje C se compiló con distintos flags de optimización provistos por GCC. Estos son según la documentación de GCC \footnote{Ver http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html.}:
 
-TODO:: Discutir un poco la figura.
+\begin{itemize}
+\item \textbf{-O/-O1}: Optimizar. Intentar reducir el tamaño de código y tiempo de ejecución sin realizar optimizaciones que requieran mucho tiempo de compilación.
+\item \textbf{-O2}: Optimizar aún más. Se incrementa el tiempo de compilación y la performance del código generado. Esto incluye, por ejemplo, la eliminación del checkeo por punteros inválidos (delete-null-pointer-checks).
+\item \textbf{-O3}: Optimizar incluso más. Incluye, por ejemplo, inlining automático de funciones y vectorización de loops (ftree-loop-vectorize).
+\end{itemize}
 
-Adicionalmente, se analizaron las diferencias entre el código generado con compilación estándar y el código generado con optimización de tipo O1. La diferencia entre ambos evidencia inmediatamente una característica subóptima del código estándar; \emph{todas} las variables locales se alojan en la pila, incluso habiendo disponibilidad de registros. Los registros se utilizan únicamente como variables temporales, y al final de cada extracto de código se guarda el resultado en un espacio de la pila. El código generado con O1, en cambio, ahorra gran cantidad de esos accesos a memoria. Este comportamiento se ejemplifica con el siguiente extracto (figura \ref{fig:codigo-objeto-filtro-color}).
+Los resultados en cuestión de performance se pueden ver en la figura \ref{fig:filtro-color-C-vs-Os}, la cual muestra una comparación entre la cantidad de clocks consumidos durante la ejecución de cada versión.
+
+\begin{figure}[H]
+\begin{center}
+  \includegraphics[scale=0.35]{secciones/filtro_color/graficos/C_normal_O1_O2_O3.png}
+\end{center}
+\caption{Comparación de performance entre la versión C compilada con distintos flags de optimización.}
+\label{fig:filtro-color-C-vs-Os}
+\end{figure}
+
+El incremento en performance al activar las optimizaciones del compilador es notable, reduciendo a aproximadamente un cuarto el tiempo de ejecución en todos los casos. Sin embargo, la relación de performance entre los resultados con distintos flags no fue prevista; el flag \textbf{O3} generó código menos performante que las otras optimizaciones, y el flag \textbf{O2} fue muy levemente superior a la optimización de primer nivel. Esto permite aducir que los distintos tipos de optimización automática varían su utilidad según el código que se procesa, por lo cual siempre que se busque optimizar no es una buena estrategia optar por el mayor nivel de optimización \emph{sin realizar una comparación sobre el código particular que se desea optimizar.}
+
+Adicionalmente, se analizaron las diferencias entre el código generado con compilación estándar y el código generado con optimización de tipo O1. La diferencia entre los códigos generados evidencia inmediatamente una característica subóptima del código estándar; \emph{todas} las variables locales se alojan en la pila, incluso habiendo disponibilidad de registros. Los registros se utilizan únicamente como variables temporales, y al final de cada extracto de código se guarda el resultado en un espacio de la pila. El código generado con O1, en cambio, ahorra gran cantidad de esos accesos a memoria. Este comportamiento se ejemplifica con el siguiente extracto (figura \ref{fig:codigo-objeto-filtro-color}).
 
 % esto está atado con alambre...
 \begin{figure}[h]
@@ -113,7 +146,28 @@ Sin embargo, la lógica de flujo del código generado es equivalente. Es decir, 
 \subsection{Optimización en código ASM - Desenrollado de ciclos}
 \label{sub:filtro-color-optimizaciones-asm}
 
-Sobre la implementación en lenguaje ensamblador ya descripta, se realizaron dos sucesivas modificaciones para estudiar la técnica conocida como desenrollado de ciclos.
+Sobre la implementación en lenguaje ensamblador ya descripta, se realizaron dos sucesivas modificaciones para estudiar la técnica conocida como desenrollado de ciclos en su versión más elemental. Esta técnica consiste en minimizar la lógica de flujo, comparaciones y saltos condicionales para ciclos que realizan una gran cantidad de iteraciones. Un ejemplo esquemático se puede ver en la figura \ref{fig:filtro-color-loop-unrolling}.
+
+\begin{figure}[h]
+	\begin{mdframed}
+	\begin{center}
+		\begin{lstlisting}
+		for i = 1 .. n		| for i = 1 .. n/k
+			F(i)		| 	F(i)
+		endfor			| 	F(i + 1)
+					| 	...
+					| 	F(i + k - 1)
+					| endfor
+		\end{lstlisting}
+	\end{center}
+	\end{mdframed}
+	\caption{Pseudo-código ejemplo de la técnica loop unrolling.}
+	\label{fig:filtro-color-loop-unrolling}
+\end{figure}
+
+Siguiendo la notación de la figura, en el caso particular del filtro color, se tomó k = 2, y k = 4, y se realizaron mediciones de performance.
+
+TODO:: grafico de performance loop unrolling
 
 % Describir ocmo funciona el filtro.	
 % Como se implementó en c

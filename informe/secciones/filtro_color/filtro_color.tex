@@ -6,7 +6,10 @@ El filtro de color es una transformación sobre imágenes a color que tiene el e
 
 La forma en la cual se especifica el rango de colores que deberá permanecer inmutado es mediante la elección de un color principal, cuya codificación RGB se denota con (\param{rc}, \param{gc}, \param{bc}), y un parámetro umbral \param{threshold}. Una vez determinados estos valores, un píxel de la imagen fuente será actualizado por el filtro únicamente si cumple:
 
-$$ \vectornorm{(r, g, b) - (rc, gc, bc)} > threshold \label{condicion}$$
+
+\begin{equation} \label{filtro-color-condicion}
+\vectornorm{(r, g, b) - (rc, gc, bc)} > threshold 
+\end{equation}
 
 donde (\param{r}, \param{g}, \param{b}) es la codificación en RGB del píxel. En particular, de cumplirse esta condición, los tres canales se actualizan de la siguiente forma:
 
@@ -14,9 +17,23 @@ $$ r' = b' = g' = \frac{r + g + b}{3} $$
 
 De esta última expresión se desprende que el color de los píxeles alterados pasa a estar en la escala de grises, ya que los tres canales toman igual valor. Como una observación adicional, queda claro mediante esta especificación que el filtro actúa de forma localizada en sobre cada píxel; su suceptibilidad a ser modificado y su nuevo valor dependen únicamente de su propio valor, y no del de sus vecinos.
 
-\subsection{Implementación en lenguaje C}
+\subsection{Implementación en lenguaje C y lenguaje ensamblador}
 
-La implementación en C del filtro se realizó de la forma más sencilla e intuitiva posible; mediante un ciclo que visita una vez cada píxel de la imagen, de izquierda a derecha y de arriba a abajo, evaluando la condición \ref{condicion}
+La implementación en C del filtro se realizó de la forma más sencilla e intuitiva posible; mediante un ciclo que visita una vez a cada píxel de la imagen, de izquierda a derecha y de arriba a abajo, evaluando la condición y modificando su valor de ser necesario. Como única optimización elemental, se modificó la condición (\ref{filtro-color-condicion}) por la siguiente condición equivalente:
+
+$$\vectornorm{(r, g, b) - (rc, gc, bc)}^2 = (r - rc)^2 + (g - gc)^2 + (b - bc)^2 > threshold^2$$
+
+La modificación evita el cálculo de una raíz cuadrada, sin incurrir en el riesgo de exceder el rango del tipo de datos utilizado ya que el máximo \param{threshold} que no hace a la condición trivialmente falsa es $\sqrt{195075} \approx 441$ (el valor máximo que puede tomar la expresión de la izquierda es $255^2 + 255^2 + 255^2 = 195075$), por lo que cualquier valor mayor se puede reducir a $442$.
+
+La implementación en lenguaje ensamblador mantiene esencialmente el mismo procedimiento, con la salvedad de que fue adaptado para procesar cuatro píxeles en simultáneo mediante el uso de operaciones SIMD. Se recorre la matriz en el mismo órden descripto previamente, realizando lecturas de 16 bytes por iteración (equivalente a 5 píxeles y un byte sobrante).
+
+La necesidad de limitar el procesamiento simultáneo a cuatro píxeles se desprende del hecho de que, como se dijo antes, la expresión que mide la distancia entre un píxel y el color principal puede tomar valores en el rango $0, ... \,195075$. Este último valor no cabe en un entero de 16 bits, precisándose un \tipo{double word} para almacenar ese resultado temporal; esto implica un total de hasta cuatro valores de distancia en un registro XMM. En cuestiones de espacio, hubiese sido equivalente utilizar \tipo{floats} ya que también caben hasta cuatro por registro de 128 bits.
+
+De esta forma, el procedimiento realizado en cada iteración consiste en calcular el valor de la distancia al color principal y el promedio de los tres canales para cada uno de los cuatro píxeles en simultáneo, y luego actualizar sus valores por la siguiente expresión informal:
+
+$$\text{valor\_original} \land \lnot \text{cumple\_condicion} + \text{promedio} \land \text{cumple\_condicion}$$
+
+Esto permite expresar el equivalente a una expresión del tipo \textbf{if}-\textbf{then}-\textbf{else}, en el lenguaje del procesamiento simultáneo.
 
 
 % Describir ocmo funciona el filtro.	

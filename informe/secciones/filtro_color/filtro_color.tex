@@ -84,8 +84,7 @@ Se realizaron mediciones en igualdad de condiciones para ambas implementaciones,
 
 \begin{figure}[H]
 \begin{center}
-  \includegraphics[scale=0.35]{secciones/filtro_color/graficos/C_ASM_perf.png}
-  \includegraphics[scale=0.35]{secciones/filtro_color/graficos/C_ASM_loc.png}
+  \includegraphics[scale=0.5]{secciones/filtro_color/graficos/fcolor.png}
 \end{center}
 \caption{Comparación de performance (superior) y cantidad de líneas de código (inferior) entre versión C básica y versión ASM básica.}
 \label{fig:filtro-color-C-vs-ASM}
@@ -142,6 +141,143 @@ Adicionalmente, se analizaron las diferencias entre el código generado con comp
 \end{figure}
 
 Sin embargo, la lógica de flujo del código generado es equivalente. Es decir, las operaciones realizadas y el orden en que se realizan son iguales; se mantiene la forma de recorrer la imagen y el procesamiento píxel por píxel.
+
+%Análisis de saltos condicionales
+
+\subsection{Análisis de saltos condicionales}
+
+	Los saltos condicionales son algo absolutamente necesario en la programación.
+Si bien existen técnicas para minimizarlos todo diclo $for$ o $while$ consta
+básicamente de un salto condicional que se repite una gran cantidad de veces.
+
+	Sin embargo los saltos condicionales que estamos analizando ahora no son
+esos sino aquellos que se realizan en medio de la iteración para decidir
+si la operación que se va a realizar va a ser una u otra. Es decir que lo
+que estamos analizando es como impacta el uso de $if$ en la performance
+del filtro.
+
+	
+	El primer experimento realizado, entonces, fue sencillamente comentar
+el código perteneciente al if. Este análisis en realidad no es justo
+ni significativo. Al hacer esto se está comparando un código
+que realiza una operación contra otro que no la realiza.
+No se obtiene la diferencia entre realizar y no realizar saltos
+condicionales sino que se obtiene la diferencia entre realizar
+o no realizar una operación completa. Por eso este experimento
+se modificó de la siguiente forma:
+
+	A esta altura es importante mencionar que el procesador tiene una enorme
+cantidad de optimizaciones para que los saltos condicionales
+tengan la máxima performance posible, por eso para realizar este
+análisis fue importante tener en cuenta esas optimizaciones y buscar
+casos donde le resulte dificil saber que rama del if tiene que tomar.
+
+	Pensando en esto se armaron 2 videos patrón. Ambos consisten
+en una imagen repetida en todos los frames del video, lo que
+cambia es la imagen.
+	En el \textit{patr0n negativo} lo que se hizo fue crear una imagen
+que aturdiera lo máximo posible al sistema de predicción de saltos.
+La imagen es basicamente una matriz de pixeles que tiene
+intercalados blancos con negros de la isguiente manera.
+
+\begin{center}
+$
+ \begin{pmatrix}
+   000000 & FFFFFF & 000000 & FFFFFF & \cdots & 000000 & FFFFFF \\
+   FFFFFF & 000000 & FFFFFF & 000000 & \cdots & FFFFFF & 000000 \\
+   000000 & FFFFFF & 000000 & FFFFFF & \cdots & 000000 & FFFFFF \\
+   FFFFFF & 000000 & FFFFFF & 000000 & \cdots & FFFFFF & 000000 \\
+   000000 & FFFFFF & 000000 & FFFFFF & \cdots & 000000 & FFFFFF \\
+   \vdots & \vdots & \vdots  & \vdots  & \ddots & \vdots  \\
+   FFFFFF & 000000 & FFFFFF & 000000 & \cdots & FFFFFF & 000000 \\
+   000000 & FFFFFF & 000000 & FFFFFF & \cdots & 000000 & FFFFFF \\
+\end{pmatrix}
+$
+\end{center}
+
+	La idea con este patrón es que obligatoriamente en una iteración
+entra al una rama del if y en la siguiente entra a la otra (si se pasan
+los parámetros adecuados).
+
+	El siguiente patrón \textit{patrón positivo} consiste sencillamente en una
+imagen blanca repetida durante todo el video. Ambos videos tienen
+la misma duración.
+
+	El experimento consiste en comparar cuanto tarda el filtro
+en realizarse de manera absoluta (sobre TODA la imagen) sin un
+condicional y con un condicional. La idea es comparar peso que 
+tiene sólo el salto condicional, pero sólo el salto condicional. Para esto
+lo que se hizo fue modificar el código C del filtro añadiendo un 
+$else$ al $if$ exactamente igual al $then$. Es decir que la comparación
+se realiza pero el resultado es el mismo. La operación siempre se hace.
+
+	Luego se sacó el $if$ pero se dejó la operación. Es decir que acá
+también se reliza si o si la operación, sin ninguna clase de condicional
+dando vueltas.
+
+
+\begin{figure}[h]
+	\begin{mdframed}
+	\begin{center}
+		\begin{lstlisting}
+		if (Cond) then:    | 
+			OPERACION  | 
+		else:              | OPERACION
+			OPERACION  |
+		endif              |
+		\end{lstlisting}
+	\end{center}
+	\end{mdframed}
+	\caption{Experimento 1}
+	\label{fig:Experimento Saltos}
+\end{figure}
+
+	El siguiente gráfico muestra los resultados obtenidos en una ronda de test.
+Algunas datos usados para sacar conclusiones no quedan plasmados en este gráfico sin
+embargo se explican luego.
+
+\begin{figure}[H]
+\begin{center}
+  \includegraphics[scale=0.5]{secciones/filtro_color/graficos/performanceExpSaltos.png}
+\end{center}
+\caption{Resultados de una ronda de test del experimento de saltos}
+\label{fig: Tiempos Experimento Saltos}
+\end{figure}
+
+	Si bien todas las baterías de test dieron resultados similares el análisis de todos
+los resultados logró afirmar aún mas las conclusiones. A continuación
+se detallan los comportamientos observados en los test y las concluiones obtenidas:
+
+\begin{itemize}
+
+	\item Como era de esperarse a la implementación sin condicionales no
+le afecta la entrada. Es decir, el resultado obtenido para el patrón
+positivo y para el patrón negativo fue el mismo. En algunas rondas de
+test se realizó mas rápido uno y en otras otro. La diferencia de tiempo
+es por cuestiones accidentales a la implementación en si.
+	\item Como también era de esperar versión con $if$ resulta levemente
+mas lenta. Los reultados oscilaron entre un 4\% y un 6\%. En principio
+esto suena extraño, pues sencillamente se están ejecutando 2 o 3 instrucciones
+extra para realizar el salto (recordemos que el condicional tiene el mismo código
+en las 2 ramas del $if$). Es decir, se podría esperar que la diferencia sea menor.
+Sin embargo lo qeu juega acá es el pipeline. Cuando hay condicionales
+existen posibilidades de que el pipeline se rompa, además se invierte tiempo
+en realizar las predicciones para no romper el pipeline. Esto explica esta diferencia.
+	\item Lo mas interesante, tal vez, es la diferencia de tiempo entre
+los dos patrones en la implementación con condicionales. Acá ambas ramas
+del if son iguales, sin enbargo nos encontramos con una diferencia de performance que oscila
+entre un 3\% y un 5\%. Esta diferencia si se vió de manera clara, en todas
+las rondas de test el resultado fue el mismo. Eso muestra de manera bastante
+que los saltos condicionales adquieren peso en la performance. Otra vez
+la explicación de esto es el el pipeline. El patrón positivo es ``Pipeline Amigable'',
+mientras que el patrón negitivo no lo es. Es decir el patrón negativo está pensado
+para que se desarme el pipeline la mayor cantidad de veces posible.
+
+
+\end{itemize}
+
+
+\newpage
 
 \subsection{Optimización en código ASM - Desenrollado de ciclos}
 \label{sub:filtro-color-optimizaciones-asm}

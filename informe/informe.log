@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.9.9)  24 SEP 2013 16:55
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.9.9)  15 OCT 2013 14:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1089,6 +1089,18 @@ Package: listings 2007/02/22 1.4 (Carsten Heinz)
  (./informe.aux
 LaTeX Info: Redefining \. on input line 7.
 LaTeX Info: Redefining \% on input line 7.
+
+LaTeX Warning: Label `fig:filtro-color-ejemplo' multiply defined.
+
+
+LaTeX Warning: Label `fig:filtro-color-ejemplo' multiply defined.
+
+
+LaTeX Warning: Label `sub:comparaci_n_de_performance' multiply defined.
+
+
+LaTeX Warning: Label `fig:filtro-color-ejemplo' multiply defined.
+
 )
 \openout1 = `informe.aux'.
 
@@ -1173,7 +1185,10 @@ e
 
 ABD: EveryShipout initializing macros
 \c@lstlisting=\count294
- (./informe.toc)
+ (./informe.toc
+LaTeX Info: Redefining \. on input line 1.
+LaTeX Info: Redefining \% on input line 1.
+)
 \tf@toc=\write4
 \openout4 = `informe.toc'.
 
@@ -1181,7 +1196,7 @@ ABD: EveryShipout initializing macros
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./secciones/introduccion/
 introduccion.tex
-<secciones/introduccion/imagenes/SISD.png, id=16, 456.70625pt x 245.91875pt>
+<secciones/introduccion/imagenes/SISD.png, id=17, 456.70625pt x 245.91875pt>
 File: secciones/introduccion/imagenes/SISD.png Graphic file (type png)
 
 <use secciones/introduccion/imagenes/SISD.png>
@@ -1189,7 +1204,7 @@ Package pdftex.def Info: secciones/introduccion/imagenes/SISD.png used on input
  line 21.
 (pdftex.def)             Requested size: 182.67926pt x 98.36575pt.
 
-<secciones/introduccion/imagenes/SIMD.png, id=17, 429.605pt x 237.88875pt>
+<secciones/introduccion/imagenes/SIMD.png, id=18, 429.605pt x 237.88875pt>
 File: secciones/introduccion/imagenes/SIMD.png Graphic file (type png)
 
 <use secciones/introduccion/imagenes/SIMD.png>
@@ -1206,13 +1221,17 @@ File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 38.
-) [3]
+
+<secciones/consideraciones/imagenes/cuartiles.png, id=22, 558.58687pt x 322.203
+75pt>
+File: secciones/consideraciones/imagenes/cuartiles.png Graphic file (type png)
+ <use secciones/consideraciones/imagenes/cuartiles.png>
+Package pdftex.def Info: secciones/consideraciones/imagenes/cuartiles.png used 
+on input line 74.
+(pdftex.def)             Requested size: 279.29276pt x 161.10147pt.
+) [3 <./secciones/consideraciones/imagenes/cuartiles.png>] [4]
 (./secciones/filtro_color/filtro_color.tex
-
-LaTeX Warning: Reference `fig:filtro-color-ejemplo' on page 4 undefined on inpu
-t line 3.
-
-<secciones/filtro_color/imagenes/matecocido.jpg, id=25, 513.92pt x 385.44pt>
+<secciones/filtro_color/imagenes/matecocido.jpg, id=30, 513.92pt x 385.44pt>
 File: secciones/filtro_color/imagenes/matecocido.jpg Graphic file (type jpg)
 
 <use secciones/filtro_color/imagenes/matecocido.jpg>
@@ -1220,7 +1239,7 @@ Package pdftex.def Info: secciones/filtro_color/imagenes/matecocido.jpg used on
  input line 7.
 (pdftex.def)             Requested size: 205.56435pt x 154.17326pt.
 
-<secciones/filtro_color/imagenes/matecocido-fcolor.jpg, id=26, 513.92pt x 385.4
+<secciones/filtro_color/imagenes/matecocido-fcolor.jpg, id=31, 513.92pt x 385.4
 4pt>
 File: secciones/filtro_color/imagenes/matecocido-fcolor.jpg Graphic file (type 
 jpg)
@@ -1228,19 +1247,10 @@ jpg)
 Package pdftex.def Info: secciones/filtro_color/imagenes/matecocido-fcolor.jpg 
 used on input line 8.
 (pdftex.def)             Requested size: 205.56435pt x 154.17326pt.
-
-
-LaTeX Warning: Reference `filtro-color-condicion' on page 4 undefined on input 
-line 29.
-
-[4 <./secciones/filtro_color/imagenes/matecocido.jpg> <./secciones/filtro_color
-/imagenes/matecocido-fcolor.jpg>]
-
-LaTeX Warning: Reference `fig:pseudocodigo-filtro-color' on page 5 undefined on
- input line 43.
-
+ [5 <./secciones/filtro_color/imagenes/matecocido.jpg> <./secciones/filtro_colo
+r/imagenes/matecocido-fcolor.jpg>]
 LaTeX Font Info:    Try loading font information for OML+cmr on input line 64.
-(/usr/share/texlive/texmf-dist/tex/latex/base/omlcmr.fd
+ (/usr/share/texlive/texmf-dist/tex/latex/base/omlcmr.fd
 File: omlcmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <10> not available
@@ -1250,74 +1260,59 @@ Package mdframed Info: mdframed inside float
 Package mdframed Info: mdframed inside a box 
  mdframed uses option nobreak mdframed on input line 71.
 
+<secciones/filtro_color/graficos/fcolor.png, id=39, 1084.05pt x 578.16pt>
+File: secciones/filtro_color/graficos/fcolor.png Graphic file (type png)
 
-LaTeX Warning: Reference `fig:filtro-color-C-vs-ASM' on page 5 undefined on inp
-ut line 83.
+<use secciones/filtro_color/graficos/fcolor.png>
+Package pdftex.def Info: secciones/filtro_color/graficos/fcolor.png used on inp
+ut line 87.
+(pdftex.def)             Requested size: 542.02368pt x 289.07928pt.
 
+Overfull \hbox (29.87405pt too wide) in paragraph at lines 87--88
+ [] 
+ []
 
-<secciones/filtro_color/graficos/C_ASM_perf.png, id=35, 1357.2306pt x 904.8204p
-t>
-File: secciones/filtro_color/graficos/C_ASM_perf.png Graphic file (type png)
- <use secciones/filtro_color/graficos/C_ASM_perf.png>
-Package pdftex.def Info: secciones/filtro_color/graficos/C_ASM_perf.png used on
- input line 87.
-(pdftex.def)             Requested size: 475.03784pt x 316.6919pt.
-
-<secciones/filtro_color/graficos/C_ASM_loc.png, id=37, 1357.2306pt x 904.8204pt
->
-File: secciones/filtro_color/graficos/C_ASM_loc.png Graphic file (type png)
- <use secciones/filtro_color/graficos/C_ASM_loc.png>
-Package pdftex.def Info: secciones/filtro_color/graficos/C_ASM_loc.png used on 
-input line 88.
-(pdftex.def)             Requested size: 475.03784pt x 316.6919pt.
- [5]
-
-LaTeX Warning: Reference `fig:filtro-color-C-vs-ASM' on page 6 undefined on inp
-ut line 94.
-
-[6 <./secciones/filtro_color/graficos/C_ASM_perf.png> <./secciones/filtro_color
-/graficos/C_ASM_loc.png>]
-
-LaTeX Warning: Reference `fig:filtro-color-C-vs-Os' on page 7 undefined on inpu
-t line 108.
-
-
-<secciones/filtro_color/graficos/C_normal_O1_O2_O3.png, id=46, 1357.2306pt x 90
+[6]
+<secciones/filtro_color/graficos/C_normal_O1_O2_O3.png, id=44, 1357.2306pt x 90
 4.8204pt>
 File: secciones/filtro_color/graficos/C_normal_O1_O2_O3.png Graphic file (type 
 png)
  <use secciones/filtro_color/graficos/C_normal_O1_O2_O3.png>
 Package pdftex.def Info: secciones/filtro_color/graficos/C_normal_O1_O2_O3.png 
-used on input line 112.
+used on input line 111.
 (pdftex.def)             Requested size: 475.03784pt x 316.6919pt.
-
-
-LaTeX Warning: Reference `fig:codigo-objeto-filtro-color' on page 7 undefined o
-n input line 120.
-
+ [7 <./secciones/filtro_color/graficos/fcolor.png>]
 Package mdframed Info: mdframed inside float 
- mdframed uses option nobreak mdframed on input line 139.
+ mdframed uses option nobreak mdframed on input line 138.
 Package mdframed Info: mdframed inside a box 
- mdframed uses option nobreak mdframed on input line 139.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-LaTeX Warning: Reference `fig:filtro-color-loop-unrolling' on page 7 undefined 
-on input line 149.
-
-[7 <./secciones/filtro_color/graficos/C_normal_O1_O2_O3.png>]
+ mdframed uses option nobreak mdframed on input line 138.
+ [8 <./secciones/filtro_color/graficos/C_normal_O1_O2_O3.png>]
 Package mdframed Info: mdframed inside float 
- mdframed uses option nobreak mdframed on input line 163.
+ mdframed uses option nobreak mdframed on input line 230.
 Package mdframed Info: mdframed inside a box 
- mdframed uses option nobreak mdframed on input line 163.
-) [8]
+ mdframed uses option nobreak mdframed on input line 230.
+
+<secciones/filtro_color/graficos/performanceExpSaltos.png, id=55, 1084.05pt x 5
+78.16pt>
+File: secciones/filtro_color/graficos/performanceExpSaltos.png Graphic file (ty
+pe png)
+ <use secciones/filtro_color/graficos/performanceExpSaltos.png>
+Package pdftex.def Info: secciones/filtro_color/graficos/performanceExpSaltos.p
+ng used on input line 241.
+(pdftex.def)             Requested size: 542.02368pt x 289.07928pt.
+
+Overfull \hbox (29.87405pt too wide) in paragraph at lines 241--242
+ [] 
+ []
+
+[9] [10 <./secciones/filtro_color/graficos/performanceExpSaltos.png>]
+Package mdframed Info: mdframed inside float 
+ mdframed uses option nobreak mdframed on input line 299.
+Package mdframed Info: mdframed inside a box 
+ mdframed uses option nobreak mdframed on input line 299.
+) [11]
 (./secciones/filtro_miniature/filtro_miniature.tex
-
-LaTeX Warning: Reference `fig:filtro-miniature-ejemplo' on page 9 undefined on 
-input line 4.
-
-<secciones/filtro_miniature/imagenes/neo.jpg, id=56, 803.0pt x 602.25pt>
+<secciones/filtro_miniature/imagenes/neo.jpg, id=67, 803.0pt x 602.25pt>
 File: secciones/filtro_miniature/imagenes/neo.jpg Graphic file (type jpg)
 
 <use secciones/filtro_miniature/imagenes/neo.jpg>
@@ -1325,7 +1320,7 @@ Package pdftex.def Info: secciones/filtro_miniature/imagenes/neo.jpg used on in
 put line 17.
 (pdftex.def)             Requested size: 160.59715pt x 120.44786pt.
 
-<secciones/filtro_miniature/imagenes/neo-miniature.jpg, id=57, 803.0pt x 602.25
+<secciones/filtro_miniature/imagenes/neo-miniature.jpg, id=68, 803.0pt x 602.25
 pt>
 File: secciones/filtro_miniature/imagenes/neo-miniature.jpg Graphic file (type 
 jpg)
@@ -1334,7 +1329,7 @@ Package pdftex.def Info: secciones/filtro_miniature/imagenes/neo-miniature.jpg
 used on input line 18.
 (pdftex.def)             Requested size: 160.59715pt x 120.44786pt.
 
-<secciones/filtro_miniature/imagenes/grid.png, id=58, 406.51875pt x 257.96375pt
+<secciones/filtro_miniature/imagenes/grid.png, id=69, 406.51875pt x 257.96375pt
 >
 File: secciones/filtro_miniature/imagenes/grid.png Graphic file (type png)
  <use secciones/filtro_miniature/imagenes/grid.png>
@@ -1342,7 +1337,7 @@ Package pdftex.def Info: secciones/filtro_miniature/imagenes/grid.png used on i
 nput line 52.
 (pdftex.def)             Requested size: 162.60461pt x 103.18365pt.
 
-<secciones/filtro_miniature/imagenes/grid-inv.png, id=59, 406.51875pt x 257.963
+<secciones/filtro_miniature/imagenes/grid-inv.png, id=70, 406.51875pt x 257.963
 75pt>
 File: secciones/filtro_miniature/imagenes/grid-inv.png Graphic file (type png)
  <use secciones/filtro_miniature/imagenes/grid-inv.png>
@@ -1353,77 +1348,65 @@ on input line 53.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
+[12 <./secciones/filtro_miniature/imagenes/neo.jpg> <./secciones/filtro_miniatu
+re/imagenes/neo-miniature.jpg>] [13 <./secciones/filtro_miniature/imagenes/grid
+.png> <./secciones/filtro_miniature/imagenes/grid-inv.png>]
+<secciones/filtro_miniature/graficos/miniature.png, id=81, 1084.05pt x 578.16pt
+>
+File: secciones/filtro_miniature/graficos/miniature.png Graphic file (type png)
 
-LaTeX Warning: Reference `fig:filtro-miniature-grillas' on page 9 undefined on 
-input line 59.
+ <use secciones/filtro_miniature/graficos/miniature.png>
+Package pdftex.def Info: secciones/filtro_miniature/graficos/miniature.png used
+ on input line 92.
+(pdftex.def)             Requested size: 542.02368pt x 289.07928pt.
 
-[9 <./secciones/filtro_miniature/imagenes/neo.jpg> <./secciones/filtro_miniatur
-e/imagenes/neo-miniature.jpg>] [10 <./secciones/filtro_miniature/imagenes/grid.
-png> <./secciones/filtro_miniature/imagenes/grid-inv.png>]
-<secciones/filtro_miniature/graficos/C_ASM_perf.png, id=70, 1357.2306pt x 904.8
-204pt>
-File: secciones/filtro_miniature/graficos/C_ASM_perf.png Graphic file (type png
-)
- <use secciones/filtro_miniature/graficos/C_ASM_perf.png>
-Package pdftex.def Info: secciones/filtro_miniature/graficos/C_ASM_perf.png use
-d on input line 92.
-(pdftex.def)             Requested size: 475.03784pt x 316.6919pt.
-
-<secciones/filtro_miniature/graficos/C_ASM_loc.png, id=71, 1357.2306pt x 904.82
-04pt>
-File: secciones/filtro_miniature/graficos/C_ASM_loc.png Graphic file (type png)
-
- <use secciones/filtro_miniature/graficos/C_ASM_loc.png>
-Package pdftex.def Info: secciones/filtro_miniature/graficos/C_ASM_loc.png used
- on input line 93.
-(pdftex.def)             Requested size: 475.03784pt x 316.6919pt.
- [11 <./secciones/filtro_miniature/graficos/C_ASM_perf.png> <./secciones/filtro
-_miniature/graficos/C_ASM_loc.png>]
-
-LaTeX Warning: Reference `fig:filtro-miniature-ASM-profiling' on page 12 undefi
-ned on input line 111.
+Overfull \hbox (29.87405pt too wide) in paragraph at lines 92--93
+ [] 
+ []
 
 
 <secciones/filtro_miniature/graficos/ASM_normal_sinmovdqu_sinprocesardatos.png,
- id=77, 1357.2306pt x 904.8204pt>
+ id=82, 1357.2306pt x 904.8204pt>
 File: secciones/filtro_miniature/graficos/ASM_normal_sinmovdqu_sinprocesardatos
 .png Graphic file (type png)
 
 <use secciones/filtro_miniature/graficos/ASM_normal_sinmovdqu_sinprocesardatos.
 png>
 Package pdftex.def Info: secciones/filtro_miniature/graficos/ASM_normal_sinmovd
-qu_sinprocesardatos.png used on input line 115.
+qu_sinprocesardatos.png used on input line 114.
 (pdftex.def)             Requested size: 475.03784pt x 316.6919pt.
-) [12 <./secciones/filtro_miniature/graficos/ASM_normal_sinmovdqu_sinprocesarda
-tos.png>] (./secciones/decodificacion/decodificacion.tex [13]
-<secciones/decodificacion/imagenes/decode.png, id=86, 505.89pt x 433.62pt>
+ [14 <./secciones/filtro_miniature/graficos/miniature.png>]) [15 <./secciones/f
+iltro_miniature/graficos/ASM_normal_sinmovdqu_sinprocesardatos.png>]
+(./secciones/decodificacion/decodificacion.tex [16]
+<secciones/decodificacion/imagenes/decode.png, id=94, 1084.05pt x 578.16pt>
 File: secciones/decodificacion/imagenes/decode.png Graphic file (type png)
 
 <use secciones/decodificacion/imagenes/decode.png>
 Package pdftex.def Info: secciones/decodificacion/imagenes/decode.png used on i
 nput line 135.
-(pdftex.def)             Requested size: 202.3524pt x 173.44492pt.
-) [14 <./secciones/decodificacion/imagenes/decode.png>] (./secciones/conclusion
-es/conclusiones.tex) [15]
-(./informe.aux
+(pdftex.def)             Requested size: 542.02368pt x 289.07928pt.
+
+Overfull \hbox (29.87405pt too wide) in paragraph at lines 135--136
+ [] 
+ []
+
+[17 <./secciones/decodificacion/imagenes/decode.png>]) [18]
+(./secciones/conclusiones/conclusiones.tex) [19] (./informe.aux
 LaTeX Info: Redefining \. on input line 7.
 LaTeX Info: Redefining \% on input line 7.
 )
 
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 21168 strings out of 495059
- 393926 string characters out of 3182031
- 487756 words of memory out of 3000000
- 23873 multiletter control sequences out of 15000+200000
+ 21176 strings out of 495059
+ 394099 string characters out of 3182031
+ 485977 words of memory out of 3000000
+ 23878 multiletter control sequences out of 15000+200000
  10275 words of font info for 37 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 56i,8n,60p,1004b,1462s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 56i,10n,60p,1004b,1462s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texli
@@ -1433,16 +1416,17 @@ t/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts
 /type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
 public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
 amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
-7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></
-usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on informe.pdf (15 pages, 802655 bytes).
+s/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
+6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmti10.pfb>
+Output written on informe.pdf (19 pages, 821012 bytes).
 PDF statistics:
- 145 PDF objects out of 1000 (max. 8388607)
- 87 compressed objects within 1 object stream
+ 161 PDF objects out of 1000 (max. 8388607)
+ 99 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  88 words of extra memory for PDF output out of 10000 (max. 10000000)
 

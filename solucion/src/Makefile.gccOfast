@@ -1,7 +1,7 @@
 CC = gcc
 ASM = nasm
 DBG = gdb
-CFLAGS = -ggdb -Wall -std=c99 -pedantic -m64 -msse4.2 -O1
+CFLAGS = -ggdb -Wall -std=c99 -pedantic -m64 -msse4.2 -Ofast
 ASMFLAGS = -felf64 -g -F dwarf
 OPENCV_LIB = `pkg-config --cflags --libs opencv`
 

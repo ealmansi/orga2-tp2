@@ -10,5 +10,66 @@
 
 \end{comment}
 
+	A lo largo de este trabajo se analizaron diferentes implementaciones
+los filtros bajando al nivel mas bajo posible para explicar los resultados.
+Los resultados son bastante visibles, se logró acelerar el tiempo de cómputo
+de manera extremadamente significativa, sencillamente haciendo un correcto
+aprovechamiento de los recursos brindados por la arquitectura de procesador
+usada.
 
-	
+	Antes de sacar conclusiones generales cabe hacer unos breces comentarios
+particulares de cada filtro.
+
+\begin{itemize}
+	\item \textbf{Fcolor:} En este filtro se obtuvo un resultado bueno.
+La implementación en ensablador va mas de 2 veces mas rápido que la implementación
+en C. Sin embargo la implementación en ensablandor fue realmente mucho mas costosa
+que la implementación en C. Es importante marcar que en el primer
+intento este filtro implementado en ensamblador no fue mas rápido que C sino
+que hubo que trabarlo bastante para lograrlo. Como conclusión entonces
+podríamos decir que la relación costo-beneficio no es tan ventajosa. Vale
+la pena realizar un trabajo así sólo si se está trabajando con sistemas
+muy críticos.
+	\item \textbf{Miniature:} Este filtro es el claro ejemplo de cuando definitivamente
+vale la pena ensuciarse las manos con el ensamblador para exprimir los recursos
+del procesador. Con las velocidades alcanzadas con la implementación en ensablandor
+este filtro incluso se podría utilizar en tiempo real (al menos para ciertos parámetros)
+mientras que con los tiempos obtenidos con la implementación en C eso no es mas que una
+fantasía lejana.
+	\item \textbf{Decode:} Con este filtro pasa algo particular. Los resultados
+obtenidos fueron excelentes. La implementación en ensablador es exsesivamente mas rápida
+que la implementación en C... Y sin embargo es probable que no valga la pena. Si
+se codificara en una gigantezca imagen todo el libro "El ingenioso hidalgo Don Quijote
+de la Mancha" este filtro en su implementación en C lo decodificaría en no más de 15
+segundos. Definitivamente leer esa historia toma bastante más de 15 segundos, por lo
+que definitivamente eso sirve para tiempo real. Por otra parte si se usa en un sistema muy
+concurrido este debería ser un sistema con una concurrencia realmente alta para ocasionar
+problemas. De esta manera la implementación en ensamblador es excesivamente rápida, pero
+este filtro en particular tal vez no sería la elección natural para implementar en
+ensamblador a la hora de acelerar un sistema. Sería muy poco probable
+que se lo identifique como un punto crítico.
+	Dejando de lado eso es interesante marcar que realmente el aumento de rendimiento
+en este filtro es muy importante. Eso en parte es porque este filtro es muy ``SIMD friendly''
+como se explicó anteriormente. Por lo tanto es interesante tener en cuenta procesos
+con la estructura que tiene este filtro son fáciles de implementar en ensamblador
+y obtener excelentes resultados.
+\end{itemize}
+
+	Aclaradas estas cuestiones el siguiente análisis que cabe hacer
+es el de ''Complejidad algorítmica vs Optimización de implementación''.
+Todos los filtros tuvieron cambios algorítmos a la hora de adaptarlos
+al procesamiento SIMD, sin embargo esos cambios no fueron estructurales.
+Sencillamente fueron los cambios indispensables para esta clase de procesamiento.
+La única excepción, tal vez, fue Miniature. Sin embargo el cambio
+principal que se realizó fue sobre como recibir los datos. El procesamiento
+de sigue siendo muy similar. De todas maneras la complejidad del algorítmo
+sigue siendo la misma, para todos los filtros. Sin embargo mediante
+optimizaciones de bajo nivel se logró incluso cambiar el orden de magnitud
+en el tiempo (Caso fcolor y decode).
+
+	La contracara de esto es como realmente aumenta la dificultad en la
+implementación. Esto hace que no sea viable implementar grandes sistemas
+en ensablandor utilizando todas las optimizaciones de bajo nivel posibles.
+Sin embargo si es viable identificar cuellos de botella o puntos críticos
+en un sistema y aplicar ahí toda la optimización posible. Esa práctica
+puede aumentar de manera sumamente significativa el rendimiento del sistema.

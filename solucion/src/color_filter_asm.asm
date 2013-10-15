@@ -24,6 +24,15 @@ masc_desempaquetar_r:	DB 0x02,0x80,0x80,0x80,0x05,0x80,0x80,0x80,0x08,0x80,0x80,
 masc_desempaquetar_g:	DB 0x01,0x80,0x80,0x80,0x04,0x80,0x80,0x80,0x07,0x80,0x80,0x80,0x0A,0x80,0x80,0x80
 masc_desempaquetar_b:	DB 0x00,0x80,0x80,0x80,0x03,0x80,0x80,0x80,0x06,0x80,0x80,0x80,0x09,0x80,0x80,0x80
 
+
+;-----------------------------COSA DE TIEMPOS
+define_format
+__start: DQ 0
+__end: DQ 0
+;-----------------------------FIN COSA DE TIEMPOS
+
+
+
 ;	;	;	;	;	Macros ;	;	;	;	;	;
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -256,6 +265,8 @@ section .text
 color_filter_asm:
 	push_regs
 
+	get_timestamp [__start]
+
 	levantar_parametros					; R8 	-	src		; R12B 	-	bc
 										; R9 	-	dst		; R13D 	-	threshold
 										; R10B 	-	rc		; R14D 	-	width
@@ -299,6 +310,12 @@ color_filter_asm:
 	caso_borde
 
 	escribir_datos XMM0
+
+	get_timestamp [__end]
+	MOV rax, [__end]
+	SUB rax, [__start]
+	print_time rax
+
 
 	pop_regs
     ret

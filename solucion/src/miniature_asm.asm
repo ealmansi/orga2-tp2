@@ -15,7 +15,12 @@ global miniature_asm
 
 ;	;	;	;	;	Datos	;	;	;	;	;	;
 
+
 section .data
+
+
+
+
 
 align 16
 mat_fila_0_datos: 		DB  18,   5,   1,   0,   5,  18,   5,   1,  1,   5,  18,   5,   0,   1,   5,  18
@@ -26,9 +31,11 @@ masc_empaquet_datos: 	DB 0x00,0x80,0x80,0x04,0x80,0x80,0x08,0x80,0x80,0x0C,0x80,
 masc_denom_datos: 		DD 600.0
 contador_clocks: 		DQ 0
 
+;-----------------------------COSA DE TIEMPOS
 define_format
-__antes: DQ 0
-__despues: DQ 0
+__start: DQ 0
+__end: DQ 0
+;-----------------------------FIN COSA DE TIEMPOS
 
 ;	;	;	;	;	Renombres ;	;	;	;	;	;
 
@@ -537,6 +544,7 @@ section .text
 ;                int iters);
 miniature_asm:
 	push_regs
+	get_timestamp [__start]
 
 	levantar_parametros
 
@@ -567,6 +575,11 @@ incr:
 
 	jmp 		for
 end_for:
+
+	get_timestamp [__end]
+	MOV rax, [__end]
+	SUB rax, [__start]
+	print_time rax
 
 	pop_regs
     ret

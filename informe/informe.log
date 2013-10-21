@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.9.9)  21 OCT 2013 02:33
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.9.9)  21 OCT 2013 13:22
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1245,7 +1245,7 @@ File: secciones/introduccion/imagenes/SISD.png Graphic file (type png)
 
 <use secciones/introduccion/imagenes/SISD.png>
 Package pdftex.def Info: secciones/introduccion/imagenes/SISD.png used on input
- line 21.
+ line 29.
 (pdftex.def)             Requested size: 182.67926pt x 98.36575pt.
 
 <secciones/introduccion/imagenes/SIMD.png, id=19, 429.605pt x 237.88875pt>
@@ -1253,7 +1253,7 @@ File: secciones/introduccion/imagenes/SIMD.png Graphic file (type png)
 
 <use secciones/introduccion/imagenes/SIMD.png>
 Package pdftex.def Info: secciones/introduccion/imagenes/SIMD.png used on input
- line 22.
+ line 30.
 (pdftex.def)             Requested size: 171.83894pt x 95.15381pt.
 ) [2 <./secciones/introduccion/imagenes/SISD.png> <./secciones/introduccion/ima
 genes/SIMD.png>]
@@ -1293,48 +1293,48 @@ used on input line 8.
 (pdftex.def)             Requested size: 205.56435pt x 154.17326pt.
  [5 <./secciones/filtro_color/imagenes/matecocido.jpg> <./secciones/filtro_colo
 r/imagenes/matecocido-fcolor.jpg>]
-LaTeX Font Info:    Try loading font information for OML+cmr on input line 64.
+LaTeX Font Info:    Try loading font information for OML+cmr on input line 72.
  (/usr/share/texlive/texmf-dist/tex/latex/base/omlcmr.fd
 File: omlcmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <10> not available
-(Font)              Font shape `OML/cmm/m/it' tried instead on input line 64.
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 72.
 Package mdframed Info: mdframed inside float 
- mdframed uses option nobreak mdframed on input line 71.
+ mdframed uses option nobreak mdframed on input line 79.
 Package mdframed Info: mdframed inside a box 
- mdframed uses option nobreak mdframed on input line 71.
+ mdframed uses option nobreak mdframed on input line 79.
 
-<secciones/filtro_color/graficos/fcolor.png, id=39, 1084.05pt x 578.16pt>
+[6] <secciones/filtro_color/graficos/fcolor.png, id=42, 1084.05pt x 578.16pt>
 File: secciones/filtro_color/graficos/fcolor.png Graphic file (type png)
 
 <use secciones/filtro_color/graficos/fcolor.png>
 Package pdftex.def Info: secciones/filtro_color/graficos/fcolor.png used on inp
-ut line 87.
+ut line 109.
 (pdftex.def)             Requested size: 542.02368pt x 289.07928pt.
 
-Overfull \hbox (29.87405pt too wide) in paragraph at lines 87--88
+Overfull \hbox (29.87405pt too wide) in paragraph at lines 109--110
  [] 
  []
 
-[6]
+
 <secciones/filtro_color/graficos/C_normal_O1_O2_O3.png, id=44, 1357.2306pt x 90
 4.8204pt>
 File: secciones/filtro_color/graficos/C_normal_O1_O2_O3.png Graphic file (type 
 png)
  <use secciones/filtro_color/graficos/C_normal_O1_O2_O3.png>
 Package pdftex.def Info: secciones/filtro_color/graficos/C_normal_O1_O2_O3.png 
-used on input line 111.
+used on input line 133.
 (pdftex.def)             Requested size: 475.03784pt x 316.6919pt.
  [7 <./secciones/filtro_color/graficos/fcolor.png>]
 Package mdframed Info: mdframed inside float 
- mdframed uses option nobreak mdframed on input line 138.
+ mdframed uses option nobreak mdframed on input line 160.
 Package mdframed Info: mdframed inside a box 
- mdframed uses option nobreak mdframed on input line 138.
+ mdframed uses option nobreak mdframed on input line 160.
  [8 <./secciones/filtro_color/graficos/C_normal_O1_O2_O3.png>]
 Package mdframed Info: mdframed inside float 
- mdframed uses option nobreak mdframed on input line 230.
+ mdframed uses option nobreak mdframed on input line 252.
 Package mdframed Info: mdframed inside a box 
- mdframed uses option nobreak mdframed on input line 230.
+ mdframed uses option nobreak mdframed on input line 252.
 
 <secciones/filtro_color/graficos/performanceExpSaltos.png, id=55, 1084.05pt x 5
 78.16pt>
@@ -1342,18 +1342,18 @@ File: secciones/filtro_color/graficos/performanceExpSaltos.png Graphic file (ty
 pe png)
  <use secciones/filtro_color/graficos/performanceExpSaltos.png>
 Package pdftex.def Info: secciones/filtro_color/graficos/performanceExpSaltos.p
-ng used on input line 241.
+ng used on input line 263.
 (pdftex.def)             Requested size: 542.02368pt x 289.07928pt.
 
-Overfull \hbox (29.87405pt too wide) in paragraph at lines 241--242
+Overfull \hbox (29.87405pt too wide) in paragraph at lines 263--264
  [] 
  []
 
 [9] [10 <./secciones/filtro_color/graficos/performanceExpSaltos.png>]
 Package mdframed Info: mdframed inside float 
- mdframed uses option nobreak mdframed on input line 299.
+ mdframed uses option nobreak mdframed on input line 321.
 Package mdframed Info: mdframed inside a box 
- mdframed uses option nobreak mdframed on input line 299.
+ mdframed uses option nobreak mdframed on input line 321.
 ) [11]
 (./secciones/filtro_miniature/filtro_miniature.tex
 <secciones/filtro_miniature/imagenes/neo.jpg, id=67, 803.0pt x 602.25pt>
@@ -1497,7 +1497,7 @@ LaTeX Info: Redefining \% on input line 7.
 Here is how much of TeX's memory you used:
  22107 strings out of 495059
  408312 string characters out of 3182031
- 522631 words of memory out of 3000000
+ 523632 words of memory out of 3000000
  24761 multiletter control sequences out of 15000+200000
  10970 words of font info for 40 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -1521,7 +1521,7 @@ dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/ty
 pe1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
 blic/amsfonts/cm/cmtt10.pfb>
-Output written on informe.pdf (22 pages, 935308 bytes).
+Output written on informe.pdf (22 pages, 939753 bytes).
 PDF statistics:
  186 PDF objects out of 1000 (max. 8388607)
  114 compressed objects within 2 object streams

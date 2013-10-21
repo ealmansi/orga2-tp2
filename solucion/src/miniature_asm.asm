@@ -9,6 +9,8 @@ global miniature_asm
 
 section .data
 
+tiempo_datos 0
+
 align 16
 mat_fila_0_datos: 		DB  18,   5,   1,   0,   5,  18,   5,   1,  1,   5,  18,   5,   0,   1,   5,  18
 mat_fila_1_datos: 		DB  64,  32,   5,   0,  32,  64,  32,   5,  5,  32,  64,  32,   0,   5,  32,  64

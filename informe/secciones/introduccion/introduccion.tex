@@ -12,9 +12,17 @@ de 3 filtros (2 de video y uno de imágen).
 
 	El procesamiento SIMD consiste en realizar una misma operación sobre varios
 datos de manera simultánea. Es decir que lo que se logra es paralelismo a nivel
-de datos. Esta clase procesamiento es ideal para realizar filtros sobre imágenes
-, porque ahí justamente lo que uno busca es que cada pixel reciba el mismo proceso.
-
+de datos. Este tipo de procesamiento resulta especialmente conveniente para una
+gran variedad de procesos multimedia en los cuales un mismo proceso se aplica
+a muchos datos y los datos se pueden trabajar en bloque, como los filtros
+implementados en este trabajo. Existen también procesos que muestran las
+limitaciones de este esquema de procesamiento como la lupa con cosenos y
+la rotación por ejemplo. En general el motivo de estas limitaciones
+consiste en que en alguna parte del algorítmo los datos ya no se pueden
+tratar mas como un bloque. Por ejemplo en el algoritmo de rotación
+uno trae datos consecutivos, los procesa y a la hora de guardarlos
+estos no oscupan posiciones consecutivas, por lo tanto a la hora
+de grabar los datos no es posible hacerlo utilizando un proceso SIMD.
 
 \begin{figure}[h]
 \begin{center}
@@ -43,8 +51,3 @@ producir ese código es sumamente trabajoso, mucho mas que usar lenguajes de mas
 c o c++. Por ese motivo se intentará hacer otro análisis (tal vez algo menos científico
 pero intentando justificar de la manera mas objetiva posible) de cuando vale la pena y cuando no.
 
-
-
-
-
-	

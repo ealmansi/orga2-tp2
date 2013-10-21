@@ -1,12 +1,12 @@
 extern printf
 
-;%macro tiempo_datos 0
+%macro tiempo_datos 1
 section .data
 	__tiempo_antes__: 		DQ 0
 	__tiempo_despues__: 	DQ 0
-	__tiempo_fmt_print__: 	DB "%llu, ",10, 0
+	__tiempo_fmt_print__: 	DB "%llu, ", %1 , 0 ;
 
-;%endmacro
+%endmacro
 
 %macro get_timestamp 1
 

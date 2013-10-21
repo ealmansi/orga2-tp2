@@ -1,7 +1,8 @@
 CC = gcc
 ASM = nasm
 DBG = gdb
-CFLAGS = -ggdb -Wall -std=c99 -pedantic -m64 -DIMPRIMIR_MEDICIONES
+OPTFLAG = 0
+CFLAGS = -ggdb -Wall -std=c99 -pedantic -m64 -DIMPRIMIR_MEDICIONES -O$(OPTFLAG)
 ASMFLAGS = -felf64 -g -F dwarf -dIMPRIMIR_MEDICIONES
 OPENCV_LIB = `pkg-config --cflags --libs opencv`
 

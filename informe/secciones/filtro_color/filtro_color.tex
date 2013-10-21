@@ -78,7 +78,7 @@ Para simplificar la implementación, se asumió que la imagen tiene una cantidad
 Sin embargo, incluso para una cantidad de píxeles múltiplo de 4, es importante contemplar el \emph{caso borde} que sucede en la última iteración, cuando faltan procesar los últimos cuatro píxeles de la imagen. De realizarse una lectura desde el comienzo del píxel, se leería junto a los píxeles restantes un total de 4 bytes de memoria posteriores al fin de la imagen. Por esta razon, la última iteración se dejó fuera del ciclo principal, realizando un retroceso de 4 bytes en el puntero de lectura, y ejecutando una versión levemente modificada del cuerpo de ciclo de forma tal que procese los píxeles en los últimos 12 bytes del registro, en vez de los primeros.
 
 \subsection{Comparación de performance}
-\label{sub:comparaci_n_de_performance}
+\label{sub:comparaci_n_de_performance_fcolor}
 
 Se realizaron mediciones en igualdad de condiciones para ambas implementaciones, según se explicó en la sección de consideraciones generales. En la figura \ref{fig:filtro-color-C-vs-ASM} se puede comparar la cantidad de clocks consumidos por ambas implementaciones para una misma entrada.
 

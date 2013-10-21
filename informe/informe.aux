@@ -9,11 +9,11 @@
 \@writefile{lof}{\select@language{spanish}}
 \@writefile{lot}{\select@language{spanish}}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introducci\IeC {\'o}n}{2}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Imagen antes y despu\IeC {\'e}s de aplicar el filtro de color con color principal rojo.}}{2}}
-\newlabel{fig:filtro-color-ejemplo}{{1}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Esquemas de procesamiento SISD y SIMD}}{2}}
+\newlabel{fig:SISD-SIMD}{{1}{2}}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Consideraciones generales}{3}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Fuente: http://commons.wikimedia.org/wiki/File:Lqr\_with\_quantile.png}}{3}}
-\newlabel{fig:filtro-color-ejemplo}{{2}{3}}
+\newlabel{fig:cuariles}{{2}{3}}
 \@writefile{toc}{\contentsline {section}{\numberline {3}Filtro de color}{5}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Descripci\IeC {\'o}n del filtro}{5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Imagen antes y despu\IeC {\'e}s de aplicar el filtro de color con color principal rojo.}}{5}}
@@ -23,7 +23,7 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Pseudo-c\IeC {\'o}digo de la implementaci\IeC {\'o}n en lenguaje ensablador del filtro color.}}{6}}
 \newlabel{fig:pseudocodigo-filtro-color}{{4}{6}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Comparaci\IeC {\'o}n de performance}{6}}
-\newlabel{sub:comparaci_n_de_performance}{{3.3}{6}}
+\newlabel{sub:comparaci_n_de_performance_fcolor}{{3.3}{6}}
 \@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Comparaci\IeC {\'o}n de performance (superior) y cantidad de l\IeC {\'\i }neas de c\IeC {\'o}digo (inferior) entre versi\IeC {\'o}n C b\IeC {\'a}sica y versi\IeC {\'o}n ASM b\IeC {\'a}sica.}}{7}}
 \newlabel{fig:filtro-color-C-vs-ASM}{{5}{7}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Optimizaciones en c\IeC {\'o}digo C}{7}}
@@ -60,9 +60,16 @@
 \newlabel{fig:filtro-miniature-ASM-profiling}{{14}{15}}
 \@writefile{toc}{\contentsline {section}{\numberline {5}Decodificaci\IeC {\'o}n esteganogr\IeC {\'a}fica}{16}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Descripci\IeC {\'o}n del filtro}{16}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Implementaciones}{16}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Optimizaciones}{17}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Rendimiento}{17}}
-\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Imagen antes y despu\IeC {\'e}s de aplicar el filtro de color con color principal rojo.}}{17}}
-\newlabel{fig:filtro-color-ejemplo}{{15}{17}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusiones}{19}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Optimizaciones en ASM}{16}}
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Diferencia de rendimiento entre asm sin entubado de c\IeC {\'o}digo y asm con entubado de c\IeC {\'o}digo en 2 etapas}}{17}}
+\newlabel{fig:entubado de codigo}{{15}{17}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Implementaciones}{18}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Implementaci\IeC {\'o}n decode ASM: Preparando los datos}{18}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.2}Implementaci\IeC {\'o}n decode ASM: El ciclo}{18}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Esquema de funcionamiento de la primera parte del ciclo de decode.}}{19}}
+\newlabel{fig:ciclo-decode}{{16}{19}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.3}Implementaci\IeC {\'o}n decode ASM: La multiplicidad de \textit  {size}}{20}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Rendimiento}{21}}
+\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces Imagen antes y despu\IeC {\'e}s de aplicar el filtro de color con color principal rojo.}}{21}}
+\newlabel{fig:rendimiento decode}{{17}{21}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusiones}{22}}

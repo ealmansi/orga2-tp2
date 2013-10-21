@@ -5,24 +5,17 @@
 	% - Se intentó estudiar si vale la pena o no el esfuerzo adicional de desarrollo y debuggeo.
 
 
-	A lo largo de este documento se realizará un análisis consiso sobre el
-procesamiento de datos SIMD mediante las intrucciones SSE de la arquitectura
-AMD-64. El mismo se hará mediante la comparación de diversas implementaciones
-de 3 filtros (2 de video y uno de imágen).
+Para analizar el modelo de procesamiento SIMD se implementaron tres filtros; dos de video\footnote{Los filtros de video implementados son técnicamente filtros de imágenes aplicados a los múltiples cuadros de un video.} y uno de imágenes. Para cada uno de ellos se desarrollaron implementaciones tanto en lenguaje C como en lenguaje ensamblador, utilizando la familia de extensiones SSE (\textbf{S}treaming \textbf{S}IMD \textbf{E}xtensions) de la arquitectura Intel.
 
-	El procesamiento SIMD consiste en realizar una misma operación sobre varios
-datos de manera simultánea. Es decir que lo que se logra es paralelismo a nivel
-de datos. Este tipo de procesamiento resulta especialmente conveniente para una
-gran variedad de procesos multimedia en los cuales un mismo proceso se aplica
-a muchos datos y los datos se pueden trabajar en bloque, como los filtros
-implementados en este trabajo. Existen también procesos que muestran las
-limitaciones de este esquema de procesamiento como la lupa con cosenos y
-la rotación por ejemplo. En general el motivo de estas limitaciones
-consiste en que en alguna parte del algorítmo los datos ya no se pueden
-tratar mas como un bloque. Por ejemplo en el algoritmo de rotación
-uno trae datos consecutivos, los procesa y a la hora de guardarlos
-estos no oscupan posiciones consecutivas, por lo tanto a la hora
-de grabar los datos no es posible hacerlo utilizando un proceso SIMD.
+Sobre las implementaciones logradas, se estudiaron las diferencias en eficiencia y en costo de desarrollo entre las soluciones en C o en ASM, así como el costo temporal relativo entre las diferentes partes de cada solución. Por ejemplo, se analizó el impacto de los saltos condicionales en una implementación en C o la relación entre tiempo de lectura/escritura, procesamiento y lógica de flujo en un programa en lenguaje ensamblador.
+
+Posteriormente, se compararon las características y la eficiencia de los distintos niveles de optimización provistos por compiladores típicos, así como el beneficio de incorporar variadas estrategias algorítmicas de optimización sobre las implementaciones en lenguaje ensamblador, como la técnica de desenrollado de ciclos en un filtro de video o la técnica de entubado de código en el filtro de imágenes.
+
+Cada una de las experiencias con los tres filtros desarrollados se describen en detalle y por separado en secciones subsiguientes.
+
+\subsection{Modelo de procesamiento SIMD}
+
+	El procesamiento SIMD consiste en realizar una misma operación sobre una gran cantidad de datos de manera simultánea y atómica, logrando lo que se conoce como paralelismo a nivel de datos. Los filtros de imágenes y otros procesos sobre multimedia son particularmente propicios para este tipo de procesamiento ya que habitualmente requieren realizar un mismo tipo de cálculo sobre cientos o miles de puntos, por lo cual la posibilidad de trabajar en bloque provee un claro beneficio en tiempo de ejecución en comparación a un procesamiento en serie.
 
 \begin{figure}[h]
 \begin{center}
@@ -32,7 +25,6 @@ de grabar los datos no es posible hacerlo utilizando un proceso SIMD.
 \caption{Esquemas de procesamiento SISD y SIMD}
 \label{fig:SISD-SIMD}
 \end{figure}
-
 
 	Sin embargo para realizar este análisis es imperioso meterse un poco mas adentro.
 El comportamiento esperado a priori para estos procesos es una relación inversa entre
@@ -51,3 +43,9 @@ producir ese código es sumamente trabajoso, mucho mas que usar lenguajes de mas
 c o c++. Por ese motivo se intentará hacer otro análisis (tal vez algo menos científico
 pero intentando justificar de la manera mas objetiva posible) de cuando vale la pena y cuando no.
 
+Existen también procesos que muestran las limitaciones de este esquema de procesamiento como la lupa con cosenos y la rotación por ejemplo. En general el motivo de estas limitaciones
+consiste en que en alguna parte del algorítmo los datos ya no se pueden
+tratar mas como un bloque. Por ejemplo en el algoritmo de rotación
+uno trae datos consecutivos, los procesa y a la hora de guardarlos
+estos no oscupan posiciones consecutivas, por lo tanto a la hora
+de grabar los datos no es posible hacerlo utilizando un proceso SIMD.

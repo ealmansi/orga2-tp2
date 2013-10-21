@@ -3,74 +3,16 @@
 
 #include <stdio.h>
 
-#define MEDIR_TIEMPO_START(start)							\
-{															\
-	unsigned int start_high, start_low;						\
-	/* warn up ... */										\
-	__asm__ __volatile__ (									\
-		"cpuid\n\t"											\
-		"rdtsc\n\t"											\
-		"mov %%edx, %0\n\t"									\
-		"mov %%eax, %1\n\t"									\
-		: "=r" (start_high), "=r" (start_low)               \
-		: /* no input */                                    \
-		: "%eax"                                            \
-	);                                                      \
-	                                                        \
-	__asm__ __volatile__ (									\
-		"cpuid\n\t"                                         \
-		"rdtsc\n\t"                                         \
-		"mov %%edx, %0\n\t"                                 \
-		"mov %%eax, %1\n\t"                                 \
-		: "=r" (start_high), "=r" (start_low)               \
-		: /* no input */									\
-		: "%eax"                                            \
-	);                                                      \
-	                                                        \
-	__asm__ __volatile__ (                                  \
-		"cpuid\n\t"                                         \
-		"rdtsc\n\t"											\
-		"mov %%edx, %0\n\t"                                 \
-		"mov %%eax, %1\n\t"                                 \
-		: "=r" (start_high), "=r" (start_low)               \
-		: /* no input */                                    \
-		: "%eax"                                            \
-	);														\
-															\
-	start = (((unsigned long long int) start_high) << 32) | \
-		(unsigned long long int) (start_low);				\
-}
+extern long long unsigned int get_timestamp();
 
-#define MEDIR_TIEMPO_STOP(end)								\
-{															\
-	unsigned int end_high, end_low;							\
-															\
-	__asm__ __volatile__ (									\
-		"cpuid\n\t"                                         \
-		"rdtsc\n\t"                                         \
-		"mov %%edx, %0\n\t"                                 \
-		"mov %%eax, %1\n\t"                                 \
-		: "=r" (end_high), "=r" (end_low)                   \
-		: /* no input */                                    \
-		: "%eax"											\
-	);                                                      \
-				                                            \
-	end = (((unsigned long long int) end_high) << 32) | 	\
-		(unsigned long long int) (end_low);					\
-}
+void imprimir_resultado(long long unsigned int res);
 
-/* los sucesivos llamados a TIMER_PRINT_STATUS tienen que ser desde la misma función */
-#define         TIMER_BEGIN()                   					\
-unsigned long long int __timer_t0__;            					\
-{																	\
-	MEDIR_TIEMPO_START(__timer_t0__);           					\
-}																	
+#define EMPEZAR_MEDICION() 								\
+	long long unsigned int __time_begin__, __time_end__;		\
+	__time_begin__ = get_timestamp();
 
-#define         TIMER_END()     \
-{                               \
-    unsigned long long int tn;                              \
-    MEDIR_TIEMPO_START(tn);                                 \
-    printf("%llu,\n", tn - __timer_t0__);    				\
-}
+#define TERMINAR_MEDICION() 							\
+	__time_end__ = get_timestamp(); 					\
+	imprimir_resultado(__time_end__ - __time_begin__);
 
 #endif /* !__TIEMPO_H__ */

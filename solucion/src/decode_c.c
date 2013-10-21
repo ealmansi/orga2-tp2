@@ -1,10 +1,8 @@
-#include <stdio.h>
+#include "tiempo.h"
 
-# define _mask_23 0x0C
-# define _mask_01 0x03
-# define _negation_mask 0x03
-
-extern unsigned long int get_timestamp();
+#define _mask_23 0x0C
+#define _mask_01 0x03
+#define _negation_mask 0x03
 
 void decode_c(unsigned char* src,
               unsigned char* code,
@@ -12,10 +10,7 @@ void decode_c(unsigned char* src,
               int width,
               int height)
 {
-	unsigned long int total_before, total_after;
-	total_before=get_timestamp();
-	
-
+	EMPEZAR_MEDICION();
 
 	int j=0;// Contador para src
 	int k=0;// Contador para code. no pueden ser el mismo porque este avanza 4 veces mas lento.
@@ -49,15 +44,7 @@ void decode_c(unsigned char* src,
 		}
 		code[k]= partial_result; //Una vez que se tiene una partial result se lo acumula en code
 		k++;
-	//	printf(" %d %d ",j,k);
-	//	if(partial_result==0){ //Si se llegó al null del final del string se terminó.
-	//		break;
-	//	}
 	}
 
-
-	
-	total_after=get_timestamp();
-
-	printf("%lu,\n",total_after-total_before);
+	TERMINAR_MEDICION();
 }

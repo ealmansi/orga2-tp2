@@ -150,7 +150,7 @@ int main(int argc, char **argv) {
 
 			if (abs(pixel_a - pixel_b) > epsilon) {
 				if (!quite) {
-					printf("Hay diferencias en el pixel: (%d, %d)\n", i, j);
+					printf("Hay diferencias en el pixel: (%d, %d). [la diferencia es de %d]\n", i, j, abs(pixel_a - pixel_b));
 				}
 
 				equal = 0;

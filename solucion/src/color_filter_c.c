@@ -1,8 +1,6 @@
 #include "utils.h"
 #include "tiempo.h"
 
-extern unsigned long int get_timestamp();
-
 #define 	OFFSET_RED			2
 #define 	OFFSET_GREEN		1
 #define 	OFFSET_BLUE			0
@@ -20,8 +18,8 @@ void color_filter_c(unsigned char *src,
                     int width,
                     int height)
 {
-	unsigned long int begin, end;
-	begin = get_timestamp();
+	EMPEZAR_MEDICION();
+
 	int r, g, b, diff_r, diff_g, diff_b, dist;
 	threshold *= threshold;
 	for (int i = 0; i < 3 * width * height; i += 3)
@@ -35,16 +33,13 @@ void color_filter_c(unsigned char *src,
 		diff_b = b - bc;
 		dist = diff_r * diff_r + diff_g * diff_g + diff_b * diff_b;
 
-		if(dist > threshold){
-			r = g = b = ((b + r + g) / 4);
-		} else {
-			r = g = b = ((g + b + r ) / 3);
-		}
+		if(dist > threshold)
+			r = g = b = ((r + g + b) / 3);
 
 		red(dst, i) = r;
 		green(dst, i) = g;
 		blue(dst, i) = b;
 	}
-	end = get_timestamp();
-	printf("%lu, ", end-begin);
+
+	TERMINAR_MEDICION();
 }

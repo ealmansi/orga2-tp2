@@ -1,26 +1,13 @@
-; RDI,RSI,RDX,RCX,R8,R9
-; XMM0,XMM1,XMM2,XMM3,XMM4,XMM5,XMM6,XMM7
-; Preservar RBX, R12, R13, R14, R15
-; resultado en RAX o XMM0
-; Byte: AL, BL, CL, DL, DIL, SIL, BPL, SPL, R8L - R15L
-; Word: AX, BX, CX, DX, DI, SI, BP, SP, R8W - R15W
-; DWord: EAX, EBX, ECX, EDX, EDI, ESI, EBP, ESP, R8D - R15D
-; QWord: RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP, R8 - R15
-
 global miniature_asm
 
-;	;	;	;	;	Includes ;	;	;	;	;	;
+; 	;	;	;	;	Macros de medicion 	;	;	;
 
-%include "handy.asm"
+%include "tiempo_asm.asm"
 
 ;	;	;	;	;	Datos	;	;	;	;	;	;
 
 
 section .data
-
-
-
-
 
 align 16
 mat_fila_0_datos: 		DB  18,   5,   1,   0,   5,  18,   5,   1,  1,   5,  18,   5,   0,   1,   5,  18
@@ -31,11 +18,6 @@ masc_empaquet_datos: 	DB 0x00,0x80,0x80,0x04,0x80,0x80,0x08,0x80,0x80,0x0C,0x80,
 masc_denom_datos: 		DD 600.0
 contador_clocks: 		DQ 0
 
-;-----------------------------COSA DE TIEMPOS
-define_format
-__start: DQ 0
-__end: DQ 0
-;-----------------------------FIN COSA DE TIEMPOS
 
 ;	;	;	;	;	Renombres ;	;	;	;	;	;
 
@@ -81,6 +63,38 @@ __end: DQ 0
 
 ;	;	;	;	;	Macros ;	;	;	;	;	;
 
+%macro alinear 0
+	sub		RSP, 8
+%endmacro
+
+%macro desalinear 0
+	add		RSP, 8
+%endmacro
+
+%macro push_regs 0
+	push 	RBP
+	mov		RBP, RSP
+	push 	RBX
+	push 	R12
+	push 	R13
+	push 	R14
+	push 	R15
+	alinear
+%endmacro
+
+%macro pop_regs 0
+	desalinear
+	pop 	R15
+	pop 	R14
+	pop 	R13
+	pop 	R12
+	pop 	RBX
+	pop 	RBP
+%endmacro
+
+%define OFFSET_OPS_STACK	64
+
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 ; unsigned char *src,
@@ -415,6 +429,68 @@ __end: DQ 0
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
+%macro procesar_pixeles_caso_borde 0 					; la ultima lectura realizada en la ultima
+														; fila lee 4 bytes de memoria invalida.
+														; para evitarlo, retrocedo 4 bytes antes
+														; de realizar esa lectura, y despues
+														; shifteo los datos levantados para 
+														; procesarlos igual que antes
+
+	pxor 		acum_b, acum_b 							; acum_b = acum_g = acum_r = [0, 0, 0, 0]
+	pxor 		acum_g, acum_g
+	pxor 		acum_r, acum_r
+
+	acumular_sumas_parciales_izq 						; acumula el aporte de los pixeles cargados (son los pixeles
+														; que estan a la izquierda de los que se estan procesando)
+
+														; carga datos que van a ser usados en esta y la prox iteracion
+	mov 		temp_int_2, i 							;  src(i - 2, j + 2), src(i - 1, j + 2),
+	sub 		temp_int_2, 2 							;  src(i, j + 2), src(i + 1, j + 2), src(i + 2, j + 2)
+	imul 		temp_int_2, width
+	add 		temp_int_2, j
+	add 		temp_int_2, 2
+	imul 		temp_int_2, 3
+	add 		temp_int_2, src
+
+	movdqu 		img_fila_0, [temp_int_2]
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	movdqu 		img_fila_1, [temp_int_2]
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	movdqu 		img_fila_2, [temp_int_2]
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	movdqu 		img_fila_3, [temp_int_2]
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	sub 		temp_int_2, 4
+	movdqu 		img_fila_4, [temp_int_2] 				; lectura donde esta el problema
+	psrldq 		img_fila_4, 4
+
+	acumular_sumas_parciales_der						; acumula el aporte de los pixeles recien cargados (los que
+														; estan a la derecha de los que se estan procesando)
+
+	normalizar_acumuladores 							; divide las sumas (ahora totales) por la suma de la matriz
+
+	empaquetar_resultado 								; empaqueta los acumuladores en 4 pixeles rgb
+
+	mov 		temp_int_2, i 							; computa el indice dst(i, j)
+	imul 		temp_int_2, width
+	add 		temp_int_2, j
+	imul 		temp_int_2, 3
+	add 		temp_int_2, dst
+
+	movdqu   	[temp_int_2], resultado 				; escribe el resultado en dst(i, j)
+
+%endmacro
+
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
 %macro procesar_fila 0
 
 	mov 		temp_int_2, i 							; carga los 20 pixeles a la izquierda de los que se
@@ -479,6 +555,74 @@ __end: DQ 0
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
+%macro procesar_ultima_fila 0
+
+	mov 		temp_int_2, i 							; carga los 20 pixeles a la izquierda de los que se
+	sub 		temp_int_2, 2 							; van a procesar en la primera iteracion
+	imul 		temp_int_2, width						; levanta src(i - 2, 0), src(i - 1, 0), src(i, 0),
+	imul 		temp_int_2, 3							; src(i + 1, 0), src(i + 2, 0)
+	add 		temp_int_2, src
+
+	movdqu 		img_fila_0, [temp_int_2]
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	movdqu 		img_fila_1, [temp_int_2]
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	movdqu 		img_fila_2, [temp_int_2]
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	movdqu 		img_fila_3, [temp_int_2]
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	add 		temp_int_2, width
+	movdqu 		img_fila_4, [temp_int_2]
+
+	mov 		temp_int_1, width 						; temp_int_1 <- width - 6
+	sub 		temp_int_1, 6
+
+.for_procesar_ult_fila: 									; j = 2, 6, ... width - 6
+
+	mov 		j, 2
+
+.cond_procesar_ult_fila:
+
+	cmp 		j, temp_int_1
+	jge 		.end_for_procesar_ult_fila
+
+	procesar_pixeles 									; procesa (i, j), (i, j + 1), (i, j + 2), (i, j + 3)
+
+.inc_procesar_ult_fila:
+
+	add 		j, 4
+
+	jmp 		.cond_procesar_ult_fila
+.end_for_procesar_ult_fila:
+
+	procesar_pixeles_caso_borde
+
+	add 		j, 4
+
+	mov 		temp_int_1, i 						; hay que restaurar los primeros 4 bytes de la posicion
+	imul    	temp_int_1, width 					; siguiente a la posicion de la ultima iteracion
+	add 		temp_int_1, j 						
+	imul 		temp_int_1, 3 						; calculo el indice (i, j)
+
+	mov 		temp_int_2, src 					; dst(i, j) <- src(i, j)
+	add 		temp_int_2, temp_int_1
+	movdqu 		img_fila_2, [temp_int_2]
+
+	mov 		temp_int_2, dst
+	add 		temp_int_2, temp_int_1
+	movdqu 		[temp_int_2], img_fila_2
+
+%endmacro
+
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
 %macro procesar_top_plane 0
 procesar_tp:
 
@@ -507,11 +651,11 @@ procesar_tp:
 %macro procesar_bottom_plane 0
 procesar_bp:
 
-	sub 		height, 2
+	sub 		height, 3
 
 .for:
 
-	mov 		i, bottom_plane 				; i = bottom_plane, ... height - 2
+	mov 		i, bottom_plane 				; i = bottom_plane, ... height - 3
 
 .cond:
 
@@ -527,7 +671,9 @@ procesar_bp:
 	jmp 		.cond
 .end_for:
 
-	add 		height, 2
+	procesar_ultima_fila 						; la ultima fila tiene un
+												; caso de borde
+	add 		height, 3
 
 %endmacro
 
@@ -544,7 +690,8 @@ section .text
 ;                int iters);
 miniature_asm:
 	push_regs
-	get_timestamp [__start]
+
+	empezar_medicion
 
 	levantar_parametros
 
@@ -576,10 +723,7 @@ incr:
 	jmp 		for
 end_for:
 
-	get_timestamp [__end]
-	MOV rax, [__end]
-	SUB rax, [__start]
-	print_time rax
+	terminar_medicion
 
 	pop_regs
     ret

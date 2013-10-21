@@ -1,7 +1,8 @@
 global get_timestamp
 
-section .text
+; 	~ 	~  	~ 	~ 	~ 	~
 
+section .text
 
 get_timestamp:
 	RDTSC

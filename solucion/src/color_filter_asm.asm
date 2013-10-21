@@ -1,19 +1,10 @@
-; RDI,RSI,RDX,RCX,R8,R9
-; XMM0,XMM1,XMM2,XMM3,XMM4,XMM5,XMM6,XMM7
-; Preservar RBX, R12, R13, R14, R15
-; resultado en RAX o XMM0
-; Byte: AL, BL, CL, DL, DIL, SIL, BPL, SPL, R8L - R15L
-; Word: AX, BX, CX, DX, DI, SI, BP, SP, R8W - R15W
-; DWord: EAX, EBX, ECX, EDX, EDI, ESI, EBP, ESP, R8D - R15D
-; QWord: RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP, R8 - R15
-
 ;	;	;	;	;	Exporta	;	;	;	;	;	;
 
 global color_filter_asm
 
-;	;	;	;	;	Includes ;	;	;	;	;	;
+; 	;	;	;	;	Macros de medicion 	;	;	;
 
-%include "handy.asm"
+%include "tiempo_asm.asm"
 
 ;	;	;	;	;	Datos	;	;	;	;	;	;
 
@@ -24,16 +15,38 @@ masc_desempaquetar_r:	DB 0x02,0x80,0x80,0x80,0x05,0x80,0x80,0x80,0x08,0x80,0x80,
 masc_desempaquetar_g:	DB 0x01,0x80,0x80,0x80,0x04,0x80,0x80,0x80,0x07,0x80,0x80,0x80,0x0A,0x80,0x80,0x80
 masc_desempaquetar_b:	DB 0x00,0x80,0x80,0x80,0x03,0x80,0x80,0x80,0x06,0x80,0x80,0x80,0x09,0x80,0x80,0x80
 
-
-;-----------------------------COSA DE TIEMPOS
-define_format
-__start: DQ 0
-__end: DQ 0
-;-----------------------------FIN COSA DE TIEMPOS
-
-
-
 ;	;	;	;	;	Macros ;	;	;	;	;	;
+
+%macro alinear 0
+	sub		RSP, 8
+%endmacro
+
+%macro desalinear 0
+	add		RSP, 8
+%endmacro
+
+%macro push_regs 0
+	push 	RBP
+	mov		RBP, RSP
+	push 	RBX
+	push 	R12
+	push 	R13
+	push 	R14
+	push 	R15
+	alinear
+%endmacro
+
+%macro pop_regs 0
+	desalinear
+	pop 	R15
+	pop 	R14
+	pop 	R13
+	pop 	R12
+	pop 	RBX
+	pop 	RBP
+%endmacro
+
+%define OFFSET_OPS_STACK	64
 
 ; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
@@ -153,6 +166,8 @@ __end: DQ 0
 
 %endmacro
 
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
 %macro cuerpo_ciclo 0
 
 	pxor 		XMM1, XMM1 									; prom <- [0,0,0,0]
@@ -197,55 +212,28 @@ __end: DQ 0
 
 %endmacro
 
-%macro caso_borde 0
+; ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-	movdqa 		XMM13, XMM0 								; los primero cuatro bytes
-	psrldq 		XMM0, 4 									; no los tengo que tocar
-															; los salteo, y sigo igual que antes
+%macro resolver_caso_borde 0
+	
+	sub 			RCX, 4 									; retrocedo 4 bytes para no leer
+															; memoria invalida
+	leer_datos 		XMM0
 
-	pxor 		XMM1, XMM1 									; prom <- [0,0,0,0]
-	pxor 		XMM2, XMM2 									; dist <- [0,0,0,0]
+	psrldq 		XMM0, 4 									; muevo los pixeles al comienzo
+															; del registro
 
-	movdqa		XMM3, XMM0 									; desempaquetar rojos
-	pshufb 		XMM3, XMM4 									; rojos <- [r1 r2 r3 r4]
-	paddd 		XMM1, XMM3 									; prom += rojos
-	psubd 		XMM3, XMM7 									; rojos -= [rc, rc, rc, rc]
-	pmulld 		XMM3, XMM3 									; rojos *= rojos
-	paddd 		XMM2, XMM3 									; dist += rojos
+	cuerpo_ciclo 											; los proceso igual que en el
+															; caso normal
 
-	movdqa		XMM3, XMM0 									; desempaquetar verdes
-	pshufb 		XMM3, XMM5 									; verdes <- [g1 g2 g3 g4]
-	paddd 		XMM1, XMM3 									; prom += verdes
-	psubd 		XMM3, XMM8 									; verdes -= [gc, gc, gc, gc]
-	pmulld 		XMM3, XMM3 									; verdes *= verdes
-	paddd 		XMM2, XMM3 									; dist += verdes
+	pslldq 		XMM0, 4 									; deshago el corrimiento que hice
+															; al principio de la iteracion
 
-	movdqa		XMM3, XMM0 									; desempaquetar azules
-	pshufb 		XMM3, XMM6 									; azules <- [b1 b2 b3 b4]
-	paddd 		XMM1, XMM3 									; prom += azules
-	psubd 		XMM3, XMM9 									; azules -= [bc, bc, bc, bc]
-	pmulld 		XMM3, XMM3 									; azules *= azules
-	paddd 		XMM2, XMM3 									; dist += azules
+ 	movdqu 		XMM13, [R9+RCX] 							; los primeros 4 bytes se perdieron
+ 	movss 		XMM0, XMM13									; los recupero de dst porque ya fueron
+ 															; procesados en la anteultima iteracion
 
-	cvtdq2ps 	XMM1, XMM1									; prom <- int2float(prom)
-	mulps 		XMM1, XMM10 								; prom /= [3 3 3 3]
-	cvtps2dq 	XMM1, XMM1 									; prom <- float2int(prom)
-	pshufb 		XMM1, XMM11 								; asigno el promedio a cada uno
-															; de los bytes del pixel
-
-	pcmpgtd 	XMM2, XMM12 								; dist <- dist > threshold ?
-	pshufb 		XMM2, XMM11 								; asigno el flag a cada uno
-															; de los bytes del pixel
-
-	movdqa 		XMM0, XMM13 								; restauro la copia de los datos
-	pslldq 		XMM2, 4 									; shifteo prom y los flags
-	pslldq 		XMM1, 4 									; para que queden alineados
-
- 	movdqa 		XMM3, XMM2 									; temp <- datos AND ~flags
- 	pandn 		XMM3, XMM0 									; 
- 	movdqa 		XMM0, XMM3 									; datos <- temp
-	pand 		XMM1, XMM2 									; prom <- prom AND flags
- 	paddb 		XMM0, XMM1 									; datos += prom
+	escribir_datos 	XMM0
 
 %endmacro
 
@@ -265,7 +253,7 @@ section .text
 color_filter_asm:
 	push_regs
 
-	get_timestamp [__start]
+	empezar_medicion
 
 	levantar_parametros					; R8 	-	src		; R12B 	-	bc
 										; R9 	-	dst		; R13D 	-	threshold
@@ -304,18 +292,9 @@ color_filter_asm:
 	jmp 		.cond
 .endfor:
 
-	sub 		RCX, 4 					; retrocedo un poco y manejo el caso borde
-	leer_datos XMM0
-
-	caso_borde
-
-	escribir_datos XMM0
-
-	get_timestamp [__end]
-	MOV rax, [__end]
-	SUB rax, [__start]
-	print_time rax
-
+	resolver_caso_borde
+	
+	terminar_medicion
 
 	pop_regs
     ret

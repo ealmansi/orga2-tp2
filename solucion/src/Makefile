@@ -1,8 +1,8 @@
 CC = gcc
 ASM = nasm
 DBG = gdb
-CFLAGS = -ggdb -Wall -std=c99 -pedantic -m64 -msse4.2 -O1
-ASMFLAGS = -felf64 -g -F dwarf
+CFLAGS = -ggdb -Wall -std=c99 -pedantic -m64 -DIMPRIMIR_MEDICIONES
+ASMFLAGS = -felf64 -g -F dwarf -dIMPRIMIR_MEDICIONES
 OPENCV_LIB = `pkg-config --cflags --libs opencv`
 
 BIN = tp2
@@ -12,7 +12,8 @@ ASMHANDY = handy.asm
 
 OBJS = tp2.o utils.o \
 	color_filter_c.o miniature_c.o decode_c.o \
-	color_filter_asm.o miniature_asm.o decode_asm.o tiempos.o
+	color_filter_asm.o miniature_asm.o decode_asm.o \
+	tiempo_c.o tiempo_asm.o get_timestamp.o
 
 .PHONY: all clean
 

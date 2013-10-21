@@ -1,8 +1,7 @@
 #include <string.h>
-#include <stdio.h>
+
 #include "utils.h"
 #include "tiempo.h"
-extern unsigned long int get_timestamp();
 
 /*  topPlane:
         Numero entre 0 y 1 que representa el porcentaje de imagen desde el cual
@@ -59,9 +58,9 @@ void miniature_c(
                 int width, int height,
                 float coeff_top_plane, float coeff_bottom_plane,
                 int iters) {
-	unsigned long long int start, end;
-	start = get_timestamp();
-	
+    
+    EMPEZAR_MEDICION();
+
     int top_plane = coeff_top_plane * height,
         bottom_plane = coeff_bottom_plane * height;
 
@@ -87,6 +86,6 @@ void miniature_c(
 
         memcpy(src, dst, 3 * width * height);
     }
-	end = get_timestamp();
-	printf("%llu ,",end-start);
+
+    TERMINAR_MEDICION();
 }

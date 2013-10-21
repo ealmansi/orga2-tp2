@@ -20,9 +20,11 @@ do
 	echo 'Procesando archivo: ' $file '\n'
 
     # fcolor
+	echo "$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER -i c fcolor $file 10 100 20 100"
 	$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER -i c fcolor $file 10 100 20 100
 	if [ $? != "0" ]; then
 		OKVALGRIND=0
+		echo "Fallo"
 	fi
 
 	$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER -i asm fcolor $file 10 100 20 100
@@ -31,9 +33,11 @@ do
 	fi
 
 	# miniaturizar
+	echo "$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER  -i c miniature $file 0.2 0.6 3"
 	$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER  -i c miniature $file 0.2 0.6 3
 	if [ $? != "0" ]; then
 		OKVALGRIND=0
+		echo "Fallo"
 	fi
 
 	$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER -i asm miniature $file 0.2 0.6 3
@@ -42,9 +46,11 @@ do
 	fi
 
 	# miniaturizar
+	echo "$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER  -i c miniature $file 0.01 0.9 4"
 	$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER  -i c miniature $file 0.01 0.9 4
 	if [ $? != "0" ]; then
 		OKVALGRIND=0
+		echo "Fallo"
 	fi
 
 	$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER -i asm miniature $file 0.01 0.9 4
@@ -53,9 +59,11 @@ do
 	fi
 
 	# miniaturizar
+	echo "$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER  -i c miniature $file 0.6 0.5 2"
 	$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER  -i c miniature $file 0.6 0.5 2
 	if [ $? != "0" ]; then
 		OKVALGRIND=0
+		echo "Fallo"
 	fi
 
 	$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER -i asm miniature $file 0.6 0.5 2
@@ -64,9 +72,11 @@ do
 	fi
 
 	# miniaturizar
+	echo "$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER  -i c miniature $file 0.43 0.91 1"
 	$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER  -i c miniature $file 0.43 0.91 1
 	if [ $? != "0" ]; then
 		OKVALGRIND=0
+		echo "Fallo"
 	fi
 
 	$VALGRIND $VALGRINDFLAGS $BINFILE --frames $FRAMEFOLDER -i asm miniature $file 0.43 0.91 1

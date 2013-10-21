@@ -46,5 +46,6 @@ void decode_c(unsigned char* src,
 		k++;
 	}
 
-	TERMINAR_MEDICION();
+	__time_end__ = get_timestamp();
+	printf("%llu, \n", __time_end__-__time_begin__);
 }

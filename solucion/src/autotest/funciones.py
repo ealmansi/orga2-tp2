@@ -23,12 +23,11 @@ def obtenerResultados(nombreFiltro, implementación, parametros, nota, veces):
 		aFile.write("{}\n".format(finalResult))
 
 def setDeMediciones(nombreFiltro, parametros, veces):
-	for flag in ["gcc","gccOfast","icc", "iccOfast"]:
-		os.system("cp ../Makefile.{} ../Makefile && make -C ../".format(flag))
-		obtenerResultados(nombreFiltro,"c", parametros, flag, veces)
+	for cc in ["gcc","icc"]:
+		for opt in ["1","fast"]:
+			os.system("make CC={} OPTGLAF={} -C ../".format(cc, opt))
+			obtenerResultados(nombreFiltro,"c", parametros, cc+"_O"+opt, veces)
 	
-	os.system("cp ../Makefile.gcc ../Makefile")
-
 	obtenerResultados(nombreFiltro, "asm", parametros, "final", veces)
 
 

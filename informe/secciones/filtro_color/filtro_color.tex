@@ -34,7 +34,15 @@ La modificación evita el cálculo de una raíz cuadrada, sin incurrir en el rie
 
 La implementación en lenguaje ensamblador mantiene esencialmente el mismo procedimiento, con la salvedad de que fue adaptado para procesar cuatro píxeles en simultáneo mediante el uso de operaciones SIMD. Se recorre la matriz en el mismo órden descripto previamente, realizando lecturas de 16 bytes por iteración (equivalente a 5 píxeles y un byte sobrante).
 
-La necesidad de limitar el procesamiento simultáneo a cuatro píxeles se desprende del hecho de que, como se dijo antes, la expresión que mide la distancia entre un píxel y el color principal puede tomar valores en el rango $0, ... \,195075$. Este último valor no cabe en un entero de 16 bits, precisándose un \tipo{double word} para almacenar ese resultado temporal; esto implica un total de hasta cuatro valores de distancia en un registro XMM. Por esta razón, además sería similar trabajar con el tipo de datos \tipo{float} ya que también caben hasta cuatro por registro de 128 bits.
+La necesidad de limitar el procesamiento simultáneo a cuatro píxeles se desprende del hecho de que, en nuestra implementación, la expresión que mide la distancia entre un píxel y el color principal puede tomar valores en el rango $0, ... \,195075$. Este último valor no cabe en un entero de 16 bits, precisándose un \tipo{double word} para almacenar ese resultado temporal; esto implica un total de hasta cuatro valores de distancia en un registro XMM. Por esta razón, además sería similar trabajar con el tipo de datos \tipo{float} ya que también caben hasta cuatro por registro de 128 bits.
+
+	Otra implementación podría haber sido procesar
+los colores de a uno. Es decir, en lugar de primero calcular
+la suma de los cuadrados restar cada cuadrado al threshold.
+Se decidió usar la primera por una cuestión respetar
+el algoritmo intuitivo. Nuestro objetivo con este
+trabajo es mostrar las optimizaciones a bajo nivel
+en un mismo algoritmo.
 
 De esta forma, el procedimiento realizado en cada iteración consiste en (para cada uno de los cuatro píxeles en simultáneo) comparar el valor de la distancia con el \param{threshold}, y calcular el promedio de los tres canales, actualizando luego sus valores según la siguiente expresión informal:
 
@@ -80,7 +88,21 @@ Sin embargo, incluso para una cantidad de píxeles múltiplo de 4, es importante
 \subsection{Comparación de performance}
 \label{sub:comparaci_n_de_performance_fcolor}
 
-Se realizaron mediciones en igualdad de condiciones para ambas implementaciones, según se explicó en la sección de consideraciones generales. En la figura \ref{fig:filtro-color-C-vs-ASM} se puede comparar la cantidad de clocks consumidos por ambas implementaciones para una misma entrada.
+	Se realizaron mediciones en igualdad de condiciones para ambas implementaciones,
+según se explicó en la sección de consideraciones generales. En la figura parte de arriba
+de la figura \ref{fig:filtro-color-C-vs-ASM} se puede comparar la cantidad de clocks 
+consumidos por diferentes implementaciones del mismo filtro.
+	La primera barra corresponde a la implementación en asm. Las otras 4 son diferentes
+compilaciones de la implementación escrita en C, tal cuál se explicó en la sección de
+consideraciones generales.
+	
+	La parte inferior del gráfico muestra una comparación entre la cantidad de líneas
+de código, como para tener una idea de la dificultad en la implementación en cada
+lenguaje. Desde ya que esta no es una comparación precisa ni objetiva, sin embargo da una
+idea de que la lógica es mucho mas compleja en la versión de ensamblador.
+
+
+
 
 \begin{figure}[H]
 \begin{center}
@@ -90,21 +112,21 @@ Se realizaron mediciones en igualdad de condiciones para ambas implementaciones,
 \label{fig:filtro-color-C-vs-ASM}
 \end{figure}
 
-El resultado muestra un incremento en velocidad de ejecución de aproximadamente 9 veces. Es importante destacar que esta mejora cercana a un orden de magintud no deviene de un cambio algorítmico, sino simplemente de un uso más provechoso de los recursos del procesador; particularmente, las operaciones SIMD. El costo de esta optimización recae en mayor tiempo de desarrollo, lo cual se puede retratar utilizando como indicador la cantidad de líneas de código mediante la figura \ref{fig:filtro-color-C-vs-ASM} (parte inferior).
+El resultado muestra un incremento en velocidad de ejecución de aproximadamente 8 veces. Es importante destacar que esta mejora cercana a un orden de magintud no deviene de un cambio algorítmico, sino simplemente de un uso más provechoso de los recursos del procesador; particularmente, las operaciones SIMD. El costo de esta optimización recae en mayor tiempo de desarrollo, lo cual se puede retratar utilizando como indicador la cantidad de líneas de código mediante la figura \ref{fig:filtro-color-C-vs-ASM} (parte inferior).
 
 
 \subsection{Optimizaciones en código C}
 \label{sub:filtro-color-optimizaciones-c}
 
-El código de la implementación en lenguaje C se compiló con distintos flags de optimización provistos por GCC. Estos son según la documentación de GCC \footnote{Ver http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html.}:
+El siguiente gráfico muestra la diferencia entre compilar este filtro con los distintos niveles de optimización
+que ofrece el compilador GCC.\footnote{Ver http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html.}:
 
 \begin{itemize}
-\item \textbf{-O/-O1}: Optimizar. Intentar reducir el tamaño de código y tiempo de ejecución sin realizar optimizaciones que requieran mucho tiempo de compilación.
-\item \textbf{-O2}: Optimizar aún más. Se incrementa el tiempo de compilación y la performance del código generado. Esto incluye, por ejemplo, la eliminación del checkeo por punteros inválidos (delete-null-pointer-checks).
-\item \textbf{-O3}: Optimizar incluso más. Incluye, por ejemplo, inlining automático de funciones y vectorización de loops (ftree-loop-vectorize).
+	\item \textbf{-O/-O1}: Optimizar. Intentar reducir el tamaño de código y tiempo de ejecución sin realizar optimizaciones que requieran mucho tiempo de compilación.
+	\item \textbf{-O2}: Optimizar aún más. Se incrementa el tiempo de compilación y la performance del código generado. Esto incluye, por ejemplo, la eliminación del checkeo por punteros inválidos (delete-null-pointer-checks).
+	\item \textbf{-O3}: Optimizar incluso más. Incluye, por ejemplo, inlining automático de funciones y vectorización de loops (ftree-loop-vectorize).
 \end{itemize}
 
-Los resultados en cuestión de performance se pueden ver en la figura \ref{fig:filtro-color-C-vs-Os}, la cual muestra una comparación entre la cantidad de clocks consumidos durante la ejecución de cada versión.
 
 \begin{figure}[H]
 \begin{center}
@@ -114,9 +136,10 @@ Los resultados en cuestión de performance se pueden ver en la figura \ref{fig:f
 \label{fig:filtro-color-C-vs-Os}
 \end{figure}
 
-El incremento en performance al activar las optimizaciones del compilador es notable, reduciendo a aproximadamente un cuarto el tiempo de ejecución en todos los casos. Sin embargo, la relación de performance entre los resultados con distintos flags no fue prevista; el flag \textbf{O3} generó código menos performante que las otras optimizaciones, y el flag \textbf{O2} fue muy levemente superior a la optimización de primer nivel. Esto permite aducir que los distintos tipos de optimización automática varían su utilidad según el código que se procesa, por lo cual siempre que se busque optimizar no es una buena estrategia optar por el mayor nivel de optimización \emph{sin realizar una comparación sobre el código particular que se desea optimizar.}
+El incremento en performance al activar las optimizaciones del compilador es notable, reduciendo a aproximadamente un cuarto el tiempo de ejecución en todos los casos. Sin embargo, la relación de performance entre los resultados con distintos flags no fue la prevista; el flag \textbf{O3} generó código menos performante que las otras optimizaciones, y el flag \textbf{O2} fue muy levemente superior a la optimización de primer nivel. Esto permite aducir que los distintos tipos de optimización automática varían su utilidad según el código que se procesa, por lo cual siempre que se busque optimizar no es una buena estrategia optar por el mayor nivel de optimización \emph{sin realizar una comparación sobre el código particular que se desea optimizar.}
 
 Adicionalmente, se analizaron las diferencias entre el código generado con compilación estándar y el código generado con optimización de tipo O1. La diferencia entre los códigos generados evidencia inmediatamente una característica subóptima del código estándar; \emph{todas} las variables locales se alojan en la pila, incluso habiendo disponibilidad de registros. Los registros se utilizan únicamente como variables temporales, y al final de cada extracto de código se guarda el resultado en un espacio de la pila. El código generado con O1, en cambio, ahorra gran cantidad de esos accesos a memoria. Este comportamiento se ejemplifica con el siguiente extracto (figura \ref{fig:codigo-objeto-filtro-color}).
+
 
 % esto está atado con alambre...
 \begin{figure}[h]
@@ -141,6 +164,9 @@ Adicionalmente, se analizaron las diferencias entre el código generado con comp
 \end{figure}
 
 Sin embargo, la lógica de flujo del código generado es equivalente. Es decir, las operaciones realizadas y el orden en que se realizan son iguales; se mantiene la forma de recorrer la imagen y el procesamiento píxel por píxel.
+
+	Los otros niveles de optimización cambian esto. Incluso utilizan los registros xmm
+pero no de manera óptima.
 
 %Análisis de saltos condicionales
 

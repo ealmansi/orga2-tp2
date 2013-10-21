@@ -107,6 +107,3 @@ if __name__ == '__main__':
 	aPlotter.shuf()
 	aPlotter.setFilter("miniature","../miniature_asm.asm", "../miniature_c.c")
 	aPlotter.plotBarsTC("graficos/miniature.png")
-	aPlotter.shuf()
-	aPlotter.setFilter("decodeOP","../decode_asm.asm", "../decode_c.c")
-	aPlotter.plotBarsT("graficos/decodeOP.png")

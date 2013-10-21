@@ -1,4 +1,4 @@
-\begin{comment}
+\begin{comment} bytes
 	- Comparación c y asm.
 		- La mayor diferencia es que se levanta de a más.
 	- El tiempo en asm es súper constante porque sólo depende de size. En c mas o menos, explicar por qué.
@@ -310,12 +310,12 @@ que retroceder el contador de \textit{src}.
 \begin{minted}[tabsize=4]{nasm}
 
 	MOV    r8, rdx  ; Se copia size
-	SHL    r8, 62   ; Se conservan los últimos 2 bits (resto módulo 4)		
+	SHL    r8, 62   ; Se conservan los ultimos 2 bits (resto modulo 4)		
 	SHR    r8, 62   ; Se vuelve al estado original
 	MOV    rcx, 4   ; En otro registro se trae un 4
-	SUB    rcx, r8  ; Ahora en rcx está lo que falta a rdx para ser módulo 4
+	SUB    rcx, r8  ; Ahora en rcx esta lo que falta a rdx para ser modulo 4
 	SHL    rcx, 2   ; Finalmente se lo multiplica por 4. Esto es lo que queremos que
-                    ; retroceda el contador de fuente que avanza 4 veces mas rápido
+                    ; retroceda el contador de fuente que avanza 4 veces mas rapido
 									
 	ADD    rcx, 16  ; Se suma 16 a rcx para compensar que el contador siempre esta
                     ; una iteracion mas adelante que el proceso de datos por el
@@ -364,7 +364,7 @@ un problema mayor.
 \begin{center}
   \includegraphics[scale=0.5]{secciones/decodificacion/imagenes/decode.png}
 \end{center}
-\caption{Imagen antes y después de aplicar el filtro de color con color principal rojo.}
+\caption{Rendimiento de las diferentes implementaciones.}
 \label{fig:rendimiento decode}
 \end{figure}
 
@@ -385,7 +385,7 @@ que además el acceso mas conflictivo (el de trar datos) está optimizado median
 
 	Otra cosa importante a la hora de hacer este análisis es que se sabe con mucha presición
 cuantas veces se realiza el ciclo principal. Si o si está en el orden de $size/4$ veces. Es decir,
-en cada iteración se graban exactamente 4 bytes y las iteraciones terminan cuando se graban $size$
+en cada iteración se graban exactamente 4 bytes y las iteraciones terminan cuando se graban $size$ bytes
 por lo tanto ese va a ser el total de iteraciones.
 
 	Despreciando las instrucciones de afuera del ciclo (que tiene sentido porque son pocas y se

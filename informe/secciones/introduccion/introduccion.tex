@@ -15,7 +15,7 @@ Cada una de las experiencias con los tres filtros desarrollados se describen en 
 
 \subsection{Modelo de procesamiento SIMD}
 
-	El procesamiento SIMD consiste en realizar una misma operación sobre una gran cantidad de datos de manera simultánea y atómica, logrando lo que se conoce como paralelismo a nivel de datos. Los filtros de imágenes y otros procesos sobre multimedia son particularmente propicios para este tipo de procesamiento ya que habitualmente requieren realizar un mismo tipo de cálculo sobre cientos o miles de puntos, por lo cual la posibilidad de trabajar en bloque provee un claro beneficio en tiempo de ejecución en comparación a un procesamiento en serie.
+El procesamiento SIMD consiste en realizar una misma operación sobre una gran cantidad de datos de manera simultánea y atómica, logrando lo que se conoce como paralelismo a nivel de datos. Los filtros de imágenes y otros procesos sobre multimedia son particularmente propicios para este tipo de procesamiento ya que habitualmente requieren realizar un mismo tipo de cálculo sobre cientos o miles de puntos, por lo cual la posibilidad de trabajar en bloque provee un claro beneficio en tiempo de ejecución en comparación a un procesamiento en serie.
 
 \begin{figure}[h]
 \begin{center}
@@ -26,26 +26,15 @@ Cada una de las experiencias con los tres filtros desarrollados se describen en 
 \label{fig:SISD-SIMD}
 \end{figure}
 
-	Sin embargo para realizar este análisis es imperioso meterse un poco mas adentro.
-El comportamiento esperado a priori para estos procesos es una relación inversa entre
-el nivel de paralelismo y el tiempo consumido. Es decir, al procesar 4 datos a la vez
-uno esperaría obtener que el proceso tarde 4 veces menos tiempo, procesando 8 datos
-a la vez 8 veces menos tiempo, etc. Sin embargo esto no siempre ocurre. Durante
-este trabajo constantemente se va a intentar explicar que desviaciones se 
-produjeron con respecto a este supuesto. Para eso vamos a analizar la arquitectura
-intel-64, la velocidad de acceso a memoria, el modo en que se usa la caché,
-el medio en el cuál se ejecutan los programas y los algoritmos utilizados entre
-otras cosas.
+La figura \ref{fig:SISD-SIMD} compara el esquema SIMD con un tipo de procesamiento más tradicional, donde para realizar una serie de sumas es necesario realizarlas independientemente y en múltiples pasos. Bajo el modelo SIMD, los datos se manejan de forma empaquetada y las sumas se realizan en simultáneo y con un costo que es idealmente independiente de la cantidad de datos.
 
-	A lo largo del trabajo se va a ir mostrando como el uso de código de ensamblador
-optimizado para el uso de la tecnología SSE produce programas sumamente eficientes. Sin embargo
-producir ese código es sumamente trabajoso, mucho mas que usar lenguajes de mas alto nivel como
-c o c++. Por ese motivo se intentará hacer otro análisis (tal vez algo menos científico
-pero intentando justificar de la manera mas objetiva posible) de cuando vale la pena y cuando no.
+La intuición parecería indicar que a priori se debería esperar un beneficio en eficiencia proporcional a la multiplicidad de datos que se manipulan en simultáneo. Es decir, al procesar 4 datos a la vez se esperaría obtener un proceso 4 veces más rápido, al procesar 8 datos a la vez uno 8 veces más rápido, etc. Sin embargo, la experiencia muestra que la relación entre ambas magnitudes es compleja, por lo cual es relevante contemplar diferentes factores característicos de la arquitectura Intel como la velocidad de acceso a memoria o el uso de la caché, así como el medio en el cuál se realiza la experimentación, y los algoritmos utilizados.
 
-Existen también procesos que muestran las limitaciones de este esquema de procesamiento como la lupa con cosenos y la rotación por ejemplo. En general el motivo de estas limitaciones
-consiste en que en alguna parte del algorítmo los datos ya no se pueden
-tratar mas como un bloque. Por ejemplo en el algoritmo de rotación
-uno trae datos consecutivos, los procesa y a la hora de guardarlos
-estos no oscupan posiciones consecutivas, por lo tanto a la hora
-de grabar los datos no es posible hacerlo utilizando un proceso SIMD.
+% (esto quedo mas o menos dicho arriba y dicho varias veces más adelante)
+% 	A lo largo del trabajo se va a ir mostrando como el uso de código de ensamblador
+% optimizado para el uso de la tecnología SSE produce programas sumamente eficientes. Sin embargo
+% producir ese código es sumamente trabajoso, mucho mas que usar lenguajes de mas alto nivel como
+% c o c++. Por ese motivo se intentará hacer otro análisis (tal vez algo menos científico
+% pero intentando justificar de la manera mas objetiva posible) de cuando vale la pena y cuando no.
+
+Naturalmente, existen procesos cuyas características imponen limitaciones a la aplicación de este esquema de procesamiento. En muchos casos el motivo de estas limitaciones consiste en una dependencia de datos entre diferentes partes del algorítmo, o una distribución irregular entre los datos que se precisa leer o escribir, inhibiendo el procesamiento en bloque. Tal es el caso de una rotación de ángulo arbitrario, donde datos consecutivos en la entrada no ocupan posiciones consecutivas en la salida.

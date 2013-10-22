@@ -34,15 +34,7 @@ La modificación evita el cálculo de una raíz cuadrada, sin incurrir en el rie
 
 La implementación en lenguaje ensamblador mantiene esencialmente el mismo procedimiento, con la salvedad de que fue adaptado para procesar cuatro píxeles en simultáneo mediante el uso de operaciones SIMD. Se recorre la matriz en el mismo órden descripto previamente, realizando lecturas de 16 bytes por iteración (equivalente a 5 píxeles y un byte sobrante).
 
-La necesidad de limitar el procesamiento simultáneo a cuatro píxeles se desprende del hecho de que, en nuestra implementación, la expresión que mide la distancia entre un píxel y el color principal puede tomar valores en el rango $0, ... \,195075$. Este último valor no cabe en un entero de 16 bits, precisándose un \tipo{double word} para almacenar ese resultado temporal; esto implica un total de hasta cuatro valores de distancia en un registro XMM. Por esta razón, además sería similar trabajar con el tipo de datos \tipo{float} ya que también caben hasta cuatro por registro de 128 bits.
-
-	Otra implementación podría haber sido procesar
-los colores de a uno. Es decir, en lugar de primero calcular
-la suma de los cuadrados restar cada cuadrado al threshold.
-Se decidió usar la primera por una cuestión respetar
-el algoritmo intuitivo. Nuestro objetivo con este
-trabajo es mostrar las optimizaciones a bajo nivel
-en un mismo algoritmo.
+El procesamiento simultáneo se limitó a cuatro píxeles ya que en nuestra implementación se computa la distancia entre un píxel y el color principal explícitamente, cuyo valor cae en el rango $0, ... \,195075$. Este último valor no cabe en un entero de 16 bits, precisándose un \tipo{double word} para almacenar ese resultado temporal; esto implica un total de hasta cuatro valores de distancia en un registro XMM. Por esta razón, además sería similar trabajar con el tipo de datos \tipo{float} ya que también caben hasta cuatro por registro de 128 bits.
 
 De esta forma, el procedimiento realizado en cada iteración consiste en (para cada uno de los cuatro píxeles en simultáneo) comparar el valor de la distancia con el \param{threshold}, y calcular el promedio de los tres canales, actualizando luego sus valores según la siguiente expresión informal:
 
@@ -136,7 +128,7 @@ que ofrece el compilador GCC.\footnote{Ver http://gcc.gnu.org/onlinedocs/gcc/Opt
 \label{fig:filtro-color-C-vs-Os}
 \end{figure}
 
-El incremento en performance al activar las optimizaciones del compilador es notable, reduciendo a aproximadamente un cuarto el tiempo de ejecución en todos los casos. Sin embargo, la relación de performance entre los resultados con distintos flags no fue la prevista; el flag \textbf{O3} generó código menos performante que las otras optimizaciones, y el flag \textbf{O2} fue muy levemente superior a la optimización de primer nivel. Esto permite aducir que los distintos tipos de optimización automática varían su utilidad según el código que se procesa, por lo cual siempre que se busque optimizar no es una buena estrategia optar por el mayor nivel de optimización \emph{sin realizar una comparación sobre el código particular que se desea optimizar.}
+El incremento en performance al activar las optimizaciones del compilador es notable, reduciendo a aproximadamente un cuarto el tiempo de ejecución en todos los casos. Sin embargo, la relación de performance entre los resultados con distintos flags no fue la prevista; el flag \textbf{O3} generó código menos performante que las otras optimizaciones\footnote{Muchas fuentes argumentan que el flag O3 no necesariamente genera código más eficiente que O2, e incluso que el segundo es más performante en general a partir de GCC 4.x (http://elinux.org/Compiler\_Optimization)}, y el flag \textbf{O2} fue muy levemente superior a la optimización de primer nivel. Esto permite aducir que los distintos tipos de optimización automática varían su utilidad según el código que se procesa, por lo cual siempre que se busque optimizar no es una buena estrategia optar por el mayor nivel de optimización \emph{sin realizar una comparación sobre el código particular que se desea optimizar.}
 
 Adicionalmente, se analizaron las diferencias entre el código generado con compilación estándar y el código generado con optimización de tipo O1. La diferencia entre los códigos generados evidencia inmediatamente una característica subóptima del código estándar; \emph{todas} las variables locales se alojan en la pila, incluso habiendo disponibilidad de registros. Los registros se utilizan únicamente como variables temporales, y al final de cada extracto de código se guarda el resultado en un espacio de la pila. El código generado con O1, en cambio, ahorra gran cantidad de esos accesos a memoria. Este comportamiento se ejemplifica con el siguiente extracto (figura \ref{fig:codigo-objeto-filtro-color}).
 

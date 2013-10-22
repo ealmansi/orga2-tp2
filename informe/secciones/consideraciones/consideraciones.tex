@@ -30,8 +30,9 @@ Todos los programas en lenguaje C se compilaron con los siguientes compiladores:
 \end{itemize} 
 				
 % esto no lo entiendo
-Además si bien siempre se compiló indicándole al compilador que use instrucciones SSE4.3 además se hicieron 2 versiones distintas con cada compilador: Una con optimizaciones agresivas y otra sin ellas. Para la primera usó el flag -Ofast, mientras que para la segunda se dejó el comportamiento predeterminado.
+Además si bien siempre se compiló indicándole al compilador que use instrucciones SSE4.2 además se hicieron 2 versiones distintas con cada compilador: Una con optimizaciones agresivas y otra sin ellas. Para la primera usó el flag -Ofast, mientras que para la segunda se dejó el comportamiento predeterminado.
 
+\newpage
 
 \subsection{Entorno de experimentación y método de medición}
 
@@ -41,7 +42,6 @@ innecesarios.
 De todas formas, la interacción con el sistema operativo es insoslayable, y algunas mediciones mostraron valores mucho mayores a la media, presumiblemente debido a interrupciones. Como criterio de eliminación de valores atípicos, se utilizó el procedimiento estándar de descartar mediciones con valores por debajo de $Q_1 - 1.5 * IQR$ o por encima de $Q_3 + 1.5 * IQR$, donde $Q_1$ y $Q_3$ son el primer y tercer cuartil de los datos, respectivamente, e $IQR$ es el rango intercuartil o $Q_3 - Q_1$ (ver figura \ref{fig:cuariles}).
 
 Las mediciones se repitieron entre 50 y 100 veces según el filtro, eligiendo esta cantidad en base a prueba y error de forma tal que la variación de la media fuera despreciable. Finalmente, se tomó el valor de la media como representante de los conjuntos de mediciones para realizar comparaciones entre distintas implementaciones, siendo esta una buena medida dada la baja variación en los datos obtenidos luego de filtrar los valores atípicos (en general, menos del 2\%).
-
 % le voy a enchufar otra fotito aca
 \begin{figure}[h!]
 \begin{center}

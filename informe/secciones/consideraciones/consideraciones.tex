@@ -35,32 +35,21 @@ Además si bien siempre se compiló indicándole al compilador que use instrucci
 
 \subsection{Entorno de experimentación y método de medición}
 
-	A la hora de realizar las mediciones de tiempo se intentó armar el ambiente mas
-ameno posible. Para esto antes de realizar los tests se mataron todas las aplicaciones
-no vitales para el sistema operativo, incluída la interfaz gráfica, acceso a internet y
-toda esa clase de cosas (init 1, kill -9 -1). Además se desconectaro todos los periféricos
+A la hora de realizar las mediciones de tiempo, se intentó armar un entorno que introdujera la menor cantidad de ruido adicional como fuera posible. Por esta razón, antes de realizar las experiencias se terminaron todas las aplicaciones no vitales para el sistema operativo, incluída la interfaz gráfica y acceso a internet. \footnote{Comandos \emph{init 1} y \emph{kill -9 -1} en Linux.}. Además, se desconectaron los periféricos
 innecesarios.
 
-	Las mediciones se repitieron entre 50 y 100 veces (según el filtro). Estos números se
-decidieron en base a prueba y error. Eliminando los valor atípicos de esa cantidad
-de valores hacia arriba la variación de la media era despreciable (menor al 0.5)
+De todas formas, la interacción con el sistema operativo es insoslayable, y algunas mediciones mostraron valores mucho mayores a la media, presumiblemente debido a interrupciones. Como criterio de eliminación de valores atípicos, se utilizó el procedimiento estándar de descartar mediciones con valores por debajo de $Q_1 - 1.5 * IQR$ o por encima de $Q_3 + 1.5 * IQR$, donde $Q_1$ y $Q_3$ son el primer y tercer cuartil de los datos, respectivamente, e $IQR$ es el rango intercuartil o $Q_3 - Q_1$ (ver figura \ref{fig:cuariles}).
 
-	Para eliminar los valores atípicos se utilizó el procedimiento de rango intercuartil. Es decir
-que se eliminaron aquellos elementos que estuvieran en los dos cuartiles externos.
+Las mediciones se repitieron entre 50 y 100 veces según el filtro, eligiendo esta cantidad en base a prueba y error de forma tal que la variación de la media fuera despreciable. Finalmente, se tomó el valor de la media como representante de los conjuntos de mediciones para realizar comparaciones entre distintas implementaciones, siendo esta una buena medida dada la baja variación en los datos obtenidos luego de filtrar los valores atípicos (en general, menos del 2\%).
 
 % le voy a enchufar otra fotito aca
-% \begin{figure}[h]
-% \begin{center}
-%   \includegraphics[scale=0.5]{secciones/consideraciones/imagenes/cuartiles.png}
-% \end{center}
-% \caption{Representación gráfica de la \footnote{Fuente: http://commons.wikimedia.org/wiki/File:Lqr\_with\_quantile.png}}
-% \label{fig:cuariles}
-% \end{figure}
-
-	Con el resto de los valores se realizó un promedio. Es muy importante notar que una vez eliminados los valores
-atípicos la variación resulta realmente baja. En general de menos del 2\%. De esta manera se logra poder trabajar
-con la media, que es una referencia muy fuerte, y además estar muy cerca del mínimo valor obtenido.
-
+\begin{figure}[h!]
+\begin{center}
+  \includegraphics[scale=0.5]{secciones/consideraciones/imagenes/cuartiles.png}
+\end{center}
+\caption{Gráfico representando el rango intercuartil (sombreado), y el rango de valores aceptados.}
+\label{fig:cuariles}
+\end{figure}
 	
 
 	

@@ -130,26 +130,36 @@ que ofrece el compilador GCC.\footnote{Ver http://gcc.gnu.org/onlinedocs/gcc/Opt
 
 El incremento en performance al activar las optimizaciones del compilador es notable, reduciendo a aproximadamente un cuarto el tiempo de ejecución en todos los casos. Sin embargo, la relación de performance entre los resultados con distintos flags no fue la prevista; el flag \textbf{O3} generó código menos performante que las otras optimizaciones\footnote{Muchas fuentes argumentan que el flag O3 no necesariamente genera código más eficiente que O2, e incluso que el segundo es más performante en general a partir de GCC 4.x (http://elinux.org/Compiler\_Optimization)}, y el flag \textbf{O2} fue muy levemente superior a la optimización de primer nivel. Esto permite aducir que los distintos tipos de optimización automática varían su utilidad según el código que se procesa, por lo cual siempre que se busque optimizar no es una buena estrategia optar por el mayor nivel de optimización \emph{sin realizar una comparación sobre el código particular que se desea optimizar.}
 
+
 Adicionalmente, se analizaron las diferencias entre el código generado con compilación estándar y el código generado con optimización de tipo O1. La diferencia entre los códigos generados evidencia inmediatamente una característica subóptima del código estándar; \emph{todas} las variables locales se alojan en la pila, incluso habiendo disponibilidad de registros. Los registros se utilizan únicamente como variables temporales, y al final de cada extracto de código se guarda el resultado en un espacio de la pila. El código generado con O1, en cambio, ahorra gran cantidad de esos accesos a memoria. Este comportamiento se ejemplifica con el siguiente extracto (figura \ref{fig:codigo-objeto-filtro-color}).
 
-
-% esto está atado con alambre...
 \begin{figure}[h]
 	\begin{mdframed}
-	\begin{center}
-		\begin{lstlisting}
-		mov  eax, DWORD PTR[rbp-0x10]	| imul   r15d,r15d
-		mov  edx,eax			| imul   r14d,r14d
-		imul edx, DWORD PTR[rbp-0x10]	| add    r14d,r15d
-		mov  eax, DWORD PTR[rbp-0xc]	| imul   ebx,ebx
-		imul eax, DWORD PTR[rbp-0xc]	| add    ebx,r14d
-		add  edx,eax			|			
-		mov  eax, DWORD PTR[rbp-0x8]	|			
-		imul eax, DWORD PTR[rbp-0x8]	|			
-		add  eax,edx			|			
-		mov  DWORD PTR [rbp-0x4],eax	|			
-		\end{lstlisting}
-	\end{center}
+		\parcolumns[rulebetween]{2}
+			\colchunk[1]{
+				\begin{minted}{nasm}
+	mov  eax, DWORD PTR[rbp-0x10]	
+	mov  edx,eax			
+	imul edx, DWORD PTR[rbp-0x10]	
+	mov  eax, DWORD PTR[rbp-0xc]	
+	imul eax, DWORD PTR[rbp-0xc]	
+	add  edx,eax			
+	mov  eax, DWORD PTR[rbp-0x8]	
+	imul eax, DWORD PTR[rbp-0x8]	
+	add  eax,edx			
+	mov  DWORD PTR [rbp-0x4],eax	
+				\end{minted}
+			}
+			\colchunk[2]{
+				\begin{minted}{nasm}
+	imul   r15d,r15d
+	imul   r14d,r14d
+	add    r14d,r15d
+	imul   ebx,ebx
+	add    ebx,r14d
+				\end{minted}
+			}
+			\colplacechunks
 	\end{mdframed}
 	\caption{Código objeto generado con compilación por default (izquierda), y con optimización de tipo O1 (derecha).}
 	\label{fig:codigo-objeto-filtro-color}
@@ -160,7 +170,6 @@ Sin embargo, la lógica de flujo del código generado es equivalente. Es decir, 
 	Los otros niveles de optimización cambian esto. Incluso utilizan los registros xmm
 pero no de manera óptima.
 
-%Análisis de saltos condicionales
 
 \subsection{Análisis de saltos condicionales}
 
@@ -234,21 +243,35 @@ también se reliza si o si la operación, sin ninguna clase de condicional
 dando vueltas.
 
 
+
+
 \begin{figure}[h]
 	\begin{mdframed}
-	\begin{center}
-		\begin{lstlisting}
-		if (Cond) then:    | 
-			OPERACION  | 
-		else:              | OPERACION
-			OPERACION  |
-		endif              |
-		\end{lstlisting}
-	\end{center}
+		\parcolumns[rulebetween]{2}
+			\colchunk[1]{
+				\begin{minted}{c}
+		if (CONDICION) {
+			OPERACION
+		} else {
+			OPERACION
+		}
+				\end{minted}
+			}
+			\colchunk[2]{
+				\begin{minted}{c}
+		OPERACION
+				\end{minted}
+			}
+			\colplacechunks
 	\end{mdframed}
-	\caption{Experimento 1}
-	\label{fig:Experimento Saltos}
+	\caption{Comparación pseudo-código.}
+	\label{fig:pseudo-codigo}
 \end{figure}
+
+
+
+
+
 
 	El siguiente gráfico muestra los resultados obtenidos en una ronda de test.
 Algunas datos usados para sacar conclusiones no quedan plasmados en este gráfico sin
@@ -302,21 +325,39 @@ para que se desarme el pipeline la mayor cantidad de veces posible.
 
 Sobre la implementación en lenguaje ensamblador ya descripta, se realizaron dos sucesivas modificaciones para estudiar la técnica conocida como desenrollado de ciclos en su versión más elemental. Esta técnica consiste en minimizar la lógica de flujo, comparaciones y saltos condicionales para ciclos que realizan una gran cantidad de iteraciones. Un ejemplo esquemático se puede ver en la figura \ref{fig:filtro-color-loop-unrolling}.
 
+
+
+
 \begin{figure}[h]
 	\begin{mdframed}
-	\begin{center}
-		\begin{lstlisting}
-		for i = 1 .. n		| for i = 1 .. n/k
-			F(i)		| 	F(i)
-		endfor			| 	F(i + 1)
-					| 	...
-					| 	F(i + k - 1)
-					| endfor
-		\end{lstlisting}
-	\end{center}
+		\parcolumns[rulebetween]{2}
+			\colchunk[1]{
+
+		\begin{algorithmic}
+			\FOR{$i=0$ to $n$}
+			\STATE F(i)
+			\ENDFOR
+		\end{algorithmic}
+
+			}
+			\colchunk[2]{
+
+\begin{algorithmic}
+	\FOR{$i=0$ to $n/k$}
+	\STATE F(i)
+	\STATE F(i+1)
+	\STATE F(i+2)
+	\STATE \dots
+	\STATE F(i+k-1)
+	\ENDFOR
+\end{algorithmic}
+
+			}
+			\colplacechunks
 	\end{mdframed}
 	\caption{Pseudo-código ejemplo de la técnica loop unrolling.}
 	\label{fig:filtro-color-loop-unrolling}
 \end{figure}
+
 
 Siguiendo la notación de la figura, en el caso particular del filtro color, se tomó k = 2, y k = 4, y se realizaron mediciones de performance. Los resultados no fueron provechosos ya que las mejoras observadas fueron menores al 5\%, incluso sin haber considerado el costo adicional de tratar con los casos donde el tamaño de la matriz no es múltiplo de la cantidad de píxeles que se procesan por ciclo, lo cual deterioraría la performance. Este resultado parecería indicar que el costo de la comparación y la escritura al program counter en cada salto no incurren un costo significativo, posiblemente debido a que el procedimiento realiza un único acceso a memoria por iteración (no congestiona la caché) y la posibilidad de ejecución fuera de orden que brinda al procesador (el puntero de lectura que se utiliza para realizar la comparación no se utiliza dentro del cuerpo del ciclo una vez leída la memoria).

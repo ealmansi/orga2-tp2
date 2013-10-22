@@ -7,6 +7,7 @@
 \usepackage[spanish]{babel}
 \usepackage{float}
 \usepackage{mdframed}
+\usepackage[section]{placeins}
 % \usepackage[colorlinks=true, linkcolor=blue]{hyperref}
 \usepackage{graphicx}
 \usepackage{titling}
@@ -66,28 +67,28 @@
 
 	\tableofcontents
 
-	\newpage
+	\clearpage
 	% -- Contenido --
 	% Se edita cada seccion por separado, no hay que cambiar nada acá.
 	\section{Introducción}
 		\input{secciones/introduccion/introduccion.tex}
-	\newpage
+	\clearpage
 
 	\section{Consideraciones generales}
 		\input{secciones/consideraciones/consideraciones.tex}
-	\newpage
+	\clearpage
 
 	\section{Filtro de color}
 		\input{secciones/filtro_color/filtro_color.tex}
-	\newpage
+	\clearpage
 
 	\section{Filtro Miniature}
 		\input{secciones/filtro_miniature/filtro_miniature.tex}
-	\newpage
+	\clearpage
 
 	\section{Decodificación esteganográfica}
 		\input{secciones/decodificacion/decodificacion.tex}
-	\newpage
+	\clearpage
 
 	\section{Conclusiones}
 		\input{secciones/conclusiones/conclusiones.tex}

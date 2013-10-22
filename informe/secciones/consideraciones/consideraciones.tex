@@ -8,42 +8,28 @@
 % Análisis del código. (object dump).
 % - Los tres filtros se programaron pensando en minizar los accesos a memoria incluso en situaciones donde producía cálculo extra.
 
-	A la hora de implementar los filtros se tuvieron algunas consideraciones generales 
-para poder explicar los resultados de manera correcta, para manetener la coherencia
-interna dentro del trabajo y para tener bases firmes en las que basarnos para sacar
-conclusiones.
+A la hora de implementar los filtros se tuvieron algunas consideraciones generales para mantener la coherencia dentro del trabajo y poder extraer resultados comparables entre los distintos filtros, como se detallan en los siguientes apartados.
 
 \subsection{Criterios de implementación}
 
-\begin{itemize}
-			\item Todas las implementaciones de C intentan ser lo mas intuitivas posibles. No se
-			utilizaron optimizaciones demasiado extrañas. Intentan ser una traducción bastante
-			fiel de la descripción en lenguaje natural del enunciado a C. Decimos esto para
-			poder analizar de manera pura la diferencia entre los dos paradigmas. Además
-			a la hora de analizar los archivos objeto creados por los compiladores
-			tener un algorítmo simple ayuda a hacer un análisi mas simple y consistente.
-			Por otra parte da libertad al compilador para meter tanta paralelización como pueda
-			de tal manera que los diferentes compiladores puedan introducir ellos las optimizaciones
-			en lugar de respetar un esquema previo.
+Para poder analizar de manera pura la diferencia entre los dos paradigmas, se procuró que las implementaciones en lenguaje C fueran lo mas intuitivas posibles; es decir, una traducción fiel a la descripción en lenguaje natural del comportamiento del filtro. No se utilizaron optimizaciones algorítmicas sofisticadas. Esto acarrea el beneficio adicional de simplificar la interpretación del código objeto generado por los compiladores, y les provee mayor libertad para realizar paralelización u otras optimizaciones sin necesariamente respetar el esquema planteado.
 
-			\item Todas las implementaciones en asm se escribieron intentando minimizar al máximo
-			los accesos a memoria. Una vez dentro del ciclo sólo se accede a memoria para buscar
-			datos y para escribir datos. La razón de esto es que los accesos a memoria son lentos,
-			por lo que en general cuando se busca performance es buena idea evitarlos. Sin embargo
-			en cada implementación se va a analizar si esto fue una decisión acertada o no.
-\end{itemize}		
+Por otro lado, todas las implementaciones en ASM se desarrollaron intentando minimizar los accesos a memoria, para evitar el cuello de botella de la arquitectura de Von Neumann. Una vez dentro del ciclo, sólo se accede a memoria para la lectura de la imagen fuente o la escritura de la imagen destino.
+
+% (esto es medio un spoiler)
+% Sin embargo en cada implementación se va a analizar si esto fue una decisión acertada o no.
 
 \subsection{Compiladores utilizados}
 			
-Todos los códigos de C se compilaron con 2 compiladores distintos:
+Todos los programas en lenguaje C se compilaron con los siguientes compiladores:
 
 \begin{itemize}
-	\item GNU C Compiler (GCC): Se eligió por ser un compilador libre, conocido, popular, sumamente versatil y porque es capaz de realizar una gran gama de optimizacizaciones, probablemente todas aquellas que se pueden realizar sin acceder al micro código de intel.
+	\item GNU C Compiler (GCC): Se eligió por ser un compilador libre, conocido, popular, sumamente versatil y porque es capaz de realizar una gran gama de optimizacizaciones, probablemente todas aquellas que se pueden realizar sin acceder al micro código de Intel.
 
-	\item Intel C++ Compiler (ICC): Este compilador introduce de manera predeterminada código que aprovecha la tecnología SSE. Es decir que de manera predeterminada genera código objeto que realiza paralelismo a nivel de datos. Además realiza optimizaciones de altísima calidad aprovechando los detalles del micro-código.
-
+	\item Intel C++ Compiler (ICC): Este compilador realiza optimizaciones muy avanzadas aprovechando características detalladas de la microarquitectura Intel. Adicionalmente, introduce instrucciones de la familia de extensiones SSE de forma predeterminada; es decir, por defecto es capaz de generar código objeto manifestando paralelismo a nivel de datos.
 \end{itemize} 
 				
+% esto no lo entiendo
 Además si bien siempre se compiló indicándole al compilador que use instrucciones SSE4.3 además se hicieron 2 versiones distintas con cada compilador: Una con optimizaciones agresivas y otra sin ellas. Para la primera usó el flag -Ofast, mientras que para la segunda se dejó el comportamiento predeterminado.
 
 
@@ -62,14 +48,14 @@ de valores hacia arriba la variación de la media era despreciable (menor al 0.5
 	Para eliminar los valores atípicos se utilizó el procedimiento de rango intercuartil. Es decir
 que se eliminaron aquellos elementos que estuvieran en los dos cuartiles externos.
 
-
-\begin{figure}[h]
-\begin{center}
-  \includegraphics[scale=0.5]{secciones/consideraciones/imagenes/cuartiles.png}
-\end{center}
-\caption{Fuente: http://commons.wikimedia.org/wiki/File:Lqr\_with\_quantile.png}
-\label{fig:cuariles}
-\end{figure}
+% le voy a enchufar otra fotito aca
+% \begin{figure}[h]
+% \begin{center}
+%   \includegraphics[scale=0.5]{secciones/consideraciones/imagenes/cuartiles.png}
+% \end{center}
+% \caption{Representación gráfica de la \footnote{Fuente: http://commons.wikimedia.org/wiki/File:Lqr\_with\_quantile.png}}
+% \label{fig:cuariles}
+% \end{figure}
 
 	Con el resto de los valores se realizó un promedio. Es muy importante notar que una vez eliminados los valores
 atípicos la variación resulta realmente baja. En general de menos del 2\%. De esta manera se logra poder trabajar
